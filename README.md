@@ -1,53 +1,12 @@
 # AbraKai Extreme Control Blocks
 
-**極限操控方塊｜阿布拉.凱 工作室 監製**
+極限操控方塊｜阿布拉.凱 工作室 監製
 
-A mobile- and desktop-friendly block control game with 10 levels, local scoring, sound effects, background music, and skill rewards.
+V1.3 手機直式 UI/UX 強化版：
+- 手機直式控制鍵下移，靠近拇指自然操作區
+- 遊戲棋盤重新計算高度，避免被底部手把遮住
+- HOLD / NEXT 手機版縮小，避免左右裁切
+- 上方分數與關卡資訊列壓縮，減少佔用空間
+- 保留桌機與橫式版操作風格
 
-## 專案名稱
-
-`abrakai-extreme-control-blocks`
-
-## 快速開始
-
-1. Download or clone this project.
-2. Open `index.html` directly in a browser.
-3. On desktop, use keyboard controls.
-4. On mobile, use the on-screen controller.
-
-## Controls
-
-| Key | Action |
-|---|---|
-| ← / → | Move left / right |
-| ↑ / E | Rotate |
-| ↓ | Soft drop |
-| Space | Hard drop |
-| C | Hold |
-| Z | Use skill |
-| P | Pause |
-| R | Restart |
-
-## Folder Structure
-
-```text
-abrakai-extreme-control-blocks/
-├── index.html
-├── README.md
-├── assets/
-│   ├── sounds/
-│   ├── images/
-│   └── icons/
-├── css/
-│   └── style.css
-└── js/
-    └── game.js
-```
-
-## Notes
-
-The current version keeps the main game in `index.html` for easy deployment and testing. Future versions can split CSS and JavaScript into `/css/style.css` and `/js/game.js`.
-
-## License
-
-Copyright © 2026 阿布拉.凱 工作室. All rights reserved.
+直接開啟 `index.html` 即可遊玩。
