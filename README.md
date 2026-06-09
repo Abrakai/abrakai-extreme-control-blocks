@@ -1,12 +1,17 @@
 # AbraKai Extreme Control Blocks
 
-極限操控方塊｜阿布拉.凱 工作室 監製
+**極限操控方塊｜阿布拉.凱 工作室 監製**
 
-V1.3 手機直式 UI/UX 強化版：
-- 手機直式控制鍵下移，靠近拇指自然操作區
-- 遊戲棋盤重新計算高度，避免被底部手把遮住
-- HOLD / NEXT 手機版縮小，避免左右裁切
-- 上方分數與關卡資訊列壓縮，減少佔用空間
-- 保留桌機與橫式版操作風格
+A mobile- and desktop-friendly block control game with 10 levels, local scoring, browser-saved progress, sound effects, background music, skill rewards, beginner guide, and copyright screen.
 
-直接開啟 `index.html` 即可遊玩。
+## V1.5 updates
+
+- Requires player name/nickname on the start screen.
+- Saves player nickname in the current browser for next visit.
+- Saves local progress: score, level, lines, board, next/hold pieces, and skill charges.
+- Adds a copyright/credits screen.
+- Adds a beginner village guide for new players.
+
+## Play
+
+Open `index.html` in a browser, or deploy the repository with GitHub Pages.

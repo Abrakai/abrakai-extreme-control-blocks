@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- 鎖定螢幕縮放，防止行動裝置點擊時的誤觸放大 (touch-action: none 極度重要) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>極限操控方塊 V1.3 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.5 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -192,6 +192,140 @@
                 font-size: 7px !important;
                 line-height: 1.25 !important;
                 max-width: 90vw !important;
+            }
+        }
+
+
+
+        /* V1.4 動態比例版面：用 JS 寫入 CSS 變數，依可視螢幕比例調整棋盤與手把 */
+        :root {
+            --v14-top-pad: 42px;
+            --v14-control-clearance: 186px;
+            --v14-controls-bottom: 0px;
+            --v14-controls-height: 164px;
+            --v14-dpad-size: 118px;
+            --v14-action-size: 126px;
+            --v14-shoulder-w: 88px;
+            --v14-shoulder-h: 42px;
+            --v14-preview-size: 42px;
+            --v14-board-gap: 8px;
+        }
+
+        @media (orientation: portrait) and (max-width: 768px) {
+            #game-screen {
+                padding-top: var(--v14-top-pad) !important;
+                padding-bottom: var(--v14-control-clearance) !important;
+            }
+            #left-controls, #right-controls {
+                bottom: var(--v14-controls-bottom) !important;
+                height: var(--v14-controls-height) !important;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+            }
+            .d-pad-grid {
+                width: var(--v14-dpad-size) !important;
+                height: var(--v14-dpad-size) !important;
+            }
+            .action-diamond-grid {
+                width: var(--v14-action-size) !important;
+                height: var(--v14-action-size) !important;
+            }
+            #ctrl-left-shift, #ctrl-right-shift {
+                width: var(--v14-shoulder-w) !important;
+                height: var(--v14-shoulder-h) !important;
+            }
+            #canvas-hold, #canvas-next {
+                width: var(--v14-preview-size) !important;
+                height: var(--v14-preview-size) !important;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 520px) {
+            body { height: 100dvh; overflow: hidden; }
+            .absolute.top-0.left-0.w-full.z-10 {
+                padding: 4px 8px !important;
+                background: linear-gradient(90deg, rgba(2,6,23,.55), rgba(2,6,23,.18));
+            }
+            .absolute.top-0.left-0.w-full.z-10 h1 {
+                font-size: 10px !important;
+                max-width: 28vw;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .absolute.top-0.left-0.w-full.z-10 button {
+                font-size: 9px !important;
+                padding: 4px 7px !important;
+                min-height: 26px;
+            }
+            .flex.flex-col.landscape\:flex-row {
+                padding-top: 0 !important;
+            }
+            #game-screen {
+                width: 56vw !important;
+                max-width: 56vw !important;
+                padding-top: 30px !important;
+                padding-bottom: 4px !important;
+                justify-content: center !important;
+            }
+            #left-controls, #right-controls {
+                width: 22vw !important;
+                height: 100dvh !important;
+                padding-bottom: max(6px, env(safe-area-inset-bottom)) !important;
+                justify-content: center !important;
+                transform: scale(var(--v14-landscape-control-scale, .9));
+                transform-origin: center center;
+            }
+            #left-controls > .w-full, #right-controls > .w-full {
+                margin-bottom: 10px !important;
+            }
+            .d-pad-grid {
+                width: var(--v14-landscape-dpad, 112px) !important;
+                height: var(--v14-landscape-dpad, 112px) !important;
+            }
+            .action-diamond-grid {
+                width: var(--v14-landscape-action, 118px) !important;
+                height: var(--v14-landscape-action, 118px) !important;
+            }
+            #ctrl-left-shift, #ctrl-right-shift {
+                width: var(--v14-landscape-shoulder-w, 92px) !important;
+                height: var(--v14-landscape-shoulder-h, 38px) !important;
+            }
+            #game-screen .grid.grid-cols-4 {
+                gap: 3px !important;
+                margin-bottom: 2px !important;
+                max-width: min(54vw, 340px) !important;
+            }
+            #game-screen .grid.grid-cols-4 > div > div:first-child {
+                font-size: 7px !important;
+            }
+            #game-screen .grid.grid-cols-4 > div > div:last-child {
+                font-size: 14px !important;
+                line-height: 1 !important;
+            }
+            #game-screen .grid.grid-cols-3 {
+                gap: 4px !important;
+                margin-bottom: 4px !important;
+                max-width: min(54vw, 340px) !important;
+            }
+            #game-screen .grid.grid-cols-3 > div,
+            #game-screen .grid.grid-cols-3 > button {
+                min-height: 30px !important;
+                padding: 2px 3px !important;
+            }
+            #game-screen .grid.grid-cols-3 > div > div:first-child,
+            #game-screen .grid.grid-cols-3 > button > div:first-child {
+                font-size: 7px !important;
+            }
+            #game-screen .grid.grid-cols-3 > div > div:last-child,
+            #game-screen .grid.grid-cols-3 > button > div:last-child {
+                font-size: 12px !important;
+            }
+            #canvas-hold, #canvas-next {
+                width: 42px !important;
+                height: 42px !important;
+            }
+            #game-screen .mt-2.text-\[8px\] {
+                display: none !important;
             }
         }
 
@@ -398,22 +532,30 @@
             </h2>
             <div id="overlay-subtitle" class="text-sm text-slate-300 mb-3 tracking-wider">阿布拉.凱 工作室 監製</div>
             <p id="overlay-desc" class="text-[11px] text-gray-400 mb-4 leading-relaxed">
-                10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>手機用螢幕手把，電腦用方向鍵、空白、C鍵、Z鍵。<br>免登入，分數只儲存在本機。
+                10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>手機用螢幕手把，電腦用方向鍵、空白、C鍵、Z鍵。<br>免登入，請先填寫名稱；暱稱與進度會儲存在本機。
             </p>
             <div id="level-brief" class="level-card rounded-xl p-3 mb-4 text-left text-[11px] text-slate-300 leading-relaxed">
                 <div class="text-blue-300 font-bold text-center mb-1">LEVEL 1｜新手啟動</div>
                 <div>過關條件：本關獲得 800 分。</div>
                 <div>過關獎勵：解鎖清除一行技能。</div>
             </div>
+            <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3 text-[11px] text-emerald-200 leading-relaxed"></div>
             
             <div id="username-form" class="mb-6 bg-slate-900/80 p-4 rounded-xl border border-slate-700 shadow-inner">
-                <label class="block text-center text-[10px] text-blue-400 mb-2 uppercase tracking-wider font-bold">玩家暱稱（本機紀錄）</label>
-                <input type="text" id="input-nickname" maxlength="12" placeholder="輸入玩家名稱" value="極速開拓者" class="w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <label class="block text-center text-[10px] text-blue-400 mb-2 uppercase tracking-wider font-bold">玩家暱稱（本機儲存）</label>
+                <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或暱稱" value="" class="w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
             </div>
 
             <button id="btn-start" class="w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-lg shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
                 開始挑戰 (START)
             </button>
+            <button id="btn-new-game" class="hidden mt-2 w-full px-8 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
+                重新開始新局
+            </button>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+                <button id="btn-guide" class="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 border border-blue-900/70 rounded-lg text-[11px] text-blue-200 font-bold">新手村說明</button>
+                <button id="btn-copyright" class="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 border border-yellow-900/70 rounded-lg text-[11px] text-yellow-200 font-bold">版權宣告</button>
+            </div>
             <div class="mt-4 bg-slate-900/70 border border-slate-800 rounded-xl p-3 text-left">
                 <div class="text-center text-[10px] text-yellow-400 mb-2 tracking-wider font-bold">本機預設前十名</div>
                 <div id="leaderboard-full" class="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-slate-300"></div>
@@ -422,6 +564,18 @@
             <div class="mt-8 text-[9px] text-slate-600 font-mono tracking-widest uppercase">
                 © 2026 阿布拉.凱 工作室 監製
             </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 說明 / 版權彈窗 ================= -->
+    <div id="info-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+        <div class="max-w-md w-full max-h-[82dvh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-950 shadow-[0_0_40px_rgba(59,130,246,0.25)] p-5 text-slate-200">
+            <div class="flex items-center justify-between gap-4 mb-3">
+                <h3 id="info-modal-title" class="text-xl font-black text-blue-300 tracking-wider">說明</h3>
+                <button id="btn-close-info" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">關閉</button>
+            </div>
+            <div id="info-modal-body" class="text-[13px] leading-relaxed text-slate-300 space-y-3"></div>
         </div>
     </div>
 
@@ -436,7 +590,10 @@
         // 簡化版：不連 Firebase、不要求登入，改用 localStorage 儲存本機最高分與本機排行榜
         const STORAGE_KEY_BEST = 'abk_tetris_best_score_v1';
         const STORAGE_KEY_BOARD = 'abk_tetris_local_board_v1';
+        const STORAGE_KEY_NAME = 'abk_tetris_player_name_v1';
+        const STORAGE_KEY_STATE = 'abk_tetris_saved_state_v1';
 
+        let savedStateCache = null;
         let bestScore = Number(localStorage.getItem(STORAGE_KEY_BEST) || 0);
 
         let localLeaderboard = loadLocalLeaderboard();
@@ -528,6 +685,88 @@
         function initFirebase() {
             // 維持原本啟動流程名稱，但不再依賴外部服務，讓遊戲可以真正「打開就玩」
             renderLeaderboard(localLeaderboard);
+        }
+
+        function getSavedState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_STATE);
+                if (!raw) return null;
+                const data = JSON.parse(raw);
+                if (!data || !Array.isArray(data.grid) || !data.activePiece || !data.nextPiece) return null;
+                if (typeof data.score !== 'number' || typeof data.level !== 'number') return null;
+                return data;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearSavedState() {
+            localStorage.removeItem(STORAGE_KEY_STATE);
+            savedStateCache = null;
+            updateSaveStatus();
+        }
+
+        function saveGameState() {
+            if (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece) return;
+            const state = {
+                version: '1.5',
+                savedAt: Date.now(),
+                nickname, score, lines, level, stageStartScore, stageStartLines,
+                stageResults, skillCharges, grid, activePiece, nextPiece, holdPiece, canHold
+            };
+            try {
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(state));
+                savedStateCache = state;
+                updateSaveStatus();
+            } catch (e) {}
+        }
+
+        function restoreGameState(state) {
+            nickname = validateString(state.nickname || localStorage.getItem(STORAGE_KEY_NAME) || '', '玩家');
+            const nameInput = document.getElementById('input-nickname');
+            if (nameInput) nameInput.value = nickname;
+            grid = state.grid;
+            score = state.score || 0;
+            lines = state.lines || 0;
+            level = Math.max(1, Math.min(LEVELS.length, state.level || 1));
+            stageStartScore = state.stageStartScore || 0;
+            stageStartLines = state.stageStartLines || 0;
+            stageResults = Array.isArray(state.stageResults) ? state.stageResults : [];
+            skillCharges = state.skillCharges || { row: 0, col: 0, cross: 0 };
+            activePiece = state.activePiece;
+            nextPiece = state.nextPiece;
+            holdPiece = state.holdPiece || null;
+            canHold = state.canHold !== false;
+            isGameOver = false; isPaused = false; gameStarted = true; overlayMode = 'playing'; pendingLevelClear = false;
+            isRapidDescending = false;
+            updateUI();
+            hideOverlay();
+            resetGravityTimer(); resizeCanvas(); draw();
+            if (bgmEnabled) startBgm();
+            showToast(`歡迎回來，${nickname}｜LEVEL ${level}`);
+        }
+
+        function updateSaveStatus() {
+            const status = document.getElementById('save-status');
+            const startBtn = document.getElementById('btn-start');
+            const newBtn = document.getElementById('btn-new-game');
+            const nameInput = document.getElementById('input-nickname');
+            const savedName = validateString(localStorage.getItem(STORAGE_KEY_NAME) || '', '');
+            if (nameInput && !nameInput.value && savedName) nameInput.value = savedName;
+            const state = savedStateCache || getSavedState();
+            if (!status || !startBtn || !newBtn) return;
+            if (state) {
+                savedStateCache = state;
+                const nm = validateString(state.nickname || savedName || '玩家', '玩家');
+                status.classList.remove('hidden');
+                status.innerHTML = `偵測到本機進度：<b>${nm}</b>｜LEVEL ${state.level}｜累計分數 ${state.score}｜消除 ${state.lines || 0} 行<br>按下「繼續挑戰」可接續上次遊戲。`;
+                if (overlayMode === 'start') startBtn.innerText = '繼續挑戰';
+                newBtn.classList.remove('hidden');
+            } else {
+                status.classList.add('hidden');
+                if (overlayMode === 'start') startBtn.innerText = '開始挑戰 (START)';
+                newBtn.classList.add('hidden');
+            }
         }
 
         // --- STREAMING_CHUNK: Web Audio Engine for BGM and SFX ---
@@ -681,7 +920,7 @@
         let overlayMode = 'start';
         let pendingLevelClear = false;
         let isGameOver = false, isPaused = false, gameStarted = false;
-        let nickname = "極速開拓者";
+        let nickname = validateString(localStorage.getItem(STORAGE_KEY_NAME) || "", "");
 
         const SHAPES = {
             'I': { matrix: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#38bdf8' },
@@ -706,34 +945,93 @@
         const canvasHold = document.getElementById('canvas-hold');
         const ctxHold = canvasHold.getContext('2d');
 
+        // V1.4：依照 visualViewport / 螢幕比例動態計算 UI 與 Canvas 最佳大小
+        function getViewportSize() {
+            const vv = window.visualViewport;
+            return {
+                width: Math.round(vv ? vv.width : window.innerWidth),
+                height: Math.round(vv ? vv.height : window.innerHeight)
+            };
+        }
+
+        function clampNumber(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function applyDynamicLayoutVars() {
+            const { width: vw, height: vh } = getViewportSize();
+            const isPortrait = vh >= vw;
+            const root = document.documentElement;
+
+            if (isPortrait && vw <= 768) {
+                const tallRatio = vh / Math.max(vw, 1);
+                const topPad = clampNumber(Math.round(vh * 0.052), 40, 52);
+                // iPhone 15 Pro Max / 高螢幕：按鍵稍微上移；小螢幕：避免過度擠壓棋盤
+                const controlsBottom = tallRatio > 2.05
+                    ? clampNumber(Math.round(vh * 0.028), 18, 30)
+                    : clampNumber(Math.round(vh * 0.018), 10, 22);
+                const controlsHeight = clampNumber(Math.round(vh * 0.205), 156, 188);
+                const dpadSize = clampNumber(Math.round(vw * 0.315), 108, 126);
+                const actionSize = clampNumber(Math.round(vw * 0.335), 116, 136);
+                const shoulderW = clampNumber(Math.round(vw * 0.235), 82, 98);
+                const shoulderH = clampNumber(Math.round(vh * 0.049), 38, 46);
+                const previewSize = clampNumber(Math.round(vw * 0.112), 38, 48);
+                const controlClearance = controlsHeight + controlsBottom + 18;
+
+                root.style.setProperty('--v14-top-pad', `${topPad}px`);
+                root.style.setProperty('--v14-controls-bottom', `${controlsBottom}px`);
+                root.style.setProperty('--v14-controls-height', `${controlsHeight}px`);
+                root.style.setProperty('--v14-control-clearance', `${controlClearance}px`);
+                root.style.setProperty('--v14-dpad-size', `${dpadSize}px`);
+                root.style.setProperty('--v14-action-size', `${actionSize}px`);
+                root.style.setProperty('--v14-shoulder-w', `${shoulderW}px`);
+                root.style.setProperty('--v14-shoulder-h', `${shoulderH}px`);
+                root.style.setProperty('--v14-preview-size', `${previewSize}px`);
+            } else if (!isPortrait && vh <= 520) {
+                const scale = clampNumber(vh / 430, 0.78, 1.05);
+                root.style.setProperty('--v14-landscape-control-scale', `${scale}`);
+                root.style.setProperty('--v14-landscape-dpad', `${clampNumber(Math.round(vh * 0.29), 92, 124)}px`);
+                root.style.setProperty('--v14-landscape-action', `${clampNumber(Math.round(vh * 0.305), 96, 130)}px`);
+                root.style.setProperty('--v14-landscape-shoulder-w', `${clampNumber(Math.round(vw * 0.105), 78, 104)}px`);
+                root.style.setProperty('--v14-landscape-shoulder-h', `${clampNumber(Math.round(vh * 0.088), 32, 42)}px`);
+            }
+        }
+
         // 自動響應計算 Canvas 最佳大小
         function resizeCanvas() {
-            const container = canvas.parentElement;
-            const isPortraitPhone = window.innerHeight >= window.innerWidth && window.innerWidth <= 768;
-            let maxWidth = container.clientWidth - 8;
-            let maxHeight = window.innerHeight * 0.65;
+            applyDynamicLayoutVars();
 
-            if (isPortraitPhone) {
-                // V1.3：手機直式先保留底部手把區與上方資訊區，避免棋盤被遮住。
-                const topOfBoard = container.getBoundingClientRect().top;
-                const bottomControls = 176;
-                const safeBottom = 12;
-                maxHeight = Math.max(320, window.innerHeight - topOfBoard - bottomControls - safeBottom);
-                // 兩側 HOLD/NEXT 在手機上各保留約 46px，避免畫面被裁切。
-                maxWidth = Math.max(190, window.innerWidth - 112);
+            const { width: vw, height: vh } = getViewportSize();
+            const isPortrait = vh >= vw;
+            const container = canvas.parentElement;
+
+            let maxWidth = Math.max(160, container.clientWidth - 8);
+            let maxHeight;
+
+            if (isPortrait && vw <= 768) {
+                // 扣除頂部 HUD 與底部拇指操作區，棋盤完整留在可視區內
+                const topReserve = clampNumber(Math.round(vh * 0.19), 132, 172);
+                const bottomReserve = clampNumber(Math.round(vh * 0.25), 188, 235);
+                maxHeight = Math.max(280, vh - topReserve - bottomReserve);
+                maxWidth = Math.min(maxWidth, vw * 0.74);
+            } else if (!isPortrait && vh <= 520) {
+                // 橫式手機：優先吃滿高度，修正 V1.3 橫式棋盤過小問題
+                maxHeight = vh * 0.88;
+                maxWidth = Math.min(maxWidth, vw * 0.46);
+            } else {
+                maxHeight = vh * 0.70;
             }
-            
+
             let finalWidth = Math.min(maxWidth, maxHeight / 2);
-            if (!isPortraitPhone && finalWidth * 2 > maxHeight && window.innerWidth > window.innerHeight) {
-                finalWidth = maxHeight / 2;
-            }
-            finalWidth = Math.floor(finalWidth);
+            finalWidth = Math.floor(clampNumber(finalWidth, 150, 360));
 
             canvas.width = finalWidth;
             canvas.height = finalWidth * 2;
             draw();
         }
         window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 180));
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeCanvas);
 
         function generatePiece(type = null) {
             const key = type || SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
@@ -846,7 +1144,7 @@
             clearLines();
             activePiece = nextPiece; nextPiece = generatePiece(); canHold = true;
             if (checkCollision(activePiece.matrix, activePiece.x, activePiece.y)) endGame();
-            draw(); resetGravityTimer();
+            draw(); resetGravityTimer(); saveGameState();
         }
 
         function clearLines() {
@@ -886,6 +1184,7 @@
             grantReward(currentLevel.skill);
             playLevelClearSound();
             updateUI();
+            clearSavedState();
             if (level >= LEVELS.length) {
                 winGame();
                 return;
@@ -926,6 +1225,7 @@
             overlayMode = 'playing';
             updateUI();
             resetGravityTimer();
+            saveGameState();
             if (bgmEnabled) startBgm();
             showToast(`LEVEL ${level}：${LEVELS[level-1].name}`);
         }
@@ -993,6 +1293,10 @@
             const percentage = Math.min(100, Math.max(0, (stageScore / currentLevel.target) * 100));
             document.getElementById('progress-bar').style.width = `${percentage}%`;
             updateSkillUI();
+            if (gameStarted && !isGameOver && !pendingLevelClear) {
+                clearTimeout(updateUI._saveTimer);
+                updateUI._saveTimer = setTimeout(saveGameState, 250);
+            }
         }
 
         function updateSkillUI() {
@@ -1031,6 +1335,7 @@
             isGameOver = true; gameStarted = false; stopBgm();
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
             playLevelUpSound(); setTimeout(() => playClearSound(), 300);
+            clearSavedState();
             submitScoreToCloud(nickname, score);
             document.getElementById('overlay-title').innerHTML = "阿布拉.凱<br><span class='text-xl'>工作室 監製</span>";
             document.getElementById('overlay-desc').innerText = `🎉 恭喜破關！達成最終關卡！\n消行數：${lines}\n傲人分數：${score}`;
@@ -1041,16 +1346,24 @@
         function endGame() {
             isGameOver = true; gameStarted = false; stopBgm();
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
-            playGameOverSound(); submitScoreToCloud(nickname, score);
+            playGameOverSound(); clearSavedState(); submitScoreToCloud(nickname, score);
             document.getElementById('overlay-title').innerHTML = "阿布拉.凱<br><span class='text-xl'>工作室 監製</span>";
             document.getElementById('overlay-desc').innerText = `GAME OVER\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines} (Level ${level})`;
             document.getElementById('btn-start').innerText = "再試一次";
             document.getElementById('overlay').style.opacity = "1"; document.getElementById('overlay').classList.remove('pointer-events-none');
         }
 
-        function initGame() {
+        function initGame(forceNew = false) {
+            if (!forceNew && savedStateCache && overlayMode === 'start') return restoreGameState(savedStateCache);
             const nameInput = document.getElementById('input-nickname');
-            nickname = validateString(nameInput.value.trim() || "極速開拓者");
+            nickname = validateString((nameInput?.value || '').trim(), '');
+            if (!nickname) {
+                showToast('請先輸入玩家名稱或暱稱');
+                if (nameInput) nameInput.focus();
+                return;
+            }
+            localStorage.setItem(STORAGE_KEY_NAME, nickname);
+            clearSavedState();
             grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
             score = 0; lines = 0; level = 1; stageStartScore = 0; stageStartLines = 0;
             stageResults = []; skillCharges = { row: 0, col: 0, cross: 0 };
@@ -1062,6 +1375,7 @@
             document.getElementById('level-brief').innerHTML = getNextLevelBrief(1, false);
             hideOverlay();
             resetGravityTimer(); resizeCanvas();
+            saveGameState();
             if (bgmEnabled) startBgm();
         }
 
@@ -1118,7 +1432,7 @@
             grid.splice(target, 1);
             grid.unshift(Array(COLS).fill(0));
             score += 250 * level;
-            playSkillSound(); updateUI(); draw(); showToast('技能發動：清除一行！');
+            playSkillSound(); updateUI(); draw(); saveGameState(); showToast('技能發動：清除一行！');
         }
 
         function useColumnBomb() {
@@ -1130,7 +1444,7 @@
             }
             for (let r = 0; r < ROWS; r++) grid[r][target] = 0;
             score += 350 * level;
-            playSkillSound(); updateUI(); draw(); showToast('技能發動：清除一列！');
+            playSkillSound(); updateUI(); draw(); saveGameState(); showToast('技能發動：清除一列！');
         }
 
         function useCrossBomb() {
@@ -1141,7 +1455,7 @@
             grid.unshift(Array(COLS).fill(0));
             for (let r = 0; r < ROWS; r++) grid[r][col] = 0;
             score += 600 * level;
-            playSkillSound(); updateUI(); draw(); showToast('技能發動：十字爆破！');
+            playSkillSound(); updateUI(); draw(); saveGameState(); showToast('技能發動：十字爆破！');
         }
 
         function drawGrid(ctxTarget, width, height, scaleX, scaleY) {
@@ -1256,9 +1570,51 @@
         document.getElementById('btn-start').addEventListener('click', () => {
             if (overlayMode === 'levelClear') return resumeNextLevel();
             if (overlayMode === 'pause') return togglePause();
-            initGame();
+            initGame(false);
+        });
+        document.getElementById('btn-new-game').addEventListener('click', () => {
+            clearSavedState();
+            initGame(true);
         });
         document.getElementById('btn-pause').addEventListener('click', togglePause);
+
+        function showInfoModal(type) {
+            const modal = document.getElementById('info-modal');
+            const title = document.getElementById('info-modal-title');
+            const body = document.getElementById('info-modal-body');
+            if (!modal || !title || !body) return;
+            if (type === 'guide') {
+                title.innerText = '新手村遊戲說明';
+                body.innerHTML = `
+                    <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
+                    <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
+                    <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。</p>
+                    <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p>
+                    <p><b class="text-emerald-300">本機儲存：</b>玩家暱稱、最高分、排行榜與目前進度會儲存在目前瀏覽器。下次用同一台裝置與同一個瀏覽器開啟，就可以繼續挑戰。</p>
+                `;
+            } else {
+                title.innerText = '版權宣告';
+                body.innerHTML = `
+                    <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
+                    <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
+                    <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
+                    <p>本遊戲為方塊落下型益智闖關小遊戲，設計重點為手機與電腦皆可快速開啟遊玩、單機進度保存、10 關技能挑戰與本機排行榜。</p>
+                    <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
+                    <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。</p>
+                `;
+            }
+            modal.classList.remove('hidden');
+        }
+        document.getElementById('btn-guide').addEventListener('click', () => showInfoModal('guide'));
+        document.getElementById('btn-copyright').addEventListener('click', () => showInfoModal('copyright'));
+        document.getElementById('btn-close-info').addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
+        document.getElementById('info-modal').addEventListener('click', (e) => { if (e.target.id === 'info-modal') e.currentTarget.classList.add('hidden'); });
+        document.getElementById('input-nickname').addEventListener('input', (e) => {
+            const v = validateString(e.target.value, '');
+            if (v) localStorage.setItem(STORAGE_KEY_NAME, v);
+        });
+        window.addEventListener('pagehide', saveGameState);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveGameState(); });
         
         const soundBtn = document.getElementById('btn-sound');
         soundBtn.addEventListener('click', () => { soundEnabled = !soundEnabled; soundBtn.innerText = soundEnabled ? "🔊 開" : "🔇 關"; if (soundEnabled) playRotateSound(); });
@@ -1266,6 +1622,8 @@
         const bgmBtn = document.getElementById('btn-bgm');
         bgmBtn.addEventListener('click', () => { bgmEnabled = !bgmEnabled; bgmBtn.innerText = bgmEnabled ? "🎵 開" : "🎵 關"; bgmEnabled ? startBgm() : stopBgm(); });
 
+        savedStateCache = getSavedState();
+        updateSaveStatus();
         initFirebase();
         resizeCanvas();
         draw();
