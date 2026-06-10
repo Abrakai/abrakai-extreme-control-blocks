@@ -1,21 +1,11 @@
-# AbraKai Extreme Control Blocks
+# 極限操控方塊 V1.7.5
 
-極限操控方塊｜阿布拉.凱 工作室 監製
+## 更新重點
+- 修正手機資訊窗高度與捲動問題。
+- 新手村 / 產品介紹彈窗支援內部滑動，底部保留關閉按鈕。
+- 新增「沉浸模式」按鈕。
+- 加入 PWA meta 與 manifest.webmanifest。
+- 同步更新新手村指引、使用說明、版本更新歷程與版權版本號碼。
 
-Current version: **V1.7.3｜滑鼠觸控全支援・平板適配・產品歷程版**
-
-## Play
-
-Open `index.html` directly, or deploy this repository with GitHub Pages.
-
-## V1.7.3 update notes
-
-- Added current version information to the browser title, footer, copyright screen, and product introduction.
-- Added product update history in the product/copyright screen.
-- Improved mouse/touch/pointer support for on-screen control buttons.
-- Added tablet operation guidance in the beginner guide.
-- Kept local-only storage reminders for players using different browsers or devices.
-
-## Local storage note
-
-This is a local single-device browser game. Player records are stored in the current browser. Changing browsers, clearing browser data, using private browsing, or changing devices may hide or remove previous local records.
+## 上傳方式
+將 `index.html` 與 `manifest.webmanifest` 放到 GitHub repository 根目錄後 Commit / Push。

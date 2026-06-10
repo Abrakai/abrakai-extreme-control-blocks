@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <!-- 鎖定螢幕縮放，防止行動裝置點擊時的誤觸放大 (touch-action: none 極度重要) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>極限操控方塊 V1.7.3 - 阿布拉.凱 工作室</title>
+    <!-- V1.7.5：PWA / 沉浸式顯示設定，讓使用者加入主畫面後能取得更完整的遊玩視野 -->
+    <meta name="theme-color" content="#050608">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="極限操控方塊">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.webmanifest">
+    <title>極限操控方塊 V1.7.5 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -397,6 +404,80 @@
             #right-controls { align-items: flex-start; padding-left: clamp(12px, 3vw, 56px); }
         }
 
+    
+        /* V1.7.5：手機彈窗、首頁與 safe-area 修正 */
+        :root {
+            --vvh: 100dvh;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        #overlay {
+            height: var(--vvh) !important;
+            max-height: var(--vvh) !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior: contain !important;
+            touch-action: pan-y !important;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+        }
+        #overlay > div {
+            min-height: var(--vvh) !important;
+        }
+        #info-modal {
+            height: var(--vvh) !important;
+            max-height: var(--vvh) !important;
+            padding-top: calc(12px + var(--safe-top)) !important;
+            padding-bottom: calc(12px + var(--safe-bottom)) !important;
+            touch-action: pan-y !important;
+            overflow: hidden !important;
+        }
+        #info-modal-card {
+            max-height: calc(var(--vvh) - var(--safe-top) - var(--safe-bottom) - 24px) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+        #info-modal-body {
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            padding-right: 2px;
+        }
+        .modal-footer-fixed {
+            border-top: 1px solid rgba(51, 65, 85, .85);
+            background: rgba(2, 6, 23, .96);
+            padding-top: 12px;
+            margin-top: 12px;
+            padding-bottom: max(0px, var(--safe-bottom));
+            flex-shrink: 0;
+        }
+        .immersive-hint {
+            background: rgba(8, 47, 73, .35);
+            border: 1px solid rgba(125, 211, 252, .45);
+            color: #bae6fd;
+        }
+        @media (max-width: 640px) {
+            #overlay h2 {
+                font-size: clamp(2rem, 10vw, 3rem) !important;
+            }
+            #overlay .max-w-6xl {
+                max-width: 100% !important;
+            }
+            #overlay section {
+                padding: 14px !important;
+            }
+            #info-modal {
+                align-items: stretch !important;
+                justify-content: stretch !important;
+            }
+            #info-modal-card {
+                width: 100% !important;
+                max-width: none !important;
+                border-radius: 18px !important;
+            }
+        }
+
     </style>
 </head>
 
@@ -594,81 +675,119 @@
     </div>
 
     <!-- ================= 全螢幕狀態罩幕 (Login / Game Over) ================= -->
-    <div id="overlay" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col items-center justify-center transition-all duration-300">
-        <div class="text-center p-6 max-w-sm w-full relative">
-            <div class="text-xs text-blue-500 font-semibold tracking-widest uppercase mb-1">AbraKai Game Studio</div>
-            <h2 id="overlay-title" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 mb-2 tracking-widest drop-shadow-[0_0_16px_rgba(59,130,246,0.65)] leading-tight">
-                極限操控方塊
-            </h2>
-            <div id="overlay-subtitle" class="text-sm text-slate-300 mb-3 tracking-wider">阿布拉.凱 工作室 監製</div>
-            <p id="overlay-desc" class="text-[11px] text-gray-400 mb-4 leading-relaxed">
-                10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>手機用螢幕手把，電腦用方向鍵、空白、C鍵、Z鍵。<br>本機多人挑戰者帳號｜可用挑戰密碼登入自己的進度。
-            </p>
-            <div id="level-brief" class="level-card rounded-xl p-3 mb-4 text-left text-[11px] text-slate-300 leading-relaxed">
-                <div class="text-blue-300 font-bold text-center mb-1">LEVEL 1｜新手啟動</div>
-                <div>過關條件：本關獲得 800 分。</div>
-                <div>過關獎勵：解鎖清除一行技能。</div>
-            </div>
-            <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3 text-[11px] text-emerald-200 leading-relaxed"></div>
-
-            <div id="player-list-panel" class="mb-3 bg-slate-900/70 border border-slate-800 rounded-xl p-3 text-left">
-                <div class="text-center text-[10px] text-cyan-300 mb-2 tracking-wider font-bold">本機挑戰者清單</div>
-                <div id="player-list" class="space-y-1 text-[11px] text-slate-300"></div>
-            </div>
-            
-            <div id="username-form" class="mb-4 readable-panel p-4 rounded-xl border shadow-inner">
-                <label class="block text-center text-[12px] text-blue-300 mb-2 uppercase tracking-wider font-bold">玩家登入</label>
-                <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從清單選擇" value="" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[12px] text-blue-100 font-bold">忘記挑戰密碼？查看提示</button>
-                <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">登入後可到「玩家」中心修改名稱、代表人物、代表色、挑戰密碼與密碼提示。首頁只負責登入或註冊。</div>
-            </div>
-
-            <div id="register-panel" class="hidden mb-4 readable-panel p-4 rounded-xl border shadow-inner text-left">
-                <div class="text-center text-[12px] text-emerald-300 mb-2 tracking-wider font-black">註冊新挑戰者</div>
-                <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                <input type="password" id="reg-password" maxlength="16" placeholder="設定挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                <div class="mt-2 grid grid-cols-2 gap-2">
-                    <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
-                        <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
-                    </select>
-                    <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
-                        <option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option>
-                    </select>
+    <div id="overlay" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 overflow-y-auto transition-all duration-300">
+        <div class="min-h-full w-full px-4 py-6 md:px-6 md:py-8 flex items-center justify-center">
+            <div class="w-full max-w-6xl">
+                <div class="text-center mb-4 md:mb-6">
+                    <div class="text-xs text-blue-500 font-semibold tracking-[0.35em] uppercase mb-1">AbraKai Game Studio</div>
+                    <h2 id="overlay-title" class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 tracking-widest drop-shadow-[0_0_16px_rgba(59,130,246,0.65)] leading-tight">
+                        極限操控方塊
+                    </h2>
+                    <div id="overlay-subtitle" class="text-sm text-slate-300 mt-2 tracking-wider">阿布拉.凱 工作室 監製</div>
+                    <p id="overlay-desc" class="mt-3 max-w-3xl mx-auto text-[12px] md:text-[13px] text-slate-400 leading-relaxed">
+                        10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>支援手機、平板、電腦遊玩；本機多人挑戰者帳號可保存自己的進度與龍虎榜成績。
+                    </p>
                 </div>
-                <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
-                <div class="mt-3 grid grid-cols-2 gap-2">
-                    <button id="btn-create-player" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button>
-                    <button id="btn-cancel-register" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-xs font-bold">取消</button>
-                </div>
-            </div>
 
-            <button id="btn-start" class="w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-lg shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
-                登入並開始 / 繼續挑戰
-            </button>
-            <button id="btn-register-toggle" class="mt-2 w-full px-8 py-2.5 bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 font-bold rounded-lg border border-emerald-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
-                註冊新挑戰者
-            </button>
-            <button id="btn-guest-start" class="mt-2 w-full px-8 py-2.5 bg-amber-900/80 hover:bg-amber-800 text-amber-100 font-bold rounded-lg border border-amber-600 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
-                Guest 路人模式｜不記錄分數直接玩
-            </button>
-            <div class="guest-note mt-2 rounded-lg px-3 py-2 text-[11px] leading-relaxed">Guest 模式不用註冊即可開打；本次分數只供當場參考，不會保存玩家進度，也不會寫入本機龍虎榜。</div>
-            <button id="btn-new-game" class="hidden mt-2 w-full px-8 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
-                重新開始新局
-            </button>
-            <div class="mt-3 grid grid-cols-2 gap-2">
-                <button id="btn-guide" class="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 border border-blue-900/70 rounded-lg text-[11px] text-blue-200 font-bold">新手村說明</button>
-                <button id="btn-copyright" class="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 border border-yellow-900/70 rounded-lg text-[11px] text-yellow-200 font-bold">版權 / 產品介紹</button>
-            </div>
-            <div class="mt-4 bg-slate-900/70 border border-slate-800 rounded-xl p-3 text-left">
-                <div class="text-center text-[10px] text-yellow-400 mb-2 tracking-wider font-bold">本機龍虎榜前十名</div>
-                <div id="leaderboard-full" class="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-slate-300"></div>
-            </div>
-            
-            <div class="mt-8 text-[9px] text-slate-600 font-mono tracking-widest uppercase">
-                © 2026 阿布拉.凱 工作室 監製｜目前版本 V1.7.3
+                <div class="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(330px,0.8fr)] items-start">
+                    <section class="rounded-2xl border border-blue-900/45 bg-slate-950/70 shadow-[0_0_32px_rgba(15,23,42,0.65)] p-4 md:p-5">
+                        <div class="grid gap-3 md:grid-cols-[1.15fr_0.85fr] items-start mb-4">
+                            <div id="level-brief" class="level-card rounded-xl p-3 text-left text-[12px] text-slate-300 leading-relaxed">
+                                <div class="text-blue-300 font-bold text-center mb-1">LEVEL 1｜新手啟動</div>
+                                <div>過關條件：本關獲得 800 分。</div>
+                                <div>過關獎勵：解鎖清除一行技能。</div>
+                            </div>
+                            <div id="save-status" class="hidden rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3 text-[12px] text-emerald-200 leading-relaxed"></div>
+                        </div>
+
+                        <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] items-start">
+                            <div>
+                                <div class="mb-3 rounded-2xl border border-slate-800 bg-slate-900/55 p-4">
+                                    <div class="flex items-center justify-between gap-3 mb-3">
+                                        <div>
+                                            <div class="text-[11px] text-blue-300 font-bold tracking-[0.18em] uppercase">登入 / 繼續挑戰</div>
+                                            <div class="text-[12px] text-slate-400 mt-1">首頁只保留登入、註冊與 Guest 快速開始；玩家資料請在登入後到「玩家」中心修改。</div>
+                                        </div>
+                                        <div class="hidden md:block rounded-full px-3 py-1 text-[11px] border border-slate-700 text-slate-300">版本 V1.7.5</div>
+                                    </div>
+
+                                    <div id="username-form" class="readable-panel p-4 rounded-xl border shadow-inner">
+                                        <label class="block text-center text-[12px] text-blue-300 mb-2 uppercase tracking-wider font-bold">玩家登入</label>
+                                        <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從右側清單選擇" value="" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                                        <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                                        <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[12px] text-blue-100 font-bold">忘記挑戰密碼？查看提示</button>
+                                    </div>
+
+                                    <div id="register-panel" class="hidden mt-3 readable-panel p-4 rounded-xl border shadow-inner text-left">
+                                        <div class="text-center text-[12px] text-emerald-300 mb-2 tracking-wider font-black">註冊新挑戰者</div>
+                                        <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                                        <input type="password" id="reg-password" maxlength="16" placeholder="設定挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                                        <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                                        <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                                        <div class="mt-2 grid grid-cols-2 gap-2">
+                                            <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
+                                                <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
+                                            </select>
+                                            <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
+                                                <option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option>
+                                            </select>
+                                        </div>
+                                        <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            <button id="btn-create-player" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button>
+                                            <button id="btn-cancel-register" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-xs font-bold">取消</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid gap-3 sm:grid-cols-2">
+                                    <button id="btn-start" class="sm:col-span-2 w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
+                                        登入並開始 / 繼續挑戰
+                                    </button>
+                                    <button id="btn-register-toggle" class="w-full px-6 py-3 bg-emerald-900/85 hover:bg-emerald-800 text-emerald-100 font-bold rounded-xl border border-emerald-700 transition-all duration-200 transform active:scale-95 text-sm">
+                                        註冊新挑戰者
+                                    </button>
+                                    <button id="btn-guest-start" class="w-full px-6 py-3 bg-amber-900/85 hover:bg-amber-800 text-amber-100 font-bold rounded-xl border border-amber-600 transition-all duration-200 transform active:scale-95 text-sm">
+                                        Guest 路人模式
+                                    </button>
+                                </div>
+                                <div class="guest-note mt-3 rounded-xl px-3 py-3 text-[12px] leading-relaxed">
+                                    Guest 模式不用註冊即可開打；本次分數僅供當場參考，不會保存玩家進度，也不會寫入本機龍虎榜。
+                                </div>
+                                <button id="btn-new-game" class="hidden mt-3 w-full px-8 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
+                                    重新開始新局
+                                </button>
+                                <div class="mt-4 flex flex-wrap items-center gap-2">
+                                    <button id="btn-guide" class="px-4 py-2 bg-slate-900/80 hover:bg-slate-800 border border-blue-900/70 rounded-lg text-[12px] text-blue-200 font-bold">新手村說明</button>
+                                    <button id="btn-copyright" class="px-4 py-2 bg-slate-900/80 hover:bg-slate-800 border border-yellow-900/70 rounded-lg text-[12px] text-yellow-200 font-bold">版權 / 產品介紹</button>
+                                    <button id="btn-immersive" class="px-4 py-2 bg-sky-900/80 hover:bg-sky-800 border border-sky-700 rounded-lg text-[12px] text-sky-100 font-bold">沉浸模式</button>
+                                    <div class="text-[11px] text-slate-500">可先閱讀說明，再開始登入、註冊或直接 Guest 體驗。</div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div id="player-list-panel" class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 text-left">
+                                    <div class="flex items-center justify-between gap-3 mb-2">
+                                        <div>
+                                            <div class="text-[11px] text-cyan-300 tracking-[0.18em] font-bold uppercase">本機挑戰者清單</div>
+                                            <div class="text-[11px] text-slate-500 mt-1">可點選自動帶入名稱，再輸入挑戰密碼登入。</div>
+                                        </div>
+                                    </div>
+                                    <div id="player-list" class="space-y-1 text-[11px] text-slate-300 max-h-[220px] overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 text-left">
+                                    <div class="text-[11px] text-yellow-400 mb-2 tracking-[0.18em] font-bold uppercase">本機龍虎榜前十名</div>
+                                    <div id="leaderboard-full" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-x-3 gap-y-1 text-[11px] text-slate-300"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] text-slate-600 font-mono tracking-widest uppercase text-center md:text-left">
+                            © 2026 阿布拉.凱 工作室 監製｜目前版本 V1.7.5
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     </div>
@@ -676,28 +795,22 @@
 
     <!-- ================= 說明 / 版權彈窗 ================= -->
     <div id="info-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
-        <div class="max-w-md w-full max-h-[82dvh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-950 shadow-[0_0_40px_rgba(59,130,246,0.25)] p-5 text-slate-200">
-            <div class="flex items-center justify-between gap-4 mb-3">
-                <h3 id="info-modal-title" class="text-xl font-black text-blue-300 tracking-wider">說明</h3>
-                <button id="btn-close-info" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">關閉</button>
+        <div id="info-modal-card" class="max-w-md w-full rounded-2xl border border-slate-700 bg-slate-950 shadow-[0_0_40px_rgba(59,130,246,0.25)] p-5 text-slate-200">
+            <div class="flex items-center justify-between gap-4 mb-3 flex-shrink-0">
+                <h3 id="info-modal-title" class="text-lg font-black text-blue-300">說明</h3>
+                <button id="btn-close-info-top" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold">關閉</button>
             </div>
-            <div id="info-modal-body" class="text-[13px] leading-relaxed text-slate-300 space-y-3"></div>
+            <div id="info-modal-body" class="space-y-3 text-sm leading-relaxed"></div>
+            <div class="modal-footer-fixed">
+                <button id="btn-close-info" class="w-full px-4 py-3 rounded-xl bg-blue-700 hover:bg-blue-600 text-white text-sm font-black shadow-[0_0_18px_rgba(59,130,246,.25)]">我知道了，關閉視窗</button>
+            </div>
         </div>
     </div>
-
-    <!-- ================= 入榜慶祝特效 ================= -->
-    <div id="rank-celebration" class="hidden absolute inset-0 z-[65] pointer-events-none flex items-center justify-center">
-        <div class="rounded-3xl border border-yellow-300/60 bg-slate-950/70 px-6 py-5 text-center shadow-[0_0_45px_rgba(250,204,21,.45)]">
-            <div id="celebration-title" class="text-3xl font-black text-yellow-300">🎉 龍虎榜更新！</div>
-            <div id="celebration-desc" class="mt-2 text-sm text-slate-100"></div>
-        </div>
-    </div>
-
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.7.3";
-        const GAME_VERSION_NAME = "滑鼠觸控全支援・平板適配・產品歷程版";
+        const GAME_VERSION = "V1.7.5";
+        const GAME_VERSION_NAME = "手機彈窗修正・沉浸模式提示版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -710,6 +823,47 @@
         const STORAGE_KEY_STATE = 'abk_tetris_saved_state_v1';
         const STORAGE_KEY_PLAYERS = 'abk_tetris_players_v1';
         const STORAGE_KEY_CURRENT_PLAYER = 'abk_tetris_current_player_id_v1';
+
+        function updateVisualViewportSize() {
+            const vv = window.visualViewport;
+            const h = Math.max(320, Math.floor((vv && vv.height) ? vv.height : window.innerHeight));
+            document.documentElement.style.setProperty('--vvh', `${h}px`);
+        }
+        updateVisualViewportSize();
+        window.addEventListener('resize', updateVisualViewportSize);
+        window.addEventListener('orientationchange', () => setTimeout(updateVisualViewportSize, 120));
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', updateVisualViewportSize);
+            window.visualViewport.addEventListener('scroll', updateVisualViewportSize);
+        }
+
+        function isIOSDevice() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+        function isStandaloneDisplay() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+        async function requestImmersiveMode() {
+            try {
+                const root = document.documentElement;
+                if (document.fullscreenElement) {
+                    await document.exitFullscreen();
+                    showToast('已離開沉浸模式');
+                    return;
+                }
+                if (root.requestFullscreen && !isIOSDevice()) {
+                    await root.requestFullscreen();
+                    showToast('已嘗試開啟沉浸模式');
+                    setTimeout(updateVisualViewportSize, 250);
+                    return;
+                }
+            } catch (err) {}
+            const msg = isIOSDevice()
+                ? 'iPhone/iPad Safari 建議使用：分享 → 加入主畫面，再從桌面圖示開啟，畫面會更完整。'
+                : '若瀏覽器不支援全螢幕，建議使用瀏覽器選單的「加到主畫面」後再開啟遊戲。';
+            alert(msg);
+        }
+
 
         let savedStateCache = null;
         let bestScore = Number(localStorage.getItem(STORAGE_KEY_BEST) || 0);
@@ -1990,6 +2144,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
+                    <p><b class="text-blue-300">首頁區塊：</b>首頁已重新整理為清楚的三大區塊：左側主操作區負責登入 / 註冊 / Guest 開始；右側顯示本機挑戰者清單與龍虎榜；下方再提供新手村與產品介紹按鈕，減少畫面雜亂感。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -1997,6 +2152,8 @@
                     <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p>
                     <p><b class="text-emerald-300">本機儲存：</b>註冊挑戰者後，帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
                     <p><b class="text-rose-300">重要提醒：</b>本遊戲目前為單機本機儲存。若更換不同瀏覽器、清除瀏覽器資料、使用無痕模式或換另一台裝置，原本玩家紀錄可能不會出現，需要重新註冊設定。未來可再加入匯出 / 匯入或 QR Code 備份功能。</p>
+                    <p><b class="text-sky-300">手機資訊窗：</b>V1.7.5 已修正手機彈窗高度與捲動，若新手村或產品介紹內容較長，可直接在視窗內上下滑動，底部會保留關閉按鈕。</p>
+                    <p><b class="text-cyan-300">沉浸模式：</b>首頁提供「沉浸模式」按鈕；Android/桌機若支援會嘗試全螢幕。iPhone/iPad Safari 建議使用「分享 → 加入主畫面」後，從桌面圖示開啟遊戲，畫面會更完整。</p>
                     <p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p>
                     <p><b class="text-cyan-300">玩家資料：</b>登入後可按右上角「玩家」修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。</p>
                 `;
@@ -2004,12 +2161,12 @@
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.7.3｜滑鼠觸控全支援・平板適配・產品歷程版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.7.5｜手機彈窗修正・沉浸模式提示版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.7.5 進一步修正手機資訊彈窗高度與捲動問題，加入沉浸模式按鈕與加入主畫面的使用提示，降低手機瀏覽器網址列與工具列造成的畫面卡住問題。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -2025,6 +2182,8 @@
                             <li><b>V1.7.1</b>：重整登入 / 註冊流程，加入 Guest 路人模式與高對比輸入介面。</li>
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
+                            <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li>
                         </ul>
                     </div>
                     <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
@@ -2035,7 +2194,9 @@
         }
         document.getElementById('btn-guide').addEventListener('click', () => showInfoModal('guide'));
         document.getElementById('btn-copyright').addEventListener('click', () => showInfoModal('copyright'));
+        document.getElementById('btn-immersive')?.addEventListener('click', requestImmersiveMode);
         document.getElementById('btn-close-info').addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
+        document.getElementById('btn-close-info-top')?.addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
         document.getElementById('info-modal').addEventListener('click', (e) => { if (e.target.id === 'info-modal') e.currentTarget.classList.add('hidden'); });
         document.getElementById('input-nickname').addEventListener('input', (e) => {
             const v = validateString(e.target.value, '');
