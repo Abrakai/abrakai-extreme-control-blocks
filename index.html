@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.8.3 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.8.4 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -696,6 +696,87 @@
             z-index: 95 !important;
         }
 
+    
+        /* V1.8.4：首頁科技感分區，避免白藍單調感 */
+        body.overlay-active #top-toolbar {
+            display: none !important;
+        }
+        .home-card-bright {
+            background:
+                radial-gradient(circle at 15% 8%, rgba(56,189,248,.18), transparent 32%),
+                radial-gradient(circle at 90% 8%, rgba(168,85,247,.16), transparent 30%),
+                linear-gradient(180deg, rgba(15,23,42,.96), rgba(30,41,59,.94)) !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(125,211,252,.65) !important;
+            box-shadow: 0 22px 60px rgba(0,0,0,.55), 0 0 28px rgba(56,189,248,.24) !important;
+        }
+        .home-card-bright .text-blue-700,
+        .home-card-bright .home-field-label {
+            color: #7dd3fc !important;
+        }
+        .home-card-bright .home-small-muted,
+        .home-card-bright .text-slate-700 {
+            color: #cbd5e1 !important;
+        }
+        #level-brief {
+            background:
+                linear-gradient(180deg, rgba(8,47,73,.76), rgba(15,23,42,.76)) !important;
+            border: 1px solid rgba(56,189,248,.55) !important;
+            color: #e0f2fe !important;
+            box-shadow: inset 0 0 16px rgba(56,189,248,.08);
+        }
+        #save-status {
+            background: linear-gradient(180deg, rgba(6,78,59,.72), rgba(15,23,42,.72)) !important;
+            border-color: rgba(52,211,153,.75) !important;
+            color: #bbf7d0 !important;
+        }
+        .home-card-bright input,
+        .home-card-bright select {
+            background: rgba(248,250,252,.98) !important;
+            color: #020617 !important;
+            border: 2px solid #38bdf8 !important;
+            box-shadow: 0 0 0 1px rgba(56,189,248,.22), inset 0 1px 2px rgba(15,23,42,.18) !important;
+        }
+        .home-primary-btn {
+            background: linear-gradient(90deg, #0891b2, #2563eb, #7c3aed) !important;
+            box-shadow: 0 12px 30px rgba(37,99,235,.38), 0 0 24px rgba(56,189,248,.22) !important;
+        }
+        .home-register-card {
+            background: linear-gradient(180deg, rgba(6,78,59,.78), rgba(15,23,42,.88)) !important;
+            color: #d1fae5 !important;
+            border-color: rgba(16,185,129,.85) !important;
+        }
+        .home-guest-card {
+            background: linear-gradient(180deg, rgba(124,45,18,.76), rgba(15,23,42,.88)) !important;
+            color: #ffedd5 !important;
+            border-color: rgba(251,146,60,.9) !important;
+        }
+        .home-card-dark {
+            background: linear-gradient(180deg, rgba(2,6,23,.88), rgba(15,23,42,.94)) !important;
+            border-color: rgba(125,211,252,.38) !important;
+            box-shadow: 0 0 24px rgba(56,189,248,.08);
+        }
+        .home-footer-actions button {
+            background: rgba(15,23,42,.94) !important;
+            box-shadow: 0 0 16px rgba(0,0,0,.25);
+        }
+        .home-footer-actions .btn-rank-bright {
+            border-color: rgba(251,191,36,.9) !important;
+            color: #fde68a !important;
+        }
+        #ranking-modal {
+            z-index: 96 !important;
+        }
+        #ranking-modal > div {
+            max-height: min(82dvh, 720px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        #ranking-modal .rank-row-top {
+            background: linear-gradient(90deg, rgba(120,53,15,.9), rgba(15,23,42,.94));
+            border-color: rgba(251,191,36,.65);
+        }
+
     </style>
 </head>
 
@@ -948,8 +1029,8 @@
                         </div>
                     </section>
                     <footer class="mt-4">
-                        <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.3</div>
+                        <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button></div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.4</div>
                     </footer>
                 </main>
             </div>
@@ -1057,8 +1138,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.8.3";
-        const GAME_VERSION_NAME = "首頁工具列遮擋修正版";
+        const GAME_VERSION = "V1.8.4";
+        const GAME_VERSION_NAME = "首頁科技感分區・龍虎榜揭榜修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2548,15 +2629,30 @@
             else body.innerText = p.hint ? `密碼提示：${p.hint}` : '這位玩家尚未設定密碼提示。';
         }
         function openRankingModal() {
-            renderLeaderboards();
+            try { renderLeaderboards(); } catch(e) {}
+            const modal = document.getElementById('ranking-modal');
             const list = document.getElementById('leaderboard-modal-list');
-            const board = getLeaderboard();
+            const board = (typeof getLeaderboard === 'function' ? getLeaderboard() : localLeaderboard || []);
             if (list) {
-                list.innerHTML = !board.length
-                    ? '<div class="rounded-lg border border-slate-700 bg-slate-900 p-3 text-slate-300">目前尚無本機龍虎榜紀錄。</div>'
-                    : board.map((r, i) => `<div class="flex justify-between items-center rounded-lg border border-slate-700 bg-slate-900/85 px-3 py-2"><span>${i+1}. ${r.avatar || '🎮'} ${r.name || '玩家'}</span><b class="text-yellow-300">${r.score || 0}</b></div>`).join('');
+                if (!board.length) {
+                    list.innerHTML = '<div class="rounded-lg border border-slate-700 bg-slate-900 p-3 text-slate-300">目前尚無本機龍虎榜紀錄。</div>';
+                } else {
+                    list.innerHTML = board.map((r, i) => {
+                        const medal = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+                        const rowClass = i < 3 ? 'rank-row-top' : 'border-slate-700 bg-slate-900/85';
+                        return `<div class="flex justify-between items-center rounded-xl border ${rowClass} px-3 py-2.5">
+                            <span class="truncate">${medal} ${r.avatar || '🎮'} <b>${r.name || '玩家'}</b><span class="ml-2 text-slate-400">Lv.${r.level || r.bestLevel || '-'}</span></span>
+                            <b class="text-yellow-300">${r.score || 0}</b>
+                        </div>`;
+                    }).join('');
+                }
             }
-            document.getElementById('ranking-modal')?.classList.remove('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('overlay-active');
+            } else {
+                alert('龍虎榜資料：\n' + board.map((r,i)=>`${i+1}. ${r.name || '玩家'} ${r.score || 0}分`).join('\n'));
+            }
         }
 
         function showInfoModal(type) {
@@ -2567,7 +2663,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-purple-300">玩家資料中心：</b>玩家資料中心保留目前挑戰密碼驗證、兩次新密碼一致性檢查，以及明確的儲存成功 / 失敗回饋。</p><p><b class="text-blue-300">首頁工具列：</b>V1.8.3 修正首頁被遊戲內右上工具列遮擋的問題。首頁、暫停、過關、Game Over 等罩幕開啟時，遊戲內工具列會自動隱藏；進入遊戲後才顯示音樂、音效、儲存、玩家、暫停。</p>
+                    <p><b class="text-cyan-300">首頁視覺：</b>V1.8.4 將首頁改為科技感深色分區，避免純白 / 藍單調；關卡說明、登入區、註冊 / 訪客與龍虎榜區塊以不同底色與霓虹邊框區分。</p><p><b class="text-yellow-300">龍虎榜揭榜：</b>修正版尾「龍虎榜揭榜」按鈕可能無反應的問題，現在會開啟獨立排行榜視窗，顯示本機前十名與前三名強化樣式。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -2584,12 +2680,12 @@
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.3｜首頁工具列遮擋修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.4｜首頁科技感分區・龍虎榜揭榜修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.3 修正首頁畫面被遊戲內右上工具列遮擋的問題。首頁、暫停、過關與 Game Over 罩幕開啟時，系統會隱藏遊戲內工具列；真正進入遊戲後才顯示音樂、音效、儲存、玩家與暫停。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.4 重新整理首頁視覺分區，改為科技感深色卡片、霓虹邊框與更清楚的區塊層級；同時修正版尾「龍虎榜揭榜」按鈕無反應的問題，開啟獨立排行榜視窗。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -2606,7 +2702,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表人物、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表人物、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li>
                         </ul>
                     </div>
                     <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
@@ -2627,6 +2723,7 @@
         document.getElementById('home-btn-save')?.addEventListener('click', saveGameState);
         document.getElementById('home-btn-pause')?.addEventListener('click', togglePause);
         document.getElementById('btn-ranking-open')?.addEventListener('click', openRankingModal);
+        document.addEventListener('click', (e) => { if (e.target && e.target.closest && e.target.closest('#btn-ranking-open')) { e.preventDefault(); openRankingModal(); } });
         document.getElementById('btn-close-ranking')?.addEventListener('click', () => document.getElementById('ranking-modal')?.classList.add('hidden'));
         document.getElementById('ranking-modal')?.addEventListener('click', (e) => { if (e.target.id === 'ranking-modal') e.currentTarget.classList.add('hidden'); });
         document.getElementById('btn-close-forgot')?.addEventListener('click', () => document.getElementById('forgot-modal')?.classList.add('hidden'));
