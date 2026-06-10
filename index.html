@@ -77,6 +77,11 @@
         .pulse-reward { animation: pulseReward 1.1s ease-in-out infinite; }
         @keyframes pulseReward { 0%,100%{ transform:scale(1); filter:brightness(1);} 50%{ transform:scale(1.04); filter:brightness(1.25);} }
 
+        .celebration-pop { animation: celebrationPop 1.8s ease-out forwards; }
+        @keyframes celebrationPop { 0%{opacity:0; transform:scale(.75)} 15%{opacity:1; transform:scale(1.05)} 70%{opacity:1; transform:scale(1)} 100%{opacity:0; transform:scale(1.08)} }
+        .firework-dot { position:absolute; width:8px; height:8px; border-radius:999px; background:#facc15; animation: fireworkDot .9s ease-out forwards; }
+        @keyframes fireworkDot { from{opacity:1; transform:translate(0,0) scale(1)} to{opacity:0; transform:translate(var(--x), var(--y)) scale(.35)} }
+
 
         /* V1.3 手機直式 UI/UX 強化：棋盤不被手把遮住、控制鍵下移、資訊列壓縮 */
         @media (orientation: portrait) and (max-width: 768px) {
@@ -345,6 +350,7 @@
             <button id="btn-bgm" class="text-[9px] px-2 py-1 bg-slate-800/80 rounded border border-slate-700">🎵 關</button>
             <button id="btn-sound" class="text-[9px] px-2 py-1 bg-slate-800/80 rounded border border-slate-700">🔊 開</button>
             <button id="btn-save" class="text-[9px] px-2 py-1 bg-emerald-900/80 rounded border border-emerald-700">儲存</button>
+            <button id="btn-player-settings" class="text-[9px] px-2 py-1 bg-purple-900/80 rounded border border-purple-700">玩家</button>
             <button id="btn-pause" class="text-[9px] px-2 py-1 bg-blue-900/80 rounded border border-blue-800">暫停</button>
         </div>
     </div>
@@ -533,7 +539,7 @@
             </h2>
             <div id="overlay-subtitle" class="text-sm text-slate-300 mb-3 tracking-wider">阿布拉.凱 工作室 監製</div>
             <p id="overlay-desc" class="text-[11px] text-gray-400 mb-4 leading-relaxed">
-                10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>手機用螢幕手把，電腦用方向鍵、空白、C鍵、Z鍵。<br>免登入，請先填寫名稱；暱稱與進度會儲存在本機。
+                10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>手機用螢幕手把，電腦用方向鍵、空白、C鍵、Z鍵。<br>本機多人挑戰者帳號｜可用挑戰密碼登入自己的進度。
             </p>
             <div id="level-brief" class="level-card rounded-xl p-3 mb-4 text-left text-[11px] text-slate-300 leading-relaxed">
                 <div class="text-blue-300 font-bold text-center mb-1">LEVEL 1｜新手啟動</div>
@@ -541,10 +547,27 @@
                 <div>過關獎勵：解鎖清除一行技能。</div>
             </div>
             <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3 text-[11px] text-emerald-200 leading-relaxed"></div>
+
+            <div id="player-list-panel" class="mb-3 bg-slate-900/70 border border-slate-800 rounded-xl p-3 text-left">
+                <div class="text-center text-[10px] text-cyan-300 mb-2 tracking-wider font-bold">本機挑戰者清單</div>
+                <div id="player-list" class="space-y-1 text-[11px] text-slate-300"></div>
+            </div>
             
-            <div id="username-form" class="mb-6 bg-slate-900/80 p-4 rounded-xl border border-slate-700 shadow-inner">
-                <label class="block text-center text-[10px] text-blue-400 mb-2 uppercase tracking-wider font-bold">玩家暱稱（本機儲存）</label>
+            <div id="username-form" class="mb-4 bg-slate-900/80 p-4 rounded-xl border border-slate-700 shadow-inner">
+                <label class="block text-center text-[10px] text-blue-400 mb-2 uppercase tracking-wider font-bold">玩家名稱 / 挑戰密碼</label>
                 <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或暱稱" value="" class="w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼（建立或登入用）" class="mt-2 w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <input type="text" id="input-hint" maxlength="18" placeholder="密碼提示（建立新玩家時使用，可留空）" class="mt-2 w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-center text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <div class="mt-2 grid grid-cols-2 gap-2">
+                    <select id="select-avatar" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white focus:outline-none">
+                        <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
+                    </select>
+                    <select id="select-color" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white focus:outline-none">
+                        <option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option>
+                    </select>
+                </div>
+                <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-200 font-bold">忘記挑戰密碼？查看提示</button>
+                <div class="mt-2 text-[10px] text-slate-500 leading-relaxed">挑戰密碼只儲存在本機瀏覽器，用於多人輪流使用時區分玩家；請勿使用重要密碼。</div>
             </div>
 
             <button id="btn-start" class="w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-lg shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
@@ -558,7 +581,7 @@
                 <button id="btn-copyright" class="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 border border-yellow-900/70 rounded-lg text-[11px] text-yellow-200 font-bold">版權宣告</button>
             </div>
             <div class="mt-4 bg-slate-900/70 border border-slate-800 rounded-xl p-3 text-left">
-                <div class="text-center text-[10px] text-yellow-400 mb-2 tracking-wider font-bold">本機預設前十名</div>
+                <div class="text-center text-[10px] text-yellow-400 mb-2 tracking-wider font-bold">本機龍虎榜前十名</div>
                 <div id="leaderboard-full" class="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-slate-300"></div>
             </div>
             
@@ -580,6 +603,14 @@
         </div>
     </div>
 
+    <!-- ================= 入榜慶祝特效 ================= -->
+    <div id="rank-celebration" class="hidden absolute inset-0 z-[65] pointer-events-none flex items-center justify-center">
+        <div class="rounded-3xl border border-yellow-300/60 bg-slate-950/70 px-6 py-5 text-center shadow-[0_0_45px_rgba(250,204,21,.45)]">
+            <div id="celebration-title" class="text-3xl font-black text-yellow-300">🎉 龍虎榜更新！</div>
+            <div id="celebration-desc" class="mt-2 text-sm text-slate-100"></div>
+        </div>
+    </div>
+
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
@@ -588,16 +619,197 @@
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
         }
 
-        // 簡化版：不連 Firebase、不要求登入，改用 localStorage 儲存本機最高分與本機排行榜
+        // V1.7：本機多人挑戰者帳號。資料只存在目前裝置與瀏覽器。
         const STORAGE_KEY_BEST = 'abk_tetris_best_score_v1';
-        const STORAGE_KEY_BOARD = 'abk_tetris_local_board_v1';
+        const STORAGE_KEY_BOARD = 'abk_tetris_local_board_v2';
         const STORAGE_KEY_NAME = 'abk_tetris_player_name_v1';
         const STORAGE_KEY_STATE = 'abk_tetris_saved_state_v1';
+        const STORAGE_KEY_PLAYERS = 'abk_tetris_players_v1';
+        const STORAGE_KEY_CURRENT_PLAYER = 'abk_tetris_current_player_id_v1';
 
         let savedStateCache = null;
         let bestScore = Number(localStorage.getItem(STORAGE_KEY_BEST) || 0);
+        let players = loadPlayers();
+        let selectedPlayerId = localStorage.getItem(STORAGE_KEY_CURRENT_PLAYER) || null;
+        let currentPlayerId = null;
+        let currentPlayer = null;
 
         let localLeaderboard = loadLocalLeaderboard();
+
+        function simpleHash(str) {
+            let h = 2166136261;
+            const input = String(str || '');
+            for (let i = 0; i < input.length; i++) {
+                h ^= input.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return 'h_' + (h >>> 0).toString(36);
+        }
+
+        function createId(prefix = 'p') {
+            return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+        }
+
+        function loadPlayers() {
+            try {
+                const list = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAYERS) || '[]');
+                return Array.isArray(list) ? list.filter(p => p && p.id).map(p => ({
+                    id: p.id,
+                    name: validateString(p.name, '玩家'),
+                    passwordHash: p.passwordHash || '',
+                    hint: validateString(p.hint || '', ''),
+                    avatar: p.avatar || '🎮',
+                    color: p.color || 'cyan',
+                    createdAt: p.createdAt || Date.now(),
+                    updatedAt: p.updatedAt || Date.now(),
+                    bestScore: Number(p.bestScore || 0),
+                    bestLevel: Number(p.bestLevel || 1),
+                    clearCount: Number(p.clearCount || 0)
+                })) : [];
+            } catch (e) { return []; }
+        }
+
+        function savePlayers() {
+            localStorage.setItem(STORAGE_KEY_PLAYERS, JSON.stringify(players));
+        }
+
+        function findPlayerByName(name) {
+            const clean = validateString(name, '').toLowerCase();
+            return players.find(p => validateString(p.name, '').toLowerCase() === clean) || null;
+        }
+
+        function findPlayerById(id) {
+            return players.find(p => p.id === id) || null;
+        }
+
+        function setCurrentPlayer(player) {
+            currentPlayer = player || null;
+            currentPlayerId = player ? player.id : null;
+            selectedPlayerId = currentPlayerId;
+            if (player) localStorage.setItem(STORAGE_KEY_CURRENT_PLAYER, player.id);
+            if (player) localStorage.setItem(STORAGE_KEY_NAME, player.name);
+            nickname = player ? player.name : nickname;
+            renderPlayerList();
+        }
+
+        function getPlayerStateKey(playerId = currentPlayerId || selectedPlayerId) {
+            return playerId ? `${STORAGE_KEY_STATE}_${playerId}` : STORAGE_KEY_STATE;
+        }
+
+        function colorClass(color) {
+            const map = { cyan: 'text-cyan-300', blue: 'text-blue-300', emerald: 'text-emerald-300', yellow: 'text-yellow-300', orange: 'text-orange-300', rose: 'text-rose-300', purple: 'text-purple-300', slate: 'text-slate-200' };
+            return map[color] || 'text-cyan-300';
+        }
+
+        function renderPlayerList() {
+            const box = document.getElementById('player-list');
+            if (!box) return;
+            if (!players.length) {
+                box.innerHTML = `<div class="text-center text-slate-500">尚未建立挑戰者。輸入名稱與挑戰密碼即可建立。</div>`;
+                return;
+            }
+            box.innerHTML = players.map(p => {
+                const state = JSON.parse(localStorage.getItem(getPlayerStateKey(p.id)) || 'null');
+                const stateText = state ? `Level ${state.level}｜${state.score} 分` : `最高 ${p.bestScore || 0} 分`;
+                const active = p.id === selectedPlayerId ? 'border-blue-500 bg-blue-950/30' : 'border-slate-800 bg-slate-950/40';
+                return `<button data-player-id="${p.id}" class="player-card w-full text-left rounded-lg border ${active} px-3 py-2 flex items-center justify-between gap-2"><span class="truncate"><span class="mr-1">${p.avatar || '🎮'}</span><b class="${colorClass(p.color)}">${validateString(p.name,'玩家')}</b><span class="ml-2 text-slate-500">${stateText}</span></span><span class="text-[10px] text-slate-500">選擇</span></button>`;
+            }).join('');
+            box.querySelectorAll('[data-player-id]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const p = findPlayerById(btn.dataset.playerId);
+                    if (!p) return;
+                    selectedPlayerId = p.id;
+                    const nameInput = document.getElementById('input-nickname');
+                    const hintInput = document.getElementById('input-hint');
+                    const avatarSelect = document.getElementById('select-avatar');
+                    const colorSelect = document.getElementById('select-color');
+                    if (nameInput) nameInput.value = p.name;
+                    if (hintInput) hintInput.value = p.hint || '';
+                    if (avatarSelect) avatarSelect.value = p.avatar || '🎮';
+                    if (colorSelect) colorSelect.value = p.color || 'cyan';
+                    savedStateCache = getSavedState();
+                    updateSaveStatus();
+                    renderPlayerList();
+                    const pw = document.getElementById('input-password');
+                    if (pw) pw.focus();
+                });
+            });
+        }
+
+        function ensurePlayerLogin() {
+            const nameInput = document.getElementById('input-nickname');
+            const pwInput = document.getElementById('input-password');
+            const hintInput = document.getElementById('input-hint');
+            const avatarSelect = document.getElementById('select-avatar');
+            const colorSelect = document.getElementById('select-color');
+            const name = validateString((nameInput?.value || '').trim(), '');
+            const password = String(pwInput?.value || '');
+            if (!name) { showToast('請先輸入玩家名稱或暱稱'); nameInput?.focus(); return false; }
+            if (!password) { showToast('請輸入挑戰密碼；新玩家也會用它建立帳號'); pwInput?.focus(); return false; }
+            let player = selectedPlayerId ? findPlayerById(selectedPlayerId) : findPlayerByName(name);
+            if (!player && findPlayerByName(name)) player = findPlayerByName(name);
+            if (player) {
+                if (player.passwordHash && player.passwordHash !== simpleHash(password)) {
+                    showToast('挑戰密碼不正確，可先查看密碼提示');
+                    return false;
+                }
+                setCurrentPlayer(player);
+                const newName = validateString(name, player.name);
+                if (newName && newName !== player.name) updatePlayerProfile({ name: newName }, false);
+                return true;
+            }
+            player = {
+                id: createId('player'),
+                name,
+                passwordHash: simpleHash(password),
+                hint: validateString(hintInput?.value || '', ''),
+                avatar: avatarSelect?.value || '🎮',
+                color: colorSelect?.value || 'cyan',
+                createdAt: Date.now(), updatedAt: Date.now(), bestScore: 0, bestLevel: 1, clearCount: 0
+            };
+            players.push(player); savePlayers(); setCurrentPlayer(player); renderPlayerList();
+            showToast(`已建立挑戰者：${player.avatar} ${player.name}`);
+            return true;
+        }
+
+        function updatePlayerProfile(updates = {}, show = true) {
+            if (!currentPlayerId) { showToast('請先登入挑戰者帳號'); return false; }
+            const player = findPlayerById(currentPlayerId);
+            if (!player) return false;
+            const oldName = player.name;
+            Object.assign(player, updates, { updatedAt: Date.now() });
+            if (updates.name) player.name = validateString(updates.name, oldName);
+            players = players.map(p => p.id === player.id ? player : p);
+            currentPlayer = player; nickname = player.name;
+            savePlayers();
+            syncLeaderboardPlayer(player);
+            saveLocalLeaderboard(); renderLeaderboard(localLeaderboard); renderPlayerList(); updateSaveStatus(); updateUI();
+            const nameInput = document.getElementById('input-nickname'); if (nameInput) nameInput.value = player.name;
+            if (show) showToast('玩家資料已更新，排行榜同步完成');
+            return true;
+        }
+
+        function syncLeaderboardPlayer(player) {
+            localLeaderboard = localLeaderboard.map(item => item.playerId === player.id ? { ...item, name: player.name, avatar: player.avatar, color: player.color } : item);
+        }
+
+        function showPasswordHint() {
+            const name = validateString(document.getElementById('input-nickname')?.value || '', '');
+            const player = (selectedPlayerId && findPlayerById(selectedPlayerId)) || findPlayerByName(name);
+            if (!player) { showToast('找不到此本機玩家，可能尚未建立'); return; }
+            alert(`玩家：${player.name}\n密碼提示：${player.hint || '這位玩家沒有設定提示'}\n\n若仍想不起來，之後可在本機資料櫃台選擇重設或清除玩家進度。`);
+        }
+
+        function openPlayerSettings() {
+            if (!currentPlayer) { showToast('請先登入挑戰者帳號'); return; }
+            const newName = prompt('修改玩家顯示名稱：', currentPlayer.name);
+            if (newName === null) return;
+            const avatar = prompt('修改代表人物 Emoji：', currentPlayer.avatar || '🎮') || currentPlayer.avatar;
+            const color = prompt('修改代表色：cyan / blue / emerald / yellow / orange / rose / purple / slate', currentPlayer.color || 'cyan') || currentPlayer.color;
+            const hint = prompt('修改密碼提示：', currentPlayer.hint || '') || currentPlayer.hint || '';
+            updatePlayerProfile({ name: validateString(newName, currentPlayer.name), avatar: validateString(avatar, currentPlayer.avatar || '🎮').slice(0, 2), color: validateString(color, currentPlayer.color || 'cyan'), hint: validateString(hint, '') });
+            saveGameState(true);
+        }
 
         function loadLocalLeaderboard() {
             const defaults = [
@@ -624,7 +836,7 @@
         function normalizeLeaderboard(list) {
             const cleaned = list
                 .filter(item => item && typeof item.score === 'number')
-                .map(item => ({ name: validateString(item.name, "玩家"), score: Math.max(0, Math.floor(item.score)) }))
+                .map(item => ({ playerId: item.playerId || null, name: validateString(item.name, "玩家"), avatar: item.avatar || '🎮', color: item.color || 'cyan', score: Math.max(0, Math.floor(item.score)), at: item.at || 0, mode: item.mode || 'ten-level' }))
                 .sort((a, b) => b.score - a.score);
 
             const unique = [];
@@ -654,21 +866,22 @@
             }
             list.slice(0, 5).forEach((item, idx) => {
                 const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
-                container.innerHTML += `<div class="flex justify-between truncate px-1"><span class="text-blue-300 mr-1">${medal} ${validateString(item.name)}</span> <span class="text-yellow-400">${item.score}</span></div>`;
+                container.innerHTML += `<div class="flex justify-between truncate px-1"><span class="text-blue-300 mr-1">${medal} ${item.avatar || '🎮'} ${validateString(item.name)}</span> <span class="text-yellow-400">${item.score}</span></div>`;
             });
             const full = document.getElementById('leaderboard-full');
             if (full) {
                 full.innerHTML = "";
                 list.slice(0, 10).forEach((item, idx) => {
                     const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
-                    full.innerHTML += `<div class="flex justify-between gap-2"><span class="truncate">${medal} ${validateString(item.name)}</span><span class="text-yellow-400">${item.score}</span></div>`;
+                    full.innerHTML += `<div class="flex justify-between gap-2"><span class="truncate">${medal} ${item.avatar || '🎮'} ${validateString(item.name)}</span><span class="text-yellow-400">${item.score}</span></div>`;
                 });
             }
         }
 
         function submitScoreToCloud(nickname, finalScore) {
-            // 保留原函式名稱，避免其他遊戲流程大改；實際上改成提交到本機龍虎榜
-            const cleanName = validateString(nickname, "玩家");
+            // V1.7：每次結算都以 playerId 送入本機龍虎榜，名稱、代表色、代表人物會同步更新。
+            const player = currentPlayerId ? findPlayerById(currentPlayerId) : null;
+            const cleanName = validateString(player?.name || nickname, "玩家");
             const cleanScore = Math.max(0, Math.floor(finalScore));
             const previousBest = bestScore;
             const beforeBoard = [...localLeaderboard];
@@ -678,18 +891,60 @@
                 localStorage.setItem(STORAGE_KEY_BEST, String(bestScore));
             }
 
-            // 每一次結算都登入本機龍虎榜，再重新排序前十名。
-            localLeaderboard.push({ name: cleanName, score: cleanScore, at: Date.now() });
+            if (player) {
+                player.bestScore = Math.max(Number(player.bestScore || 0), cleanScore);
+                player.bestLevel = Math.max(Number(player.bestLevel || 1), Number(level || 1));
+                player.updatedAt = Date.now();
+                players = players.map(p => p.id === player.id ? player : p);
+                savePlayers();
+            }
+
+            localLeaderboard.push({
+                playerId: player?.id || null,
+                name: cleanName,
+                avatar: player?.avatar || '🎮',
+                color: player?.color || 'cyan',
+                score: cleanScore,
+                level: level,
+                lines: lines,
+                at: Date.now(),
+                mode: level >= 10 ? 'ten-level-clear' : 'ten-level'
+            });
             localLeaderboard = normalizeLeaderboard(localLeaderboard);
             saveLocalLeaderboard();
             renderLeaderboard(localLeaderboard);
+            renderPlayerList();
             updateUI();
 
-            const rank = localLeaderboard.findIndex(item => item.name === cleanName && item.score === cleanScore) + 1;
+            const rank = localLeaderboard.findIndex(item => item.score === cleanScore && ((player && item.playerId === player.id) || (!player && item.name === cleanName))) + 1;
             const isRanked = rank > 0 && rank <= 10;
-            const previousRank = beforeBoard.findIndex(item => item.name === cleanName && item.score >= cleanScore) + 1;
+            const previousRank = beforeBoard.findIndex(item => ((player && item.playerId === player.id) || item.name === cleanName) && item.score >= cleanScore) + 1;
             const improved = !previousRank || (isRanked && rank < previousRank) || cleanScore > previousBest;
+            if (isRanked) showRankCelebration(rank, cleanName, cleanScore, player?.avatar || '🎮');
             return { cleanName, cleanScore, rank: isRanked ? rank : null, isRanked, isBest: cleanScore > previousBest, improved };
+        }
+
+        function showRankCelebration(rank, name, score, avatar = '🎮') {
+            const box = document.getElementById('rank-celebration');
+            const title = document.getElementById('celebration-title');
+            const desc = document.getElementById('celebration-desc');
+            if (!box || !title || !desc) return;
+            title.innerText = rank === 1 ? '👑 新王誕生！' : rank <= 3 ? '🏆 登上前三名！' : '🎉 恭喜入榜！';
+            desc.innerText = `${avatar} ${name}｜${score} 分｜本機龍虎榜第 ${rank} 名`;
+            box.classList.remove('hidden');
+            box.classList.add('celebration-pop');
+            for (let i = 0; i < 26; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'firework-dot';
+                dot.style.left = `${45 + Math.random()*10}%`;
+                dot.style.top = `${43 + Math.random()*10}%`;
+                dot.style.setProperty('--x', `${(Math.random()-.5)*360}px`);
+                dot.style.setProperty('--y', `${(Math.random()-.5)*280}px`);
+                dot.style.background = ['#facc15','#38bdf8','#fb7185','#a78bfa','#34d399'][i%5];
+                box.appendChild(dot);
+                setTimeout(() => dot.remove(), 1000);
+            }
+            setTimeout(() => { box.classList.add('hidden'); box.classList.remove('celebration-pop'); }, 1900);
         }
 
         function initFirebase() {
@@ -699,7 +954,7 @@
 
         function getSavedState() {
             try {
-                const raw = localStorage.getItem(STORAGE_KEY_STATE);
+                const raw = localStorage.getItem(getPlayerStateKey());
                 if (!raw) return null;
                 const data = JSON.parse(raw);
                 if (!data || !Array.isArray(data.grid) || !data.activePiece || !data.nextPiece) return null;
@@ -711,7 +966,7 @@
         }
 
         function clearSavedState() {
-            localStorage.removeItem(STORAGE_KEY_STATE);
+            localStorage.removeItem(getPlayerStateKey());
             savedStateCache = null;
             updateSaveStatus();
         }
@@ -720,13 +975,14 @@
             if (!force && (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece)) return;
             if (!activePiece || !nextPiece) return;
             const state = {
-                version: '1.5',
+                version: '1.7',
                 savedAt: Date.now(),
+                playerId: currentPlayerId, avatar: currentPlayer?.avatar || '🎮', color: currentPlayer?.color || 'cyan',
                 nickname, score, lines, level, stageStartScore, stageStartLines,
                 stageResults, skillCharges, grid, activePiece, nextPiece, holdPiece, canHold
             };
             try {
-                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(state));
+                localStorage.setItem(getPlayerStateKey(), JSON.stringify(state));
                 savedStateCache = state;
                 updateSaveStatus();
             } catch (e) {}
@@ -740,7 +996,7 @@
         }
 
         function restoreGameState(state) {
-            nickname = validateString(state.nickname || localStorage.getItem(STORAGE_KEY_NAME) || '', '玩家');
+            nickname = validateString(currentPlayer?.name || state.nickname || localStorage.getItem(STORAGE_KEY_NAME) || '', '玩家');
             const nameInput = document.getElementById('input-nickname');
             if (nameInput) nameInput.value = nickname;
             grid = state.grid;
@@ -769,7 +1025,7 @@
             const startBtn = document.getElementById('btn-start');
             const newBtn = document.getElementById('btn-new-game');
             const nameInput = document.getElementById('input-nickname');
-            const savedName = validateString(localStorage.getItem(STORAGE_KEY_NAME) || '', '');
+            const savedName = validateString(currentPlayer?.name || localStorage.getItem(STORAGE_KEY_NAME) || '', '');
             if (nameInput && !nameInput.value && savedName) nameInput.value = savedName;
             const state = savedStateCache || getSavedState();
             if (!status || !startBtn || !newBtn) return;
@@ -1378,14 +1634,10 @@
         }
 
         function initGame(forceNew = false) {
+            if (!ensurePlayerLogin()) return;
+            savedStateCache = getSavedState();
             if (!forceNew && savedStateCache && overlayMode === 'start') return restoreGameState(savedStateCache);
-            const nameInput = document.getElementById('input-nickname');
-            nickname = validateString((nameInput?.value || '').trim(), '');
-            if (!nickname) {
-                showToast('請先輸入玩家名稱或暱稱');
-                if (nameInput) nameInput.focus();
-                return;
-            }
+            nickname = currentPlayer?.name || nickname;
             localStorage.setItem(STORAGE_KEY_NAME, nickname);
             clearSavedState();
             grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
@@ -1602,6 +1854,8 @@
         });
         document.getElementById('btn-pause').addEventListener('click', togglePause);
         document.getElementById('btn-save').addEventListener('click', manualSaveGameState);
+        document.getElementById('btn-player-settings').addEventListener('click', openPlayerSettings);
+        document.getElementById('btn-password-hint').addEventListener('click', showPasswordHint);
 
         function showInfoModal(type) {
             const modal = document.getElementById('info-modal');
@@ -1615,7 +1869,7 @@
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。</p>
                     <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p>
-                    <p><b class="text-emerald-300">本機儲存：</b>玩家暱稱、最高分、排行榜與目前進度會儲存在目前瀏覽器。下次用同一台裝置與同一個瀏覽器開啟，就可以繼續挑戰。</p>
+                    <p><b class="text-emerald-300">本機儲存：</b>本機挑戰者帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
                 `;
             } else {
                 title.innerText = '版權宣告';
@@ -1636,7 +1890,11 @@
         document.getElementById('info-modal').addEventListener('click', (e) => { if (e.target.id === 'info-modal') e.currentTarget.classList.add('hidden'); });
         document.getElementById('input-nickname').addEventListener('input', (e) => {
             const v = validateString(e.target.value, '');
-            if (v) localStorage.setItem(STORAGE_KEY_NAME, v);
+            const p = findPlayerByName(v);
+            selectedPlayerId = p ? p.id : null;
+            savedStateCache = getSavedState();
+            updateSaveStatus();
+            renderPlayerList();
         });
         window.addEventListener('pagehide', saveGameState);
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveGameState(); });
@@ -1647,6 +1905,15 @@
         const bgmBtn = document.getElementById('btn-bgm');
         bgmBtn.addEventListener('click', () => { bgmEnabled = !bgmEnabled; bgmBtn.innerText = bgmEnabled ? "🎵 開" : "🎵 關"; bgmEnabled ? startBgm() : stopBgm(); });
 
+        const rememberedPlayer = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+        if (rememberedPlayer) {
+            selectedPlayerId = rememberedPlayer.id;
+            const nameInput = document.getElementById('input-nickname'); if (nameInput) nameInput.value = rememberedPlayer.name;
+            const hintInput = document.getElementById('input-hint'); if (hintInput) hintInput.value = rememberedPlayer.hint || '';
+            const avatarSelect = document.getElementById('select-avatar'); if (avatarSelect) avatarSelect.value = rememberedPlayer.avatar || '🎮';
+            const colorSelect = document.getElementById('select-color'); if (colorSelect) colorSelect.value = rememberedPlayer.color || 'cyan';
+        }
+        renderPlayerList();
         savedStateCache = getSavedState();
         updateSaveStatus();
         initFirebase();

@@ -2,11 +2,13 @@
 
 極限操控方塊｜阿布拉.凱 工作室 監製
 
-V1.6 updates:
-- Adds visible manual save button.
-- Keeps auto-save during gameplay.
-- Saves player nickname, progress, best score, and local leaderboard in the browser.
-- Registers final score into the local top 10 leaderboard after game over or win.
-- Shows leaderboard rank/congratulations when the player enters the top 10.
+## V1.7 更新重點
 
-Play locally by opening `index.html`.
+- 本機多人挑戰者帳號
+- 挑戰密碼與密碼提示
+- 代表色與代表人物
+- 每位玩家獨立本機進度
+- 龍虎榜以 playerId 綁定玩家，改名後同步更新排行榜
+- 入榜慶祝畫面與簡易煙火效果
+
+> 本版本仍為單機版，帳號、密碼、進度與排行榜只儲存在目前裝置與瀏覽器。
