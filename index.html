@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.7.9 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.8.0 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -589,6 +589,49 @@
             line-height: 1.8 !important;
         }
 
+    
+        /* V1.8.0：過關畫面與首頁登入畫面完全隔離 */
+        #overlay.levelclear-overlay #username-form,
+        #overlay.levelclear-overlay #register-panel,
+        #overlay.levelclear-overlay #player-list-panel,
+        #overlay.levelclear-overlay #leaderboard-full,
+        #overlay.levelclear-overlay #btn-register-toggle,
+        #overlay.levelclear-overlay #btn-guest-start,
+        #overlay.levelclear-overlay .home-register-card,
+        #overlay.levelclear-overlay .home-guest-card,
+        #overlay.levelclear-overlay .home-card-dark,
+        #overlay.levelclear-overlay footer,
+        #overlay.levelclear-overlay #btn-home-settings,
+        #overlay.levelclear-overlay .home-settings-fab,
+        #overlay.levelclear-overlay #save-status {
+            display: none !important;
+        }
+        #overlay.levelclear-overlay .home-card-bright {
+            max-width: 500px !important;
+            background: linear-gradient(180deg, #f8fafc, #eef6ff) !important;
+            border-color: #38bdf8 !important;
+        }
+        #overlay.levelclear-overlay #level-brief {
+            display: block !important;
+            background: #eff6ff !important;
+            color: #0f172a !important;
+            border-color: #93c5fd !important;
+        }
+        #overlay.levelclear-overlay #btn-start {
+            margin-top: 14px !important;
+            background: linear-gradient(90deg, #2563eb, #4f46e5) !important;
+        }
+        #overlay.levelclear-overlay #btn-new-game {
+            display: block !important;
+            background: #334155 !important;
+            color: #fff !important;
+        }
+        #overlay.levelclear-overlay #overlay-desc {
+            color: #e2e8f0 !important;
+            font-size: 14px !important;
+            line-height: 1.8 !important;
+        }
+
     </style>
 </head>
 
@@ -842,7 +885,7 @@
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.7.9</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.0</div>
                     </footer>
                 </main>
             </div>
@@ -898,8 +941,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.7.9";
-        const GAME_VERSION_NAME = "暫停畫面獨立・首頁表單隔離版";
+        const GAME_VERSION = "V1.8.0";
+        const GAME_VERSION_NAME = "過關畫面獨立・落地判定修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -1769,7 +1812,7 @@
             draw(); resetGravityTimer(); saveGameState();
         }
 
-        function clearLines() {
+        function clearLines(skipLevelCheck = false) {
             let cleared = 0;
             grid = grid.reduce((acc, row) => {
                 if (row.every(cell => cell !== 0)) { cleared++; acc.unshift(Array(COLS).fill(0)); } else { acc.push(row); }
@@ -1779,7 +1822,7 @@
                 lines += cleared;
                 const scoreTable = [0, 100, 300, 500, 800];
                 score += (scoreTable[cleared] || 1000) * level;
-                playClearSound(); checkLevelProgression(); updateUI();
+                playClearSound(); if (!skipLevelCheck) checkLevelProgression(); updateUI();
             }
         }
 
@@ -1793,7 +1836,34 @@
             }
         }
 
+        
+        function settleActivePieceBeforeLevelClear() {
+            if (!activePiece) return;
+            // 若目前方塊還沒有被寫入 grid，代表過關是由快降/硬降分數觸發，必須先讓方塊落地。
+            if (checkCollision(activePiece.matrix, activePiece.x, activePiece.y)) return;
+            while (!checkCollision(activePiece.matrix, activePiece.x, activePiece.y + 1)) {
+                activePiece.y++;
+            }
+            for (let r = 0; r < activePiece.matrix.length; r++) {
+                for (let c = 0; c < activePiece.matrix[r].length; c++) {
+                    if (activePiece.matrix[r][c] !== 0) {
+                        const targetY = activePiece.y + r;
+                        const targetX = activePiece.x + c;
+                        if (targetY < 0) { endGame(); return; }
+                        if (targetY >= 0 && targetY < ROWS && targetX >= 0 && targetX < COLS) {
+                            grid[targetY][targetX] = activePiece.color;
+                        }
+                    }
+                }
+            }
+            playLockSound();
+            clearLines(true);
+            activePiece = null;
+            draw();
+        }
+
         function completeLevel() {
+            settleActivePieceBeforeLevelClear();
             if (gravityTimer) clearInterval(gravityTimer);
             if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
             stopBgm();
@@ -1812,11 +1882,15 @@
                 return;
             }
             overlayMode = 'levelClear';
+            document.getElementById('overlay')?.classList.remove('pause-overlay');
+            document.getElementById('overlay')?.classList.add('levelclear-overlay');
             document.getElementById('overlay-title').innerHTML = `LEVEL ${level} CLEAR!`;
             document.getElementById('overlay-subtitle').innerText = '恭喜過關｜阿布拉.凱 工作室 監製';
             document.getElementById('overlay-desc').innerText = `本關成績：${stageScore} 分｜消除 ${stageLines} 行\n累計分數：${score} 分｜過關獎勵：${currentLevel.reward}\n過關加分：+${currentLevel.bonus}`;
             document.getElementById('level-brief').innerHTML = getNextLevelBrief(level + 1, true);
             document.getElementById('btn-start').innerText = `前進 LEVEL ${level + 1}`;
+            document.getElementById('btn-new-game')?.classList.remove('hidden');
+            document.getElementById('btn-new-game').innerText = '結束回首頁';
             showOverlay();
         }
 
@@ -1837,6 +1911,7 @@
         }
 
         function resumeNextLevel() {
+            document.getElementById('overlay')?.classList.remove('levelclear-overlay');
             hideOverlay();
             level++;
             stageStartScore = score;
@@ -1845,6 +1920,11 @@
             isPaused = false;
             isRapidDescending = false;
             overlayMode = 'playing';
+            if (!activePiece || checkCollision(activePiece.matrix, activePiece.x, activePiece.y)) {
+                activePiece = nextPiece || generatePiece();
+                nextPiece = generatePiece();
+                canHold = true;
+            }
             updateUI();
             resetGravityTimer();
             saveGameState();
@@ -2223,6 +2303,7 @@
             }
             const overlay = document.getElementById('overlay');
             overlay?.classList.remove('pause-overlay');
+            overlay?.classList.remove('levelclear-overlay');
             document.getElementById('overlay-title').innerText = '極限操控方塊';
             document.getElementById('overlay-subtitle').innerText = '阿布拉.凱 工作室 監製';
             document.getElementById('overlay-desc').innerText = '10 關單機挑戰｜手機、平板、電腦皆可玩｜註冊玩家可保存進度與本機龍虎榜。';
@@ -2247,7 +2328,7 @@
             initGame(false);
         });
         document.getElementById('btn-new-game').addEventListener('click', () => {
-            if (overlayMode === 'pause') return showHomeFromPausedGame();
+            if (overlayMode === 'pause' || overlayMode === 'levelClear') return showHomeFromPausedGame();
             clearSavedState();
             initGame(true);
         });
@@ -2302,7 +2383,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-blue-300">首頁區塊：</b>V1.7.9 將「暫停畫面」與「首頁登入畫面」完全隔離。暫停時不再出現玩家帳號、挑戰密碼、註冊與訪客入口，只會顯示「繼續遊戲」與「結束回首頁」。</p>
+                    <p><b class="text-blue-300">流程畫面：</b>V1.8.0 將「過關畫面」與「首頁登入畫面」完全隔離。過關時不再出現玩家帳號、挑戰密碼、註冊與訪客入口，只顯示本關結算、下一關預告、前進下一關與結束回首頁。</p><p><b class="text-emerald-300">落地判定：</b>若玩家靠快降或硬降分數達成過關條件，系統會先讓目前方塊落地並寫入棋盤，再顯示過關結算，避免方塊停在空中的不合理畫面。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -2319,12 +2400,12 @@
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.7.9｜暫停畫面獨立・首頁表單隔離版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.0｜過關畫面獨立・落地判定修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.7.9 修正暫停畫面沿用首頁登入卡片造成的流程混淆。訪客或玩家暫停時不再顯示玩家帳號、挑戰密碼、註冊與訪客入口，而是只提供繼續遊戲與結束回首頁兩個動作。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.0 修正過關畫面沿用首頁登入卡片造成的流程混淆，並修正快降/硬降達標時方塊可能停在空中的問題。過關前會先完成目前方塊落地與寫入棋盤，再顯示關卡結算。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -2341,7 +2422,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li>
                         </ul>
                     </div>
                     <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
