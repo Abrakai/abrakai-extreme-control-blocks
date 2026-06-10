@@ -344,6 +344,7 @@
         <div class="pointer-events-auto flex gap-2">
             <button id="btn-bgm" class="text-[9px] px-2 py-1 bg-slate-800/80 rounded border border-slate-700">🎵 關</button>
             <button id="btn-sound" class="text-[9px] px-2 py-1 bg-slate-800/80 rounded border border-slate-700">🔊 開</button>
+            <button id="btn-save" class="text-[9px] px-2 py-1 bg-emerald-900/80 rounded border border-emerald-700">儲存</button>
             <button id="btn-pause" class="text-[9px] px-2 py-1 bg-blue-900/80 rounded border border-blue-800">暫停</button>
         </div>
     </div>
@@ -666,20 +667,29 @@
         }
 
         function submitScoreToCloud(nickname, finalScore) {
-            // 保留原函式名稱，避免其他遊戲流程大改；實際上改成提交到本機紀錄
+            // 保留原函式名稱，避免其他遊戲流程大改；實際上改成提交到本機龍虎榜
             const cleanName = validateString(nickname, "玩家");
             const cleanScore = Math.max(0, Math.floor(finalScore));
+            const previousBest = bestScore;
+            const beforeBoard = [...localLeaderboard];
 
             if (cleanScore > bestScore) {
                 bestScore = cleanScore;
                 localStorage.setItem(STORAGE_KEY_BEST, String(bestScore));
             }
 
-            localLeaderboard.push({ name: cleanName, score: cleanScore });
+            // 每一次結算都登入本機龍虎榜，再重新排序前十名。
+            localLeaderboard.push({ name: cleanName, score: cleanScore, at: Date.now() });
             localLeaderboard = normalizeLeaderboard(localLeaderboard);
             saveLocalLeaderboard();
             renderLeaderboard(localLeaderboard);
             updateUI();
+
+            const rank = localLeaderboard.findIndex(item => item.name === cleanName && item.score === cleanScore) + 1;
+            const isRanked = rank > 0 && rank <= 10;
+            const previousRank = beforeBoard.findIndex(item => item.name === cleanName && item.score >= cleanScore) + 1;
+            const improved = !previousRank || (isRanked && rank < previousRank) || cleanScore > previousBest;
+            return { cleanName, cleanScore, rank: isRanked ? rank : null, isRanked, isBest: cleanScore > previousBest, improved };
         }
 
         function initFirebase() {
@@ -706,8 +716,9 @@
             updateSaveStatus();
         }
 
-        function saveGameState() {
-            if (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece) return;
+        function saveGameState(force = false) {
+            if (!force && (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece)) return;
+            if (!activePiece || !nextPiece) return;
             const state = {
                 version: '1.5',
                 savedAt: Date.now(),
@@ -719,6 +730,13 @@
                 savedStateCache = state;
                 updateSaveStatus();
             } catch (e) {}
+        }
+
+        function manualSaveGameState() {
+            if (!gameStarted || isGameOver) { showToast('目前沒有進行中的遊戲可儲存'); return; }
+            if (pendingLevelClear) { showToast('過關畫面中，按下一關後會自動儲存'); return; }
+            saveGameState(true);
+            showToast(`已儲存：${nickname}｜Level ${level}｜${score} 分`);
         }
 
         function restoreGameState(state) {
@@ -1336,9 +1354,11 @@
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
             playLevelUpSound(); setTimeout(() => playClearSound(), 300);
             clearSavedState();
-            submitScoreToCloud(nickname, score);
-            document.getElementById('overlay-title').innerHTML = "阿布拉.凱<br><span class='text-xl'>工作室 監製</span>";
-            document.getElementById('overlay-desc').innerText = `🎉 恭喜破關！達成最終關卡！\n消行數：${lines}\n傲人分數：${score}`;
+            const rankInfo = submitScoreToCloud(nickname, score);
+            document.getElementById('overlay-title').innerHTML = "恭喜破關！<br><span class='text-xl'>阿布拉.凱 工作室 監製</span>";
+            const rankMsg = rankInfo.isRanked ? `\n🏆 成功登入本機龍虎榜第 ${rankInfo.rank} 名！` : `\n本次未進入本機前十名，再挑戰一次！`;
+            document.getElementById('overlay-desc').innerText = `🎉 恭喜破關！達成最終關卡！\n玩家：${nickname}\n消行數：${lines}\n傲人分數：${score}${rankMsg}`;
+            document.getElementById('level-brief').innerHTML = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 龍虎榜更新成功</div><div>${nickname} 以 ${score} 分登上第 ${rankInfo.rank} 名。</div><div>${rankInfo.isBest ? '同時刷新你的本機最高分！' : '排行榜已儲存在本機瀏覽器。'}</div>` : `<div class="text-slate-300 font-bold text-center mb-1">本機龍虎榜</div><div>目前前十名門檻仍未突破，歡迎再戰！</div>`;
             document.getElementById('btn-start').innerText = "重啟傳奇挑戰";
             document.getElementById('overlay').style.opacity = "1"; document.getElementById('overlay').classList.remove('pointer-events-none');
         }
@@ -1346,9 +1366,13 @@
         function endGame() {
             isGameOver = true; gameStarted = false; stopBgm();
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
-            playGameOverSound(); clearSavedState(); submitScoreToCloud(nickname, score);
-            document.getElementById('overlay-title').innerHTML = "阿布拉.凱<br><span class='text-xl'>工作室 監製</span>";
-            document.getElementById('overlay-desc').innerText = `GAME OVER\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines} (Level ${level})`;
+            playGameOverSound(); clearSavedState();
+            const rankInfo = submitScoreToCloud(nickname, score);
+            document.getElementById('overlay-title').innerHTML = rankInfo.isRanked ? "擠進龍虎榜！<br><span class='text-xl'>阿布拉.凱 工作室 監製</span>" : "GAME OVER<br><span class='text-xl'>阿布拉.凱 工作室 監製</span>";
+            const rankMsg = rankInfo.isRanked ? `🏆 恭喜登入本機龍虎榜第 ${rankInfo.rank} 名！` : `本次未進入本機前十名，差一點就能留名！`;
+            const bestMsg = rankInfo.isBest ? `\n🎉 同時刷新你的本機最高分！` : ``;
+            document.getElementById('overlay-desc').innerText = `GAME OVER\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines} (Level ${level})\n${rankMsg}${bestMsg}`;
+            document.getElementById('level-brief').innerHTML = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 本機龍虎榜更新</div><div>${nickname}｜${score} 分｜第 ${rankInfo.rank} 名</div><div>排行榜已儲存在這台裝置的瀏覽器中，下次開啟仍會保留。</div>` : `<div class="text-blue-300 font-bold text-center mb-1">再挑戰一次</div><div>目前分數：${score} 分。</div><div>目標：擠進本機前十名，讓名字留在排行榜上！</div>`;
             document.getElementById('btn-start').innerText = "再試一次";
             document.getElementById('overlay').style.opacity = "1"; document.getElementById('overlay').classList.remove('pointer-events-none');
         }
@@ -1577,6 +1601,7 @@
             initGame(true);
         });
         document.getElementById('btn-pause').addEventListener('click', togglePause);
+        document.getElementById('btn-save').addEventListener('click', manualSaveGameState);
 
         function showInfoModal(type) {
             const modal = document.getElementById('info-modal');
