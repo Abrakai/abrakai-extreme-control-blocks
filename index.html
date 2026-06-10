@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.8.1 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.8.2 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -654,6 +654,31 @@
             font-size: 12px;
         }
 
+    
+        /* V1.8.2：玩家資料中心儲存回饋與密碼驗證 */
+        #profile-feedback {
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+        #profile-feedback.ok {
+            background: #dcfce7;
+            border: 1px solid #22c55e;
+            color: #14532d;
+        }
+        #profile-feedback.err {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #7f1d1d;
+        }
+        #profile-feedback.info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e3a8a;
+        }
+
     </style>
 </head>
 
@@ -907,7 +932,7 @@
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.1</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.2</div>
                     </footer>
                 </main>
             </div>
@@ -962,15 +987,22 @@
                     <label>密碼提示</label>
                     <input id="profile-hint" maxlength="18" class="mt-1 w-full rounded-lg px-3 py-2 font-black text-center" placeholder="例如：生日四碼、喜歡的數字">
                 </div>
+                <div class="rounded-xl border border-blue-300 bg-blue-50 p-3">
+                    <div class="text-sm font-black text-blue-800 mb-2">安全確認</div>
+                    <input id="profile-current-password" type="password" maxlength="16" class="w-full rounded-lg px-3 py-2 font-black text-center" placeholder="請輸入目前挑戰密碼以確認身份">
+                    <div class="mt-2 text-[12px] text-blue-900 leading-relaxed">基於安全性，系統不會顯示舊密碼；若要儲存玩家資料，請輸入目前挑戰密碼驗證身份。</div>
+                </div>
                 <div class="rounded-xl border border-amber-300 bg-amber-50 p-3">
                     <div class="text-sm font-black text-amber-800 mb-2">修改挑戰密碼（可留空不修改）</div>
                     <input id="profile-password1" type="password" maxlength="16" class="w-full rounded-lg px-3 py-2 font-black text-center" placeholder="新的挑戰密碼">
                     <input id="profile-password2" type="password" maxlength="16" class="mt-2 w-full rounded-lg px-3 py-2 font-black text-center" placeholder="再次輸入新的挑戰密碼">
+                    <div id="profile-password-match" class="mt-2 text-[12px] text-slate-700 leading-relaxed">未填寫新密碼時，挑戰密碼不會變更。</div>
                 </div>
+                <div id="profile-feedback" class="hidden info">請確認資料後按「儲存資料」。</div>
             </div>
             <div class="mt-4 grid grid-cols-2 gap-2">
-                <button id="btn-save-profile" class="px-3 py-3 rounded-xl bg-purple-700 hover:bg-purple-600 text-white font-black">儲存資料</button>
-                <button id="btn-cancel-profile" class="px-3 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold">取消</button>
+                <button id="btn-save-profile" type="button" class="px-3 py-3 rounded-xl bg-purple-700 hover:bg-purple-600 text-white font-black">儲存資料</button>
+                <button id="btn-cancel-profile" type="button" class="px-3 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold">取消</button>
             </div>
         </div>
     </div>
@@ -1008,8 +1040,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.8.1";
-        const GAME_VERSION_NAME = "玩家資料中心・畫面比例・過關暫停修正版";
+        const GAME_VERSION = "V1.8.2";
+        const GAME_VERSION_NAME = "玩家資料儲存回饋・密碼驗證修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -1250,30 +1282,75 @@
             document.getElementById('profile-avatar').value = currentPlayer.avatar || '🎮';
             document.getElementById('profile-color').value = currentPlayer.color || 'cyan';
             document.getElementById('profile-hint').value = currentPlayer.hint || '';
+            document.getElementById('profile-current-password').value = '';
             document.getElementById('profile-password1').value = '';
             document.getElementById('profile-password2').value = '';
+            const feedback = document.getElementById('profile-feedback');
+            if (feedback) { feedback.className = 'hidden info'; feedback.innerText = '請確認資料後按「儲存資料」。'; }
+            const match = document.getElementById('profile-password-match');
+            if (match) match.innerText = '未填寫新密碼時，挑戰密碼不會變更。';
             modal.classList.remove('hidden');
         }
 
+        function setProfileFeedback(type, msg) {
+            const el = document.getElementById('profile-feedback');
+            if (!el) {
+                showToast(msg);
+                return;
+            }
+            el.className = type;
+            el.innerText = msg;
+            el.classList.remove('hidden');
+        }
+
+        function updateProfilePasswordMatchHint() {
+            const pw1 = String(document.getElementById('profile-password1')?.value || '');
+            const pw2 = String(document.getElementById('profile-password2')?.value || '');
+            const el = document.getElementById('profile-password-match');
+            if (!el) return;
+            if (!pw1 && !pw2) {
+                el.className = 'mt-2 text-[12px] text-slate-700 leading-relaxed';
+                el.innerText = '未填寫新密碼時，挑戰密碼不會變更。';
+            } else if (pw1 && pw2 && pw1 === pw2) {
+                el.className = 'mt-2 text-[12px] text-green-700 font-bold leading-relaxed';
+                el.innerText = '兩次新密碼一致，可以儲存。';
+            } else {
+                el.className = 'mt-2 text-[12px] text-red-700 font-bold leading-relaxed';
+                el.innerText = '兩次新密碼尚未一致，請重新確認。';
+            }
+        }
+
         function savePlayerProfileFromModal() {
-            if (isGuestMode || !currentPlayer) { showToast('請先登入挑戰者帳號'); return; }
+            if (isGuestMode || !currentPlayer) { setProfileFeedback('err', '請先登入挑戰者帳號。'); return; }
+            const currentPw = String(document.getElementById('profile-current-password')?.value || '');
+            if (!currentPw) { setProfileFeedback('err', '請先輸入目前挑戰密碼，才能儲存玩家資料。'); return; }
+            if (currentPlayer.passwordHash && currentPlayer.passwordHash !== simpleHash(currentPw)) {
+                setProfileFeedback('err', '目前挑戰密碼不正確，資料尚未儲存。');
+                return;
+            }
+
             const newName = validateString(document.getElementById('profile-name')?.value || currentPlayer.name, currentPlayer.name);
             const avatar = validateString(document.getElementById('profile-avatar')?.value || currentPlayer.avatar || '🎮', '🎮').slice(0, 2);
             const color = validateString(document.getElementById('profile-color')?.value || currentPlayer.color || 'cyan', 'cyan');
             const hint = validateString(document.getElementById('profile-hint')?.value || '', '');
             const pw1 = String(document.getElementById('profile-password1')?.value || '');
             const pw2 = String(document.getElementById('profile-password2')?.value || '');
-            if (!newName) { showToast('玩家名稱不可空白'); return; }
+
+            if (!newName) { setProfileFeedback('err', '玩家名稱不可空白。'); return; }
+            if ((pw1 || pw2) && pw1 !== pw2) { setProfileFeedback('err', '兩次新挑戰密碼不一致，資料尚未儲存。'); return; }
+
             const updates = { name: newName, avatar, color, hint };
-            if (pw1 || pw2) {
-                if (pw1 !== pw2) { showToast('兩次挑戰密碼不一致'); return; }
-                updates.passwordHash = simpleHash(pw1);
-            }
-            updatePlayerProfile(updates);
+            if (pw1 && pw2 && pw1 === pw2) updates.passwordHash = simpleHash(pw1);
+
+            const ok = updatePlayerProfile(updates, false);
+            if (!ok) { setProfileFeedback('err', '儲存失敗：找不到目前玩家資料。'); return; }
             saveGameState(true);
             renderLeaderboards();
-            document.getElementById('player-profile-modal')?.classList.add('hidden');
-            showToast('玩家資料已更新');
+            setProfileFeedback('ok', '✅ 儲存成功！玩家資料、密碼提示與龍虎榜同步更新完成。');
+            showToast('玩家資料已儲存成功');
+            setTimeout(() => {
+                document.getElementById('player-profile-modal')?.classList.add('hidden');
+            }, 900);
         }
 
         function loadLocalLeaderboard() {
@@ -2420,6 +2497,8 @@
         document.getElementById('btn-close-profile')?.addEventListener('click', () => document.getElementById('player-profile-modal')?.classList.add('hidden'));
         document.getElementById('btn-cancel-profile')?.addEventListener('click', () => document.getElementById('player-profile-modal')?.classList.add('hidden'));
         document.getElementById('btn-save-profile')?.addEventListener('click', savePlayerProfileFromModal);
+        document.getElementById('profile-password1')?.addEventListener('input', updateProfilePasswordMatchHint);
+        document.getElementById('profile-password2')?.addEventListener('input', updateProfilePasswordMatchHint);
         document.getElementById('player-profile-modal')?.addEventListener('click', (e) => { if (e.target.id === 'player-profile-modal') e.currentTarget.classList.add('hidden'); });
         document.getElementById('btn-password-hint').addEventListener('click', showPasswordHint);
         document.getElementById('btn-register-toggle').addEventListener('click', () => document.getElementById('register-panel')?.classList.toggle('hidden'));
@@ -2469,7 +2548,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-blue-300">流程畫面：</b>V1.8.1 修正過關畫面與暫停鍵互動。過關後請使用畫面上的「前進下一關」或「結束回首頁」，右上角暫停鍵不再干擾過關結算。</p><p><b class="text-purple-300">玩家資料中心：</b>點選「玩家」會開啟完整玩家資料中心，可修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示，不再使用瀏覽器原生 prompt 小視窗。</p><p><b class="text-cyan-300">畫面比例：</b>桌機與大螢幕橫式版已提高棋盤與預覽區尺寸上限，讓圖示與棋盤更清楚。</p>
+                    <p><b class="text-purple-300">玩家資料中心：</b>V1.8.2 加入目前挑戰密碼驗證、兩次新密碼一致性檢查，以及明確的儲存成功 / 失敗回饋。系統基於安全性不會顯示舊密碼，只能用目前挑戰密碼驗證身份。</p><p><b class="text-blue-300">修改資料：</b>可修改顯示名稱、代表人物、代表色、密碼提示與挑戰密碼；按下儲存後，畫面會明確顯示成功或失敗原因。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -2486,12 +2565,12 @@
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.1｜玩家資料中心・畫面比例・過關暫停修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.2｜玩家資料儲存回饋・密碼驗證修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.1 修正右上角玩家按鈕僅能修改名稱的問題，改為完整玩家資料中心；同時放大桌機與大螢幕橫式的棋盤與預覽區比例，並避免過關結算時暫停鍵干擾下一關流程。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.2 修正玩家資料中心缺少目前挑戰密碼驗證與儲存回饋的問題；新增目前挑戰密碼確認、新密碼一致性提示、儲存成功 / 失敗訊息，避免使用者按下儲存後無法判斷是否生效。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -2508,7 +2587,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表人物、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表人物、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li>
                         </ul>
                     </div>
                     <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
