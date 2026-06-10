@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.7.5 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.7.6 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -478,6 +478,34 @@
             }
         }
 
+    
+        /* V1.7.6：高對比首頁與更清楚的 UI 流程 */
+        .home-topbar{position:fixed;top:calc(8px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:91;width:min(96vw,980px);display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 9px;border:1px solid rgba(125,211,252,.45);background:rgba(15,23,42,.92);box-shadow:0 10px 35px rgba(0,0,0,.45),0 0 20px rgba(56,189,248,.18);border-radius:999px;backdrop-filter:blur(10px)}
+        .home-topbar button,.home-footer-actions button,.home-mini-button{min-height:34px;border-radius:10px;font-weight:900;letter-spacing:.04em;transition:transform .12s ease,filter .12s ease,background .12s ease}
+        .home-topbar button{padding:7px 10px;font-size:12px;border:1px solid rgba(148,163,184,.55);color:#f8fafc;background:rgba(30,41,59,.92)}
+        .home-topbar button:hover,.home-footer-actions button:hover,.home-mini-button:hover{filter:brightness(1.16)}
+        .home-topbar button:active,.home-footer-actions button:active,.home-mini-button:active{transform:scale(.97)}
+        .btn-hidden-state{display:none!important}
+        .home-shell{color:#f8fafc;padding-top:calc(56px + var(--safe-top))}
+        .home-card-bright{background:linear-gradient(180deg,rgba(248,250,252,.98),rgba(226,232,240,.96));color:#0f172a;border:2px solid rgba(125,211,252,.9);box-shadow:0 18px 55px rgba(0,0,0,.42),0 0 28px rgba(56,189,248,.28)}
+        .home-card-dark{background:rgba(15,23,42,.94);color:#f8fafc;border:1px solid rgba(148,163,184,.42)}
+        .home-title-main{color:#f8fafc;text-shadow:0 0 18px rgba(59,130,246,.85),0 0 34px rgba(34,211,238,.45)}
+        .home-subtitle{color:#dbeafe}
+        .home-field-label{color:#1d4ed8;font-weight:900}
+        .home-card-bright input,.home-card-bright select{background:#fff!important;color:#020617!important;border:2px solid #2563eb!important;font-size:17px!important;min-height:46px;box-shadow:inset 0 1px 2px rgba(15,23,42,.18)}
+        .home-card-bright input::placeholder{color:#334155!important;opacity:1!important}
+        .forgot-link{color:#1d4ed8;font-weight:900;text-decoration:underline;text-underline-offset:3px}
+        .home-primary-btn{background:linear-gradient(90deg,#1d4ed8,#4338ca);color:white;border:0;box-shadow:0 10px 24px rgba(37,99,235,.35)}
+        .home-guest-card{background:#fff7ed;color:#7c2d12;border:2px solid #fb923c}
+        .home-register-card{background:#ecfdf5;color:#064e3b;border:2px solid #10b981}
+        .home-footer-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+        .home-footer-actions button{padding:9px 13px;font-size:12px;color:#f8fafc;border:1px solid rgba(148,163,184,.5);background:rgba(30,41,59,.95)}
+        .home-footer-actions .btn-guide-bright{border-color:rgba(96,165,250,.8);color:#dbeafe}
+        .home-footer-actions .btn-disclaimer-bright{border-color:rgba(250,204,21,.75);color:#fef3c7}
+        .home-footer-actions .btn-rank-bright{border-color:rgba(248,113,113,.75);color:#fecaca}
+        .home-small-muted{color:#475569}.home-dark-muted{color:#cbd5e1}
+        @media(max-width:640px){.home-topbar{width:calc(100vw - 12px);gap:4px;padding:6px;overflow-x:auto;justify-content:flex-start;border-radius:14px}.home-topbar button{font-size:11px;padding:7px 8px;flex:0 0 auto}.home-shell{padding-top:calc(62px + var(--safe-top))}.home-card-bright input{font-size:16px!important}}
+
     </style>
 </head>
 
@@ -676,122 +704,74 @@
 
     <!-- ================= 全螢幕狀態罩幕 (Login / Game Over) ================= -->
     <div id="overlay" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 overflow-y-auto transition-all duration-300">
-        <div class="min-h-full w-full px-4 py-6 md:px-6 md:py-8 flex items-center justify-center">
-            <div class="w-full max-w-6xl">
-                <div class="text-center mb-4 md:mb-6">
-                    <div class="text-xs text-blue-500 font-semibold tracking-[0.35em] uppercase mb-1">AbraKai Game Studio</div>
-                    <h2 id="overlay-title" class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 tracking-widest drop-shadow-[0_0_16px_rgba(59,130,246,0.65)] leading-tight">
-                        極限操控方塊
-                    </h2>
-                    <div id="overlay-subtitle" class="text-sm text-slate-300 mt-2 tracking-wider">阿布拉.凱 工作室 監製</div>
-                    <p id="overlay-desc" class="mt-3 max-w-3xl mx-auto text-[12px] md:text-[13px] text-slate-400 leading-relaxed">
-                        10 關單機挑戰｜每關都有過關目標與獎勵技能。<br>支援手機、平板、電腦遊玩；本機多人挑戰者帳號可保存自己的進度與龍虎榜成績。
-                    </p>
-                </div>
-
-                <div class="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(330px,0.8fr)] items-start">
-                    <section class="rounded-2xl border border-blue-900/45 bg-slate-950/70 shadow-[0_0_32px_rgba(15,23,42,0.65)] p-4 md:p-5">
-                        <div class="grid gap-3 md:grid-cols-[1.15fr_0.85fr] items-start mb-4">
-                            <div id="level-brief" class="level-card rounded-xl p-3 text-left text-[12px] text-slate-300 leading-relaxed">
-                                <div class="text-blue-300 font-bold text-center mb-1">LEVEL 1｜新手啟動</div>
-                                <div>過關條件：本關獲得 800 分。</div>
-                                <div>過關獎勵：解鎖清除一行技能。</div>
-                            </div>
-                            <div id="save-status" class="hidden rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-3 text-[12px] text-emerald-200 leading-relaxed"></div>
+        <div class="home-topbar" id="home-topbar">
+            <button id="home-btn-music">🎵 音樂</button>
+            <button id="home-btn-sfx">🔊 音效</button>
+            <button id="home-btn-player" class="btn-hidden-state">玩家資料設定</button>
+            <button id="home-btn-save" class="btn-hidden-state">儲存</button>
+            <button id="home-btn-pause" class="btn-hidden-state">暫停</button>
+            <button id="btn-immersive" title="手機建議加入主畫面或嘗試全螢幕">沉浸模式</button>
+        </div>
+        <div class="home-shell min-h-full w-full px-4 py-6 md:px-6 md:py-8 flex items-center justify-center">
+            <div class="w-full max-w-5xl">
+                <main class="text-center">
+                    <div class="mb-4">
+                        <div class="text-xs text-sky-300 font-semibold tracking-[0.35em] uppercase mb-2">AbraKai Game Studio</div>
+                        <h2 id="overlay-title" class="home-title-main text-5xl md:text-6xl font-black tracking-widest leading-tight">極限操控方塊</h2>
+                        <div id="overlay-subtitle" class="home-subtitle text-sm md:text-base mt-2 tracking-wider">阿布拉.凱 工作室 監製</div>
+                        <p id="overlay-desc" class="mt-3 max-w-3xl mx-auto text-[13px] md:text-sm text-slate-200 leading-relaxed">10 關單機挑戰｜手機、平板、電腦皆可玩｜註冊玩家可保存進度與本機龍虎榜。</p>
+                    </div>
+                    <section class="home-card-bright mx-auto max-w-xl rounded-3xl p-5 md:p-6 text-left">
+                        <div class="text-center mb-4">
+                            <div class="text-[12px] font-black tracking-[0.2em] text-blue-700">玩家登入</div>
+                            <div class="text-[12px] home-small-muted mt-1">登入後可繼續挑戰，玩家資料設定會在登入後開放。</div>
                         </div>
-
-                        <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] items-start">
-                            <div>
-                                <div class="mb-3 rounded-2xl border border-slate-800 bg-slate-900/55 p-4">
-                                    <div class="flex items-center justify-between gap-3 mb-3">
-                                        <div>
-                                            <div class="text-[11px] text-blue-300 font-bold tracking-[0.18em] uppercase">登入 / 繼續挑戰</div>
-                                            <div class="text-[12px] text-slate-400 mt-1">首頁只保留登入、註冊與 Guest 快速開始；玩家資料請在登入後到「玩家」中心修改。</div>
-                                        </div>
-                                        <div class="hidden md:block rounded-full px-3 py-1 text-[11px] border border-slate-700 text-slate-300">版本 V1.7.5</div>
-                                    </div>
-
-                                    <div id="username-form" class="readable-panel p-4 rounded-xl border shadow-inner">
-                                        <label class="block text-center text-[12px] text-blue-300 mb-2 uppercase tracking-wider font-bold">玩家登入</label>
-                                        <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從右側清單選擇" value="" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                                        <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                                        <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[12px] text-blue-100 font-bold">忘記挑戰密碼？查看提示</button>
-                                    </div>
-
-                                    <div id="register-panel" class="hidden mt-3 readable-panel p-4 rounded-xl border shadow-inner text-left">
-                                        <div class="text-center text-[12px] text-emerald-300 mb-2 tracking-wider font-black">註冊新挑戰者</div>
-                                        <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                                        <input type="password" id="reg-password" maxlength="16" placeholder="設定挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                                        <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                                        <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
-                                        <div class="mt-2 grid grid-cols-2 gap-2">
-                                            <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
-                                                <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
-                                            </select>
-                                            <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
-                                                <option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option>
-                                            </select>
-                                        </div>
-                                        <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
-                                        <div class="mt-3 grid grid-cols-2 gap-2">
-                                            <button id="btn-create-player" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button>
-                                            <button id="btn-cancel-register" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-xs font-bold">取消</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="grid gap-3 sm:grid-cols-2">
-                                    <button id="btn-start" class="sm:col-span-2 w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
-                                        登入並開始 / 繼續挑戰
-                                    </button>
-                                    <button id="btn-register-toggle" class="w-full px-6 py-3 bg-emerald-900/85 hover:bg-emerald-800 text-emerald-100 font-bold rounded-xl border border-emerald-700 transition-all duration-200 transform active:scale-95 text-sm">
-                                        註冊新挑戰者
-                                    </button>
-                                    <button id="btn-guest-start" class="w-full px-6 py-3 bg-amber-900/85 hover:bg-amber-800 text-amber-100 font-bold rounded-xl border border-amber-600 transition-all duration-200 transform active:scale-95 text-sm">
-                                        Guest 路人模式
-                                    </button>
-                                </div>
-                                <div class="guest-note mt-3 rounded-xl px-3 py-3 text-[12px] leading-relaxed">
-                                    Guest 模式不用註冊即可開打；本次分數僅供當場參考，不會保存玩家進度，也不會寫入本機龍虎榜。
-                                </div>
-                                <button id="btn-new-game" class="hidden mt-3 w-full px-8 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
-                                    重新開始新局
-                                </button>
-                                <div class="mt-4 flex flex-wrap items-center gap-2">
-                                    <button id="btn-guide" class="px-4 py-2 bg-slate-900/80 hover:bg-slate-800 border border-blue-900/70 rounded-lg text-[12px] text-blue-200 font-bold">新手村說明</button>
-                                    <button id="btn-copyright" class="px-4 py-2 bg-slate-900/80 hover:bg-slate-800 border border-yellow-900/70 rounded-lg text-[12px] text-yellow-200 font-bold">版權 / 產品介紹</button>
-                                    <button id="btn-immersive" class="px-4 py-2 bg-sky-900/80 hover:bg-sky-800 border border-sky-700 rounded-lg text-[12px] text-sky-100 font-bold">沉浸模式</button>
-                                    <div class="text-[11px] text-slate-500">可先閱讀說明，再開始登入、註冊或直接 Guest 體驗。</div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <div id="player-list-panel" class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 text-left">
-                                    <div class="flex items-center justify-between gap-3 mb-2">
-                                        <div>
-                                            <div class="text-[11px] text-cyan-300 tracking-[0.18em] font-bold uppercase">本機挑戰者清單</div>
-                                            <div class="text-[11px] text-slate-500 mt-1">可點選自動帶入名稱，再輸入挑戰密碼登入。</div>
-                                        </div>
-                                    </div>
-                                    <div id="player-list" class="space-y-1 text-[11px] text-slate-300 max-h-[220px] overflow-y-auto pr-1"></div>
-                                </div>
-
-                                <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 text-left">
-                                    <div class="text-[11px] text-yellow-400 mb-2 tracking-[0.18em] font-bold uppercase">本機龍虎榜前十名</div>
-                                    <div id="leaderboard-full" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-x-3 gap-y-1 text-[11px] text-slate-300"></div>
-                                </div>
-                            </div>
+                        <div id="level-brief" class="rounded-2xl p-3 mb-4 text-left text-[12px] bg-blue-50 border border-blue-200 text-slate-700 leading-relaxed">
+                            <div class="text-blue-700 font-black text-center mb-1">LEVEL 1｜新手啟動</div>
+                            <div>過關條件：本關獲得 800 分。</div>
+                            <div>過關獎勵：解鎖清除一行技能。</div>
                         </div>
-
-                        <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] text-slate-600 font-mono tracking-widest uppercase text-center md:text-left">
-                            © 2026 阿布拉.凱 工作室 監製｜目前版本 V1.7.5
+                        <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-400 bg-emerald-50 p-3 text-[12px] text-emerald-900 leading-relaxed"></div>
+                        <div id="username-form" class="space-y-3">
+                            <div><label class="home-field-label block text-[13px] mb-1">玩家帳號</label><input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從清單選擇" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
+                            <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" maxlength="16" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
+                            <div class="text-right"><button id="btn-password-hint" class="forgot-link text-[12px] bg-transparent border-0 p-0">忘記密碼？</button></div>
+                        </div>
+                        <div id="register-panel" class="hidden mt-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4 text-left">
+                            <div class="text-center text-[13px] text-emerald-800 mb-3 tracking-wider font-black">註冊新挑戰者</div>
+                            <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                            <input type="password" id="reg-password" maxlength="16" placeholder="設定挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                            <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                            <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option></select>
+                                <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option></select>
+                            </div>
+                            <div class="mt-2 text-[11px] text-emerald-900 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
+                            <div class="mt-3 grid grid-cols-2 gap-2"><button id="btn-create-player" class="home-mini-button px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button><button id="btn-cancel-register" class="home-mini-button px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white text-xs font-bold">取消</button></div>
+                        </div>
+                        <button id="btn-start" class="home-primary-btn mt-4 w-full px-6 py-3 rounded-xl font-black text-base uppercase tracking-widest">登入並開始 / 繼續挑戰</button>
+                        <div class="mt-3 grid grid-cols-2 gap-3">
+                            <div class="home-register-card rounded-2xl p-3 text-center"><div class="text-[12px] font-black mb-2">新玩家</div><button id="btn-register-toggle" class="home-mini-button w-full px-3 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-black rounded-lg">註冊</button></div>
+                            <div class="home-guest-card rounded-2xl p-3 text-center"><div class="text-[12px] font-black mb-2">無註冊遊俠</div><button id="btn-guest-start" class="home-mini-button w-full px-3 py-2 bg-orange-600 hover:bg-orange-500 text-white text-xs font-black rounded-lg">訪客</button></div>
+                        </div>
+                        <div class="mt-3 text-[12px] home-small-muted leading-relaxed text-center">訪客可立即開打，但不儲存進度，也不寫入本機龍虎榜。</div>
+                        <button id="btn-new-game" class="hidden mt-3 w-full px-8 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">結束回首頁 / 重新開始新局</button>
+                    </section>
+                    <section class="home-card-dark mt-4 mx-auto max-w-3xl rounded-2xl p-4">
+                        <div class="grid gap-3 md:grid-cols-2">
+                            <div id="player-list-panel" class="rounded-xl border border-cyan-800/70 bg-slate-950/80 p-3 text-left"><div class="text-[11px] text-cyan-200 tracking-[0.18em] font-black uppercase">本機挑戰者清單</div><div class="text-[11px] home-dark-muted mt-1 mb-2">點選名稱後，再輸入挑戰密碼登入。</div><div id="player-list" class="space-y-1 text-[11px] text-slate-100 max-h-[140px] overflow-y-auto pr-1"></div></div>
+                            <div class="rounded-xl border border-yellow-700/70 bg-slate-950/80 p-3 text-left"><div class="text-[11px] text-yellow-200 tracking-[0.18em] font-black uppercase">本機龍虎榜前十名</div><div id="leaderboard-full" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-slate-100"></div></div>
                         </div>
                     </section>
-                </div>
+                    <footer class="mt-4">
+                        <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright">龍虎榜揭榜</button></div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.7.6</div>
+                    </footer>
+                </main>
             </div>
         </div>
     </div>
-
 
     <!-- ================= 說明 / 版權彈窗 ================= -->
     <div id="info-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
@@ -807,10 +787,28 @@
         </div>
     </div>
 
+    
+    <!-- ================= 忘記密碼 / 龍虎榜浮動視窗 ================= -->
+    <div id="forgot-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-[75] flex items-center justify-center p-4">
+        <div class="w-full max-w-sm rounded-2xl border border-blue-500/70 bg-white text-slate-900 p-5 shadow-[0_0_35px_rgba(59,130,246,.35)]">
+            <h3 class="text-lg font-black text-blue-700 mb-2">忘記挑戰密碼？</h3>
+            <p class="text-sm leading-relaxed text-slate-700 mb-3">請先輸入或從清單選擇玩家帳號，再按下方按鈕查看該玩家設定的密碼提示。</p>
+            <div id="forgot-modal-body" class="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900 min-h-[56px]">尚未選擇玩家。</div>
+            <div class="mt-4 grid grid-cols-2 gap-2"><button id="btn-show-forgot-hint" class="px-3 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white font-black text-sm">查看提示</button><button id="btn-close-forgot" class="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm">關閉</button></div>
+        </div>
+    </div>
+    <div id="ranking-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-[74] flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl border border-yellow-400/70 bg-slate-950 text-slate-100 p-5 shadow-[0_0_35px_rgba(250,204,21,.25)]">
+            <div class="flex items-center justify-between gap-3 mb-3"><h3 class="text-lg font-black text-yellow-300">龍虎榜揭榜</h3><button id="btn-close-ranking" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold">關閉</button></div>
+            <div class="text-[12px] text-slate-300 mb-3">本榜為目前瀏覽器內的本機紀錄；更換瀏覽器、裝置或清除資料後不會自動同步。</div>
+            <div id="leaderboard-modal-list" class="space-y-1 text-sm"></div>
+        </div>
+    </div>
+
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.7.5";
-        const GAME_VERSION_NAME = "手機彈窗修正・沉浸模式提示版";
+        const GAME_VERSION = "V1.7.6";
+        const GAME_VERSION_NAME = "高對比首頁・流程重整・訪客暫停修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -1855,11 +1853,13 @@
         }
 
         function showOverlay() {
+            setTimeout(syncHomeToolbarState, 0);
             document.getElementById('overlay').style.opacity = "1";
             document.getElementById('overlay').classList.remove('pointer-events-none');
         }
 
         function hideOverlay() {
+            setTimeout(syncHomeToolbarState, 0);
             document.getElementById('overlay').style.opacity = "0";
             document.getElementById('overlay').classList.add('pointer-events-none');
         }
@@ -1915,6 +1915,7 @@
         }
 
         function togglePause() {
+            setTimeout(syncHomeToolbarState, 0);
             if (!gameStarted || isGameOver) return;
             isPaused = !isPaused;
             const pauseBtn = document.getElementById('btn-pause');
@@ -1922,9 +1923,9 @@
                 clearInterval(gravityTimer); stopBgm();
                 pauseBtn.innerText = "繼續"; pauseBtn.classList.replace('bg-blue-900/80', 'bg-green-700/80');
                 overlayMode = 'pause';
-                document.getElementById('overlay-title').innerText = "遊戲暫停";
+                document.getElementById('overlay-title').innerText = isGuestMode ? "訪客遊俠暫停中" : "遊戲暫停";
                 document.getElementById('overlay-subtitle').innerText = "阿布拉.凱 工作室 監製";
-                document.getElementById('overlay-desc').innerText = `目前 Level ${level}｜累計分數 ${score}｜本關 ${score - stageStartScore}/${LEVELS[level-1].target}`;
+                document.getElementById('overlay-desc').innerText = isGuestMode ? `訪客遊俠模式｜目前 Level ${level}｜累計分數 ${score}\n可按「登入並開始 / 繼續挑戰」繼續遊戲，或按「結束回首頁」離開本局。` : `目前 Level ${level}｜累計分數 ${score}｜本關 ${score - stageStartScore}/${LEVELS[level-1].target}\n可繼續遊戲、儲存進度，或結束回首頁。`;
                 document.getElementById('level-brief').innerHTML = getNextLevelBrief(level, false);
                 document.getElementById('btn-start').innerText = "點擊繼續";
                 showOverlay();
@@ -2136,6 +2137,40 @@
         document.getElementById('btn-create-player').addEventListener('click', createRegisteredPlayer);
         document.getElementById('btn-guest-start').addEventListener('click', startGuestMode);
 
+        
+        function syncHomeToolbarState() {
+            const loggedIn = !!currentPlayerId && !isGuestMode;
+            const playing = gameStarted && overlayMode === 'playing';
+            document.getElementById('home-btn-player')?.classList.toggle('btn-hidden-state', !loggedIn);
+            document.getElementById('home-btn-save')?.classList.toggle('btn-hidden-state', !(loggedIn && playing));
+            document.getElementById('home-btn-pause')?.classList.toggle('btn-hidden-state', !playing);
+        }
+        function openForgotModal() {
+            const body = document.getElementById('forgot-modal-body');
+            if (body) body.innerText = '請先確認玩家帳號，然後點「查看提示」。';
+            document.getElementById('forgot-modal')?.classList.remove('hidden');
+        }
+        function showForgotHintInModal() {
+            const name = validateString(document.getElementById('input-nickname')?.value || '');
+            const p = findPlayerByName(name);
+            const body = document.getElementById('forgot-modal-body');
+            if (!body) return;
+            if (!name) body.innerText = '請先輸入玩家帳號，或從本機挑戰者清單選擇玩家。';
+            else if (!p) body.innerText = `找不到「${name}」這位本機玩家。請確認是否使用同一個瀏覽器，或是否曾清除瀏覽器資料。`;
+            else body.innerText = p.hint ? `密碼提示：${p.hint}` : '這位玩家尚未設定密碼提示。';
+        }
+        function openRankingModal() {
+            renderLeaderboards();
+            const list = document.getElementById('leaderboard-modal-list');
+            const board = getLeaderboard();
+            if (list) {
+                list.innerHTML = !board.length
+                    ? '<div class="rounded-lg border border-slate-700 bg-slate-900 p-3 text-slate-300">目前尚無本機龍虎榜紀錄。</div>'
+                    : board.map((r, i) => `<div class="flex justify-between items-center rounded-lg border border-slate-700 bg-slate-900/85 px-3 py-2"><span>${i+1}. ${r.avatar || '🎮'} ${r.name || '玩家'}</span><b class="text-yellow-300">${r.score || 0}</b></div>`).join('');
+            }
+            document.getElementById('ranking-modal')?.classList.remove('hidden');
+        }
+
         function showInfoModal(type) {
             const modal = document.getElementById('info-modal');
             const title = document.getElementById('info-modal-title');
@@ -2144,7 +2179,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-blue-300">首頁區塊：</b>首頁已重新整理為清楚的三大區塊：左側主操作區負責登入 / 註冊 / Guest 開始；右側顯示本機挑戰者清單與龍虎榜；下方再提供新手村與產品介紹按鈕，減少畫面雜亂感。</p>
+                    <p><b class="text-blue-300">首頁區塊：</b>V1.7.6 已改為高對比首頁。置頂欄放音樂、音效、玩家資料設定、儲存、暫停與沉浸模式；版中放遊戲名稱、玩家帳號、挑戰密碼、忘記密碼、註冊與訪客入口；版尾放新手村、版權免責聲明與龍虎榜揭榜。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -2155,18 +2190,18 @@
                     <p><b class="text-sky-300">手機資訊窗：</b>V1.7.5 已修正手機彈窗高度與捲動，若新手村或產品介紹內容較長，可直接在視窗內上下滑動，底部會保留關閉按鈕。</p>
                     <p><b class="text-cyan-300">沉浸模式：</b>首頁提供「沉浸模式」按鈕；Android/桌機若支援會嘗試全螢幕。iPhone/iPad Safari 建議使用「分享 → 加入主畫面」後，從桌面圖示開啟遊戲，畫面會更完整。</p>
                     <p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p>
-                    <p><b class="text-cyan-300">玩家資料：</b>登入後可按右上角「玩家」修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。</p>
+                    <p><b class="text-cyan-300">玩家資料：</b>登入後可按置頂欄「玩家資料設定」修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。玩家資料設定不再設計成可隱藏欄位，避免使用者誤以為資料消失。</p><p><b class="text-orange-300">訪客暫停：</b>訪客遊玩時按暫停，會顯示專屬暫停畫面，提供「繼續遊戲」與「結束回首頁」，不會直接跳回登入首頁。</p>
                 `;
             } else {
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.7.5｜手機彈窗修正・沉浸模式提示版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.7.6｜高對比首頁・流程重整・訪客暫停修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.7.5 進一步修正手機資訊彈窗高度與捲動問題，加入沉浸模式按鈕與加入主畫面的使用提示，降低手機瀏覽器網址列與工具列造成的畫面卡住問題。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.7.6 進一步重新梳理首頁 UI/UX，改為高對比登入卡片、置頂功能列與版尾次要功能列；同時修正訪客暫停流程，避免訪客按暫停後直接跳回登入首頁。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -2183,7 +2218,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li>
                         </ul>
                     </div>
                     <p class="rounded-xl border border-yellow-700/50 bg-yellow-950/20 p-3 text-yellow-100"><b>特別感謝：</b><br>感謝 尤崇驊 提供遊戲體驗建議，一起協作設計本遊戲。</p>
@@ -2195,6 +2230,18 @@
         document.getElementById('btn-guide').addEventListener('click', () => showInfoModal('guide'));
         document.getElementById('btn-copyright').addEventListener('click', () => showInfoModal('copyright'));
         document.getElementById('btn-immersive')?.addEventListener('click', requestImmersiveMode);
+        document.getElementById('home-btn-music')?.addEventListener('click', () => document.getElementById('btn-music')?.click());
+        document.getElementById('home-btn-sfx')?.addEventListener('click', () => document.getElementById('btn-sfx')?.click());
+        document.getElementById('home-btn-player')?.addEventListener('click', openPlayerCenter);
+        document.getElementById('home-btn-save')?.addEventListener('click', saveGameState);
+        document.getElementById('home-btn-pause')?.addEventListener('click', togglePause);
+        document.getElementById('btn-ranking-open')?.addEventListener('click', openRankingModal);
+        document.getElementById('btn-close-ranking')?.addEventListener('click', () => document.getElementById('ranking-modal')?.classList.add('hidden'));
+        document.getElementById('ranking-modal')?.addEventListener('click', (e) => { if (e.target.id === 'ranking-modal') e.currentTarget.classList.add('hidden'); });
+        document.getElementById('btn-close-forgot')?.addEventListener('click', () => document.getElementById('forgot-modal')?.classList.add('hidden'));
+        document.getElementById('btn-show-forgot-hint')?.addEventListener('click', showForgotHintInModal);
+        document.getElementById('forgot-modal')?.addEventListener('click', (e) => { if (e.target.id === 'forgot-modal') e.currentTarget.classList.add('hidden'); });
+        syncHomeToolbarState();
         document.getElementById('btn-close-info').addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
         document.getElementById('btn-close-info-top')?.addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
         document.getElementById('info-modal').addEventListener('click', (e) => { if (e.target.id === 'info-modal') e.currentTarget.classList.add('hidden'); });

@@ -5,6 +5,5 @@
   "display": "standalone",
   "background_color": "#050608",
   "theme_color": "#050608",
-  "orientation": "any",
-  "description": "阿布拉.凱 工作室監製的方塊落下型十關挑戰遊戲。"
+  "orientation": "any"
 }
