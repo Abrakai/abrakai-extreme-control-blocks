@@ -2,14 +2,20 @@
 
 極限操控方塊｜阿布拉.凱 工作室 監製
 
-## V1.7.1 更新
+Current version: **V1.7.3｜滑鼠觸控全支援・平板適配・產品歷程版**
 
-- 首頁登入與註冊流程分離
-- 玩家資料修改移至登入後的「玩家」功能
-- 新增 Guest 路人模式，不註冊即可玩，但不儲存進度、不寫入本機龍虎榜
-- 提升暗黑介面下的表單對比與可讀性
-- 保留本機多人挑戰者帳號、挑戰密碼、密碼提示、代表人物、代表色、排行榜 playerId 同步
+## Play
 
-## 開啟方式
+Open `index.html` directly, or deploy this repository with GitHub Pages.
 
-直接用瀏覽器開啟 `index.html`。
+## V1.7.3 update notes
+
+- Added current version information to the browser title, footer, copyright screen, and product introduction.
+- Added product update history in the product/copyright screen.
+- Improved mouse/touch/pointer support for on-screen control buttons.
+- Added tablet operation guidance in the beginner guide.
+- Kept local-only storage reminders for players using different browsers or devices.
+
+## Local storage note
+
+This is a local single-device browser game. Player records are stored in the current browser. Changing browsers, clearing browser data, using private browsing, or changing devices may hide or remove previous local records.
