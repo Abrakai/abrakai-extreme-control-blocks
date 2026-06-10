@@ -334,6 +334,26 @@
             }
         }
 
+
+        /* V1.7.1：高對比輸入區與年長者友善可讀性 */
+        #overlay input, #overlay select, #info-modal input, #info-modal select {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border: 2px solid #93c5fd !important;
+            font-size: 16px !important;
+            line-height: 1.35 !important;
+        }
+        #overlay input::placeholder, #info-modal input::placeholder { color: #475569 !important; opacity: 1; }
+        .readable-panel {
+            background: rgba(15, 23, 42, .92) !important;
+            border-color: rgba(96, 165, 250, .45) !important;
+        }
+        .guest-note {
+            background: rgba(120, 53, 15, .35);
+            border: 1px solid rgba(251, 191, 36, .5);
+            color: #fde68a;
+        }
+
     </style>
 </head>
 
@@ -553,26 +573,45 @@
                 <div id="player-list" class="space-y-1 text-[11px] text-slate-300"></div>
             </div>
             
-            <div id="username-form" class="mb-4 bg-slate-900/80 p-4 rounded-xl border border-slate-700 shadow-inner">
-                <label class="block text-center text-[10px] text-blue-400 mb-2 uppercase tracking-wider font-bold">玩家名稱 / 挑戰密碼</label>
-                <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或暱稱" value="" class="w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼（建立或登入用）" class="mt-2 w-full bg-slate-950 border-2 border-slate-700 rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
-                <input type="text" id="input-hint" maxlength="18" placeholder="密碼提示（建立新玩家時使用，可留空）" class="mt-2 w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-center text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+            <div id="username-form" class="mb-4 readable-panel p-4 rounded-xl border shadow-inner">
+                <label class="block text-center text-[12px] text-blue-300 mb-2 uppercase tracking-wider font-bold">玩家登入</label>
+                <input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從清單選擇" value="" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <input type="password" id="input-password" maxlength="16" placeholder="挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none focus:border-blue-500 transition-colors shadow-inner">
+                <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[12px] text-blue-100 font-bold">忘記挑戰密碼？查看提示</button>
+                <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">登入後可到「玩家」中心修改名稱、代表人物、代表色、挑戰密碼與密碼提示。首頁只負責登入或註冊。</div>
+            </div>
+
+            <div id="register-panel" class="hidden mb-4 readable-panel p-4 rounded-xl border shadow-inner text-left">
+                <div class="text-center text-[12px] text-emerald-300 mb-2 tracking-wider font-black">註冊新挑戰者</div>
+                <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                <input type="password" id="reg-password" maxlength="16" placeholder="設定挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
+                <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <select id="select-avatar" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white focus:outline-none">
+                    <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
                         <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
                     </select>
-                    <select id="select-color" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white focus:outline-none">
+                    <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none">
                         <option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option>
                     </select>
                 </div>
-                <button id="btn-password-hint" class="mt-2 w-full px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-200 font-bold">忘記挑戰密碼？查看提示</button>
-                <div class="mt-2 text-[10px] text-slate-500 leading-relaxed">挑戰密碼只儲存在本機瀏覽器，用於多人輪流使用時區分玩家；請勿使用重要密碼。</div>
+                <div class="mt-2 text-[11px] text-slate-300 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <button id="btn-create-player" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button>
+                    <button id="btn-cancel-register" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-xs font-bold">取消</button>
+                </div>
             </div>
 
             <button id="btn-start" class="w-full px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-lg shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200 transform active:scale-95 text-base uppercase tracking-widest">
-                開始挑戰 (START)
+                登入並開始 / 繼續挑戰
             </button>
+            <button id="btn-register-toggle" class="mt-2 w-full px-8 py-2.5 bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 font-bold rounded-lg border border-emerald-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
+                註冊新挑戰者
+            </button>
+            <button id="btn-guest-start" class="mt-2 w-full px-8 py-2.5 bg-amber-900/80 hover:bg-amber-800 text-amber-100 font-bold rounded-lg border border-amber-600 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
+                Guest 路人模式｜不記錄分數直接玩
+            </button>
+            <div class="guest-note mt-2 rounded-lg px-3 py-2 text-[11px] leading-relaxed">Guest 模式不用註冊即可開打；本次分數只供當場參考，不會保存玩家進度，也不會寫入本機龍虎榜。</div>
             <button id="btn-new-game" class="hidden mt-2 w-full px-8 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-700 transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">
                 重新開始新局
             </button>
@@ -633,6 +672,7 @@
         let selectedPlayerId = localStorage.getItem(STORAGE_KEY_CURRENT_PLAYER) || null;
         let currentPlayerId = null;
         let currentPlayer = null;
+        let isGuestMode = false;
 
         let localLeaderboard = loadLocalLeaderboard();
 
@@ -683,6 +723,7 @@
         }
 
         function setCurrentPlayer(player) {
+            isGuestMode = false;
             currentPlayer = player || null;
             currentPlayerId = player ? player.id : null;
             selectedPlayerId = currentPlayerId;
@@ -720,13 +761,7 @@
                     if (!p) return;
                     selectedPlayerId = p.id;
                     const nameInput = document.getElementById('input-nickname');
-                    const hintInput = document.getElementById('input-hint');
-                    const avatarSelect = document.getElementById('select-avatar');
-                    const colorSelect = document.getElementById('select-color');
                     if (nameInput) nameInput.value = p.name;
-                    if (hintInput) hintInput.value = p.hint || '';
-                    if (avatarSelect) avatarSelect.value = p.avatar || '🎮';
-                    if (colorSelect) colorSelect.value = p.color || 'cyan';
                     savedStateCache = getSavedState();
                     updateSaveStatus();
                     renderPlayerList();
@@ -737,39 +772,47 @@
         }
 
         function ensurePlayerLogin() {
+            isGuestMode = false;
             const nameInput = document.getElementById('input-nickname');
             const pwInput = document.getElementById('input-password');
-            const hintInput = document.getElementById('input-hint');
-            const avatarSelect = document.getElementById('select-avatar');
-            const colorSelect = document.getElementById('select-color');
             const name = validateString((nameInput?.value || '').trim(), '');
             const password = String(pwInput?.value || '');
-            if (!name) { showToast('請先輸入玩家名稱或暱稱'); nameInput?.focus(); return false; }
-            if (!password) { showToast('請輸入挑戰密碼；新玩家也會用它建立帳號'); pwInput?.focus(); return false; }
+            if (!name) { showToast('請先輸入玩家名稱，或改用 Guest 路人模式'); nameInput?.focus(); return false; }
+            if (!password) { showToast('請輸入挑戰密碼'); pwInput?.focus(); return false; }
             let player = selectedPlayerId ? findPlayerById(selectedPlayerId) : findPlayerByName(name);
-            if (!player && findPlayerByName(name)) player = findPlayerByName(name);
-            if (player) {
-                if (player.passwordHash && player.passwordHash !== simpleHash(password)) {
-                    showToast('挑戰密碼不正確，可先查看密碼提示');
-                    return false;
-                }
-                setCurrentPlayer(player);
-                const newName = validateString(name, player.name);
-                if (newName && newName !== player.name) updatePlayerProfile({ name: newName }, false);
-                return true;
+            if (!player) {
+                showToast('找不到這位挑戰者，請先按「註冊新挑戰者」建立資料');
+                return false;
             }
-            player = {
-                id: createId('player'),
-                name,
-                passwordHash: simpleHash(password),
-                hint: validateString(hintInput?.value || '', ''),
-                avatar: avatarSelect?.value || '🎮',
-                color: colorSelect?.value || 'cyan',
+            if (player.passwordHash && player.passwordHash !== simpleHash(password)) {
+                showToast('挑戰密碼不正確，可先查看密碼提示');
+                return false;
+            }
+            setCurrentPlayer(player);
+            return true;
+        }
+
+        function createRegisteredPlayer() {
+            const name = validateString((document.getElementById('reg-name')?.value || '').trim(), '');
+            const password = String(document.getElementById('reg-password')?.value || '');
+            const password2 = String(document.getElementById('reg-password2')?.value || '');
+            const hint = validateString(document.getElementById('reg-hint')?.value || '', '');
+            const avatar = document.getElementById('reg-avatar')?.value || '🎮';
+            const color = document.getElementById('reg-color')?.value || 'cyan';
+            if (!name) { showToast('請輸入玩家名稱或暱稱'); return; }
+            if (findPlayerByName(name)) { showToast('此名稱已存在，請改名或直接登入'); return; }
+            if (!password) { showToast('請設定挑戰密碼'); return; }
+            if (password !== password2) { showToast('兩次輸入的挑戰密碼不一致'); return; }
+            const player = {
+                id: createId('player'), name, passwordHash: simpleHash(password), hint, avatar, color,
                 createdAt: Date.now(), updatedAt: Date.now(), bestScore: 0, bestLevel: 1, clearCount: 0
             };
-            players.push(player); savePlayers(); setCurrentPlayer(player); renderPlayerList();
-            showToast(`已建立挑戰者：${player.avatar} ${player.name}`);
-            return true;
+            players.push(player); savePlayers(); setCurrentPlayer(player);
+            const nameInput = document.getElementById('input-nickname'); if (nameInput) nameInput.value = player.name;
+            const pwInput = document.getElementById('input-password'); if (pwInput) pwInput.value = password;
+            document.getElementById('register-panel')?.classList.add('hidden');
+            showToast(`已建立並登入：${player.avatar} ${player.name}`);
+            renderPlayerList(); updateSaveStatus();
         }
 
         function updatePlayerProfile(updates = {}, show = true) {
@@ -801,13 +844,24 @@
         }
 
         function openPlayerSettings() {
+            if (isGuestMode) { showToast('Guest 路人模式沒有玩家資料可修改'); return; }
             if (!currentPlayer) { showToast('請先登入挑戰者帳號'); return; }
-            const newName = prompt('修改玩家顯示名稱：', currentPlayer.name);
+            const newName = prompt('玩家資料中心｜修改顯示名稱：', currentPlayer.name);
             if (newName === null) return;
-            const avatar = prompt('修改代表人物 Emoji：', currentPlayer.avatar || '🎮') || currentPlayer.avatar;
-            const color = prompt('修改代表色：cyan / blue / emerald / yellow / orange / rose / purple / slate', currentPlayer.color || 'cyan') || currentPlayer.color;
-            const hint = prompt('修改密碼提示：', currentPlayer.hint || '') || currentPlayer.hint || '';
-            updatePlayerProfile({ name: validateString(newName, currentPlayer.name), avatar: validateString(avatar, currentPlayer.avatar || '🎮').slice(0, 2), color: validateString(color, currentPlayer.color || 'cyan'), hint: validateString(hint, '') });
+            const avatar = prompt('玩家資料中心｜修改代表人物 Emoji：', currentPlayer.avatar || '🎮') || currentPlayer.avatar;
+            const color = prompt('玩家資料中心｜修改代表色：cyan / blue / emerald / yellow / orange / rose / purple / slate', currentPlayer.color || 'cyan') || currentPlayer.color;
+            const hint = prompt('玩家資料中心｜修改密碼提示：', currentPlayer.hint || '') || currentPlayer.hint || '';
+            const changePw = confirm('是否要一併修改挑戰密碼？');
+            const updates = { name: validateString(newName, currentPlayer.name), avatar: validateString(avatar, currentPlayer.avatar || '🎮').slice(0, 2), color: validateString(color, currentPlayer.color || 'cyan'), hint: validateString(hint, '') };
+            if (changePw) {
+                const pw1 = prompt('請輸入新的挑戰密碼：', '');
+                if (pw1) {
+                    const pw2 = prompt('請再次輸入新的挑戰密碼：', '');
+                    if (pw1 !== pw2) { showToast('兩次挑戰密碼不一致，已取消密碼修改'); }
+                    else { updates.passwordHash = simpleHash(pw1); }
+                }
+            }
+            updatePlayerProfile(updates);
             saveGameState(true);
         }
 
@@ -879,6 +933,9 @@
         }
 
         function submitScoreToCloud(nickname, finalScore) {
+            if (isGuestMode) {
+                return { cleanName: 'Guest 路人', cleanScore: Math.max(0, Math.floor(finalScore)), rank: null, isRanked: false, isBest: false, improved: false, guest: true };
+            }
             // V1.7：每次結算都以 playerId 送入本機龍虎榜，名稱、代表色、代表人物會同步更新。
             const player = currentPlayerId ? findPlayerById(currentPlayerId) : null;
             const cleanName = validateString(player?.name || nickname, "玩家");
@@ -953,6 +1010,7 @@
         }
 
         function getSavedState() {
+            if (isGuestMode) return null;
             try {
                 const raw = localStorage.getItem(getPlayerStateKey());
                 if (!raw) return null;
@@ -972,6 +1030,7 @@
         }
 
         function saveGameState(force = false) {
+            if (isGuestMode) return;
             if (!force && (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece)) return;
             if (!activePiece || !nextPiece) return;
             const state = {
@@ -989,6 +1048,7 @@
         }
 
         function manualSaveGameState() {
+            if (isGuestMode) { showToast('Guest 路人模式不儲存進度，請註冊後再保存'); return; }
             if (!gameStarted || isGameOver) { showToast('目前沒有進行中的遊戲可儲存'); return; }
             if (pendingLevelClear) { showToast('過關畫面中，按下一關後會自動儲存'); return; }
             saveGameState(true);
@@ -1625,7 +1685,7 @@
             playGameOverSound(); clearSavedState();
             const rankInfo = submitScoreToCloud(nickname, score);
             document.getElementById('overlay-title').innerHTML = rankInfo.isRanked ? "擠進龍虎榜！<br><span class='text-xl'>阿布拉.凱 工作室 監製</span>" : "GAME OVER<br><span class='text-xl'>阿布拉.凱 工作室 監製</span>";
-            const rankMsg = rankInfo.isRanked ? `🏆 恭喜登入本機龍虎榜第 ${rankInfo.rank} 名！` : `本次未進入本機前十名，差一點就能留名！`;
+            const rankMsg = rankInfo.guest ? `Guest 路人模式：本次分數僅供當場參考，不會寫入本機龍虎榜。` : (rankInfo.isRanked ? `🏆 恭喜登入本機龍虎榜第 ${rankInfo.rank} 名！` : `本次未進入本機前十名，差一點就能留名！`);
             const bestMsg = rankInfo.isBest ? `\n🎉 同時刷新你的本機最高分！` : ``;
             document.getElementById('overlay-desc').innerText = `GAME OVER\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines} (Level ${level})\n${rankMsg}${bestMsg}`;
             document.getElementById('level-brief').innerHTML = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 本機龍虎榜更新</div><div>${nickname}｜${score} 分｜第 ${rankInfo.rank} 名</div><div>排行榜已儲存在這台裝置的瀏覽器中，下次開啟仍會保留。</div>` : `<div class="text-blue-300 font-bold text-center mb-1">再挑戰一次</div><div>目前分數：${score} 分。</div><div>目標：擠進本機前十名，讓名字留在排行榜上！</div>`;
@@ -1634,12 +1694,12 @@
         }
 
         function initGame(forceNew = false) {
-            if (!ensurePlayerLogin()) return;
+            if (!isGuestMode && !ensurePlayerLogin()) return;
             savedStateCache = getSavedState();
-            if (!forceNew && savedStateCache && overlayMode === 'start') return restoreGameState(savedStateCache);
-            nickname = currentPlayer?.name || nickname;
-            localStorage.setItem(STORAGE_KEY_NAME, nickname);
-            clearSavedState();
+            if (!isGuestMode && !forceNew && savedStateCache && overlayMode === 'start') return restoreGameState(savedStateCache);
+            nickname = isGuestMode ? 'Guest 路人' : (currentPlayer?.name || nickname);
+            if (!isGuestMode) localStorage.setItem(STORAGE_KEY_NAME, nickname);
+            if (!isGuestMode) clearSavedState();
             grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
             score = 0; lines = 0; level = 1; stageStartScore = 0; stageStartLines = 0;
             stageResults = []; skillCharges = { row: 0, col: 0, cross: 0 };
@@ -1843,6 +1903,15 @@
         bindButton('ctrl-hold', hold);           // X 鍵
         bindButton('btn-skill', useBestSkill);    // 一鍵技能
 
+
+        function startGuestMode() {
+            isGuestMode = true;
+            currentPlayer = null; currentPlayerId = null; selectedPlayerId = null;
+            nickname = 'Guest 路人';
+            showToast('Guest 路人模式：不儲存進度，也不寫入龍虎榜');
+            initGame(true);
+        }
+
         document.getElementById('btn-start').addEventListener('click', () => {
             if (overlayMode === 'levelClear') return resumeNextLevel();
             if (overlayMode === 'pause') return togglePause();
@@ -1856,6 +1925,10 @@
         document.getElementById('btn-save').addEventListener('click', manualSaveGameState);
         document.getElementById('btn-player-settings').addEventListener('click', openPlayerSettings);
         document.getElementById('btn-password-hint').addEventListener('click', showPasswordHint);
+        document.getElementById('btn-register-toggle').addEventListener('click', () => document.getElementById('register-panel')?.classList.toggle('hidden'));
+        document.getElementById('btn-cancel-register').addEventListener('click', () => document.getElementById('register-panel')?.classList.add('hidden'));
+        document.getElementById('btn-create-player').addEventListener('click', createRegisteredPlayer);
+        document.getElementById('btn-guest-start').addEventListener('click', startGuestMode);
 
         function showInfoModal(type) {
             const modal = document.getElementById('info-modal');
@@ -1869,7 +1942,7 @@
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。</p>
                     <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p>
-                    <p><b class="text-emerald-300">本機儲存：</b>本機挑戰者帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
+                    <p><b class="text-emerald-300">本機儲存：</b>註冊挑戰者後，帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p><p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p><p><b class="text-cyan-300">玩家資料：</b>登入後可按右上角「玩家」修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。</p>
                 `;
             } else {
                 title.innerText = '版權宣告';
