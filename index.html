@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.8.9 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.9.0 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -1111,7 +1111,7 @@
                             <div>過關條件：本關獲得 800 分。</div>
                             <div>過關獎勵：解鎖清除一行技能。</div>
                         </div>
-                        <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-400 bg-emerald-50 p-3 text-[12px] text-emerald-900 leading-relaxed"></div><div id="title-system-panel" class="mb-4 rounded-2xl p-3 text-[12px] leading-relaxed"><div class="text-yellow-300 font-black text-center mb-1">玩家稱號會隨關卡升級</div><div class="text-slate-200 text-center">註冊時只選代表人物與代表色；身分稱號由系統依最高關卡自動授予。</div><div class="mt-2 flex flex-wrap gap-1 justify-center"><span class="player-title-badge">🙂 一般民眾</span><span class="player-title-badge">🛡️ 見習騎士</span><span class="player-title-badge">👑 皇家守護者</span><span class="player-title-badge">🔥 賽亞戰士</span></div></div>
+                        <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-400 bg-emerald-50 p-3 text-[12px] text-emerald-900 leading-relaxed"></div><div id="title-system-panel" class="mb-4 rounded-2xl p-3 text-[12px] leading-relaxed"><div class="text-yellow-300 font-black text-center mb-1">玩家稱號會隨關卡升級</div><div class="text-slate-200 text-center">註冊時只選代表圖案與代表色；身分稱號由系統依最高關卡自動授予。</div><div class="mt-2 flex flex-wrap gap-1 justify-center"><span class="player-title-badge">🙂 一般民眾</span><span class="player-title-badge">🛡️ 見習騎士</span><span class="player-title-badge">👑 皇家守護者</span><span class="player-title-badge">🔥 賽亞戰士</span></div></div>
                         <div id="username-form" class="space-y-3">
                             <div><label class="home-field-label block text-[13px] mb-1">玩家帳號</label><input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從清單選擇" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
                             <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" maxlength="16" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
@@ -1124,10 +1124,10 @@
                             <input type="password" id="reg-password2" maxlength="16" placeholder="再次輸入挑戰密碼" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
                             <input type="text" id="reg-hint" maxlength="18" placeholder="密碼提示，例如：生日四碼、最喜歡的數字" class="mt-2 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
                             <div class="mt-2 grid grid-cols-2 gap-2">
-                                <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option></select>
+                                <select id="reg-avatar" class="rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="🚀">🚀 火箭圖案</option><option value="🛡">🛡 盾牌圖案</option><option value="🔥">🔥 火焰圖案</option><option value="⚡">⚡ 閃電圖案</option><option value="🎮">🎮 手把圖案</option><option value="👑">👑 皇冠圖案</option><option value="🧠">🧠 腦力圖案</option><option value="🐉">🐉 龍形圖案</option></select>
                                 <select id="reg-color" class="rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option></select>
                             </div>
-                            <div class="mt-2 text-[11px] text-emerald-900 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
+                            <div class="mt-2 text-[11px] text-emerald-900 leading-relaxed">代表圖案只是外觀識別，不是玩家身分或等級；身分稱號會依最高關卡由系統自動授予。</div><div class="mt-1 text-[11px] text-emerald-900 leading-relaxed">挑戰密碼只存在本機瀏覽器，不是雲端會員密碼，請勿使用重要密碼。</div>
                             <div class="mt-3 grid grid-cols-2 gap-2"><button id="btn-create-player" class="home-mini-button px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white text-xs font-black">建立並登入</button><button id="btn-cancel-register" class="home-mini-button px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white text-xs font-bold">取消</button></div>
                         </div>
                         <button id="btn-start" class="home-primary-btn mt-4 w-full px-6 py-3 rounded-xl font-black text-base uppercase tracking-widest">登入並開始 / 繼續挑戰</button>
@@ -1146,7 +1146,7 @@
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.8.9</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.9.0</div>
                     </footer>
                 </main>
             </div>
@@ -1177,7 +1177,7 @@
                 <h3 class="text-lg font-black text-purple-700">玩家資料中心</h3>
                 <button id="btn-close-profile" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold">關閉</button>
             </div>
-            <p class="text-sm text-slate-700 leading-relaxed mb-3">可修改名稱、代表人物、代表色、挑戰密碼與密碼提示。修改後會同步更新本機龍虎榜中同一玩家的紀錄。</p><div id="profile-title-display" class="mb-4 rounded-xl border border-yellow-300 bg-yellow-50 text-yellow-900 px-3 py-2 text-sm font-black">目前稱號：一般民眾</div>
+            <p class="text-sm text-slate-700 leading-relaxed mb-3">可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示。修改後會同步更新本機龍虎榜中同一玩家的紀錄。</p><div id="profile-title-display" class="mb-4 rounded-xl border border-yellow-300 bg-yellow-50 text-yellow-900 px-3 py-2 text-sm font-black">目前稱號：一般民眾</div>
             <div class="grid gap-3">
                 <div>
                     <label>顯示名稱 / 暱稱</label>
@@ -1185,9 +1185,9 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label>代表人物</label>
+                        <label>代表圖案</label>
                         <select id="profile-avatar" class="mt-1 w-full rounded-lg px-2 py-2 font-bold">
-                            <option value="🚀">🚀 開拓者</option><option value="🛡">🛡 守護者</option><option value="🔥">🔥 爆破手</option><option value="⚡">⚡ 疾風者</option><option value="🎮">🎮 操控者</option><option value="👑">👑 方塊王</option><option value="🧠">🧠 策略家</option><option value="🐉">🐉 龍虎高手</option>
+                            <option value="🚀">🚀 火箭圖案</option><option value="🛡">🛡 盾牌圖案</option><option value="🔥">🔥 火焰圖案</option><option value="⚡">⚡ 閃電圖案</option><option value="🎮">🎮 手把圖案</option><option value="👑">👑 皇冠圖案</option><option value="🧠">🧠 腦力圖案</option><option value="🐉">🐉 龍形圖案</option>
                         </select>
                     </div>
                     <div>
@@ -1223,6 +1223,28 @@
 
     
     
+    
+    <!-- ================= 稱號階級說明 V1.9.0 ================= -->
+    <div id="title-ladder-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl border border-yellow-400/70 bg-slate-950 text-slate-100 p-5 shadow-[0_0_38px_rgba(250,204,21,.25)]">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h3 class="text-lg font-black text-yellow-300">稱號階級說明</h3>
+                <button id="btn-close-title-ladder" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold">關閉</button>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed mb-3">代表圖案只是外觀；稱號才是玩家真正的成長身分，依最高關卡自動授予。</p>
+            <div class="space-y-2 text-sm">
+                <div class="rounded-xl border border-slate-700 bg-slate-900/75 px-3 py-2">🙂 <b>一般民眾</b>｜Level 1～3</div>
+                <div class="rounded-xl border border-slate-700 bg-slate-900/75 px-3 py-2">🛡️ <b>見習騎士</b>｜Level 4～6</div>
+                <div class="rounded-xl border border-slate-700 bg-slate-900/75 px-3 py-2">⚔️ <b>方塊騎士</b>｜Level 7～10</div>
+                <div class="rounded-xl border border-slate-700 bg-slate-900/75 px-3 py-2">🏇 <b>大騎士</b>｜Level 11～15</div>
+                <div class="rounded-xl border border-yellow-700/70 bg-yellow-950/30 px-3 py-2">👑 <b>皇家守護者</b>｜Level 16～20</div>
+                <div class="rounded-xl border border-blue-700/70 bg-blue-950/30 px-3 py-2">🦸 <b>超人挑戰者</b>｜Level 21～30</div>
+                <div class="rounded-xl border border-orange-700/70 bg-orange-950/30 px-3 py-2">🔥 <b>賽亞戰士</b>｜Level 31～50</div>
+                <div class="rounded-xl border border-purple-700/70 bg-purple-950/30 px-3 py-2">🌌 <b>宇宙方塊王</b>｜Level 51 以上</div>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= 稱號升級 / 獎牌慶典 V1.8.9 ================= -->
     <div id="celebration-modal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm z-[98] flex items-center justify-center p-4 overflow-hidden">
         <div id="fireworks-layer" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
@@ -1287,8 +1309,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.8.9";
-        const GAME_VERSION_NAME = "稱號升級慶典・獎牌煙火版";
+        const GAME_VERSION = "V1.9.0";
+        const GAME_VERSION_NAME = "註冊角色圖案釐清・稱號階級說明版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -1853,7 +1875,7 @@
             if (isGuestMode) {
                 return { cleanName: 'Guest 路人', cleanScore: Math.max(0, Math.floor(finalScore)), rank: null, isRanked: false, isBest: false, improved: false, guest: true };
             }
-            // V1.7：每次結算都以 playerId 送入本機龍虎榜，名稱、代表色、代表人物會同步更新。
+            // V1.7：每次結算都以 playerId 送入本機龍虎榜，名稱、代表色、代表圖案會同步更新。
             const player = currentPlayerId ? findPlayerById(currentPlayerId) : null;
             const cleanName = validateString(player?.name || nickname, "玩家");
             const cleanScore = Math.max(0, Math.floor(finalScore));
@@ -3022,7 +3044,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-yellow-300">稱號慶典：</b>V1.8.9 加入稱號升級慶典。當玩家跨越稱號階段時，會跳出升級畫面，搭配煙火動畫、掌聲與煙火音效。</p><p><b class="text-cyan-300">獎牌里程碑：</b>突破 Level 5、10、20、30 等里程碑時，會頒發銅牌、銀牌、金牌或王者盃，讓玩家有更明確的成就目標。</p><p><b class="text-emerald-300">特別感謝：</b>版權與產品介紹頁已將「感謝 尤崇驊 提供遊戲體驗建議」固定放在最上方，避免被越來越長的版本歷程推到最後。</p>
+                    <p><b class="text-yellow-300">代表圖案 vs 身分稱號：</b>V1.9.0 已把註冊時的選項改成純「代表圖案」，例如火箭、盾牌、火焰、手把、皇冠、龍形圖案。這些只代表外觀，不代表玩家身分。</p><p><b class="text-cyan-300">真正身分：</b>玩家身分稱號由系統依最高關卡自動授予，例如一般民眾、見習騎士、方塊騎士、大騎士、皇家守護者、超人挑戰者、賽亞戰士與宇宙方塊王。</p><p><b class="text-emerald-300">升級目標：</b>首頁新增完整稱號階級說明，讓玩家知道下一個目標在哪裡。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -3033,19 +3055,19 @@
                     <p><b class="text-sky-300">手機資訊窗：</b>V1.7.5 已修正手機彈窗高度與捲動，若新手村或產品介紹內容較長，可直接在視窗內上下滑動，底部會保留關閉按鈕。</p>
                     <p><b class="text-cyan-300">沉浸模式：</b>首頁提供「沉浸模式」按鈕；Android/桌機若支援會嘗試全螢幕。iPhone/iPad Safari 建議使用「分享 → 加入主畫面」後，從桌面圖示開啟遊戲，畫面會更完整。</p>
                     <p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p>
-                    <p><b class="text-cyan-300">玩家資料：</b>登入後可按置頂欄「玩家資料設定」修改顯示名稱、代表人物、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。玩家資料設定不再設計成可隱藏欄位，避免使用者誤以為資料消失。</p><p><b class="text-orange-300">訪客暫停：</b>訪客遊玩時按暫停，會顯示專屬暫停畫面，提供「繼續遊戲」與「結束回首頁」，不會直接跳回登入首頁。</p>
+                    <p><b class="text-cyan-300">玩家資料：</b>登入後可按置頂欄「玩家資料設定」修改顯示名稱、代表圖案、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。玩家資料設定不再設計成可隱藏欄位，避免使用者誤以為資料消失。</p><p><b class="text-orange-300">訪客暫停：</b>訪客遊玩時按暫停，會顯示專屬暫停畫面，提供「繼續遊戲」與「結束回首頁」，不會直接跳回登入首頁。</p>
                 `;
             } else {
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議，一起協作設計本遊戲。這份感謝固定放在版權與產品介紹最前面，不會因版本歷程增加而被推到最後。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.8.9｜稱號升級慶典・獎牌煙火版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.9.0｜註冊角色圖案釐清・稱號階級說明版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.8.9 加入稱號升級慶典、獎牌頒發、煙火與掌聲音效，讓玩家在突破稱號或里程碑時獲得更明確的榮耀回饋。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.9.0 釐清註冊時的「代表圖案」與遊戲成長「身分稱號」差異。代表圖案只是外觀識別，身分稱號則依最高關卡自動授予，並新增完整稱號階級說明。</p>
                     </div>
                     <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
                         <p class="font-bold text-cyan-200 mb-2">產品更新歷程</p>
@@ -3057,12 +3079,12 @@
                             <li><b>V1.4</b>：導入動態比例版面，依螢幕方向與可視高度調整棋盤與控制區。</li>
                             <li><b>V1.5</b>：加入本機存檔、新手村說明、版權宣告與玩家名稱記憶。</li>
                             <li><b>V1.6</b>：強化本機龍虎榜、手動儲存與入榜祝賀結算。</li>
-                            <li><b>V1.7</b>：加入本機多人挑戰者帳號、挑戰密碼、代表人物與代表色。</li>
+                            <li><b>V1.7</b>：加入本機多人挑戰者帳號、挑戰密碼、代表圖案與代表色。</li>
                             <li><b>V1.7.1</b>：重整登入 / 註冊流程，加入 Guest 路人模式與高對比輸入介面。</li>
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表人物、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表人物與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li>
                         </ul>
                     </div>
                     <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。本遊戲目前為單機本機儲存，跨瀏覽器或跨裝置資料不會自動同步。</p>
