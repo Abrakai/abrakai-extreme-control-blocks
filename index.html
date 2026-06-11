@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.9.7 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.9.8 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -1264,6 +1264,47 @@
             line-height: 1.55;
         }
 
+    
+        /* V1.9.8：玩家帳號輸入引導與清除切換 */
+        .login-helper-note {
+            border: 1px solid rgba(56,189,248,.45);
+            background: rgba(8,47,73,.18);
+            color: #075985;
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+        .login-selected-hint {
+            border: 1px solid rgba(34,197,94,.35);
+            background: rgba(220,252,231,.75);
+            color: #14532d;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 900;
+            text-align: center;
+        }
+        .login-selected-hint.free {
+            border-color: rgba(56,189,248,.35);
+            background: rgba(224,242,254,.8);
+            color: #075985;
+        }
+        .clear-login-btn {
+            border: 1px solid rgba(59,130,246,.45);
+            background: rgba(239,246,255,.95);
+            color: #1d4ed8;
+            border-radius: 999px;
+            padding: 3px 9px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+        .player-card small {
+            display: block;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+
     </style>
 </head>
 
@@ -1490,8 +1531,17 @@
                         </div>
                         <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-400 bg-emerald-50 p-3 text-[12px] text-emerald-900 leading-relaxed"></div><div id="title-system-panel" class="mb-4 rounded-2xl p-3 text-[12px] leading-relaxed"><div class="text-yellow-300 font-black text-center mb-1">玩家稱號會隨關卡升級</div><div class="text-slate-200 text-center">註冊時只選代表圖案與代表色；身分稱號由系統依最高關卡自動授予。</div><div class="mt-2 flex flex-wrap gap-1 justify-center"><span class="player-title-badge">🙂 一般民眾</span><span class="player-title-badge">🛡️ 見習騎士</span><span class="player-title-badge">👑 皇家守護者</span><span class="player-title-badge">🔥 賽亞戰士</span></div></div>
                         <div id="username-form" class="space-y-3">
-                            <div><label class="home-field-label block text-[13px] mb-1">玩家帳號</label><input type="text" id="input-nickname" maxlength="12" placeholder="請輸入玩家名稱或從清單選擇" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
-                            <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" maxlength="16" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <label class="home-field-label block text-[13px]">玩家帳號</label>
+                                    <button id="btn-clear-login-name" type="button" class="clear-login-btn">清除 / 改輸入</button>
+                                </div>
+                                <input type="text" id="input-nickname" list="player-suggestions" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="可自行輸入，或點下方清單帶入" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors">
+                                <datalist id="player-suggestions"></datalist>
+                                <div id="login-selected-hint" class="login-selected-hint free mt-2">可自行輸入玩家帳號；若已有本機帳號，也可點下方清單快速帶入。</div>
+                                <div class="login-helper-note mt-2">輸入框不是鎖定欄位：您可以直接刪除重打其他玩家帳號。點選下方清單只是「快速帶入」，不是強迫只能選清單。</div>
+                            </div>
+                            <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" maxlength="16" autocomplete="current-password" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
                             <div class="text-right"><button id="btn-password-hint" class="forgot-link text-[12px] bg-transparent border-0 p-0">忘記密碼？</button></div>
                         </div>
                         <div id="register-panel" class="hidden mt-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4 text-left">
@@ -1517,13 +1567,13 @@
                     </section>
                     <section class="home-card-dark mt-4 mx-auto max-w-3xl rounded-2xl p-4">
                         <div class="grid gap-3 md:grid-cols-2">
-                            <div id="player-list-panel" class="rounded-xl border border-cyan-800/70 bg-slate-950/80 p-3 text-left"><div class="text-[11px] text-cyan-200 tracking-[0.18em] font-black uppercase">本機挑戰者清單</div><div class="text-[11px] home-dark-muted mt-1 mb-2">點選名稱後，再輸入挑戰密碼登入。</div><div id="player-list" class="space-y-1 text-[11px] text-slate-100 max-h-[140px] overflow-y-auto pr-1"></div></div>
+                            <div id="player-list-panel" class="rounded-xl border border-cyan-800/70 bg-slate-950/80 p-3 text-left"><div class="text-[11px] text-cyan-200 tracking-[0.18em] font-black uppercase">本機挑戰者清單</div><div class="text-[11px] home-dark-muted mt-1 mb-2">可直接輸入帳號登入；也可點選清單快速帶入，再輸入挑戰密碼。</div><div id="player-list" class="space-y-1 text-[11px] text-slate-100 max-h-[140px] overflow-y-auto pr-1"></div></div>
                             <div class="rounded-xl border border-yellow-700/70 bg-slate-950/80 p-3 text-left"><div class="text-[11px] text-yellow-200 tracking-[0.18em] font-black uppercase">本機龍虎榜前十名</div><div id="leaderboard-full" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-slate-100"></div></div>
                         </div>
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.9.7</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.9.8</div>
                     </footer>
                 </main>
             </div>
@@ -1686,8 +1736,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.9.7";
-        const GAME_VERSION_NAME = "過關節點暫存・預設榜稱號修正版";
+        const GAME_VERSION = "V1.9.8";
+        const GAME_VERSION_NAME = "帳號輸入引導・產品介紹修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2000,18 +2050,76 @@
             return map[color] || 'text-cyan-300';
         }
 
+
+        function renderPlayerDatalist() {
+            const list = document.getElementById('player-suggestions');
+            if (!list) return;
+            list.innerHTML = players
+                .map(p => `<option value="${String(p.name || '').replace(/"/g, '&quot;')}">${p.avatar || '🎮'} ${p.name || '玩家'}</option>`)
+                .join('');
+        }
+
+        function renderLoginSelectedHint() {
+            const el = document.getElementById('login-selected-hint');
+            const nameInput = document.getElementById('input-nickname');
+            if (!el || !nameInput) return;
+            const typed = validateString(nameInput.value || '', '');
+            const selected = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+            if (selected && validateString(selected.name, '').toLowerCase() === typed.toLowerCase()) {
+                el.className = 'login-selected-hint mt-2';
+                el.innerText = `目前帶入：${selected.avatar || '🎮'} ${selected.name}。請輸入挑戰密碼登入。`;
+            } else if (typed) {
+                el.className = 'login-selected-hint free mt-2';
+                el.innerText = `正在輸入：「${typed}」。系統會用這個名稱尋找本機玩家；若找不到，請先註冊。`;
+            } else {
+                el.className = 'login-selected-hint free mt-2';
+                el.innerText = '可自行輸入玩家帳號；若已有本機帳號，也可點下方清單快速帶入。';
+            }
+        }
+
+        function handleLoginNameInput(value) {
+            const typed = validateString(value || '', '');
+            const selected = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+            if (selected && validateString(selected.name, '').toLowerCase() !== typed.toLowerCase()) {
+                selectedPlayerId = null;
+            }
+            const exact = findPlayerByName(typed);
+            if (exact) selectedPlayerId = exact.id;
+            savedStateCache = getSavedState();
+            updateSaveStatus();
+            renderLoginSelectedHint();
+            renderPlayerList();
+        }
+
+        function clearLoginNameInput() {
+            selectedPlayerId = null;
+            currentPlayer = null;
+            currentPlayerId = null;
+            const nameInput = document.getElementById('input-nickname');
+            const pwInput = document.getElementById('input-password');
+            if (nameInput) { nameInput.value = ''; nameInput.focus(); }
+            if (pwInput) pwInput.value = '';
+            savedStateCache = getSavedState();
+            updateSaveStatus();
+            renderLoginSelectedHint();
+            renderPlayerList();
+            showToast('已清除帳號欄，可輸入其他玩家帳號');
+        }
+
         function renderPlayerList() {
+            renderPlayerDatalist();
+            renderLoginSelectedHint();
             const box = document.getElementById('player-list');
             if (!box) return;
             if (!players.length) {
-                box.innerHTML = `<div class="text-center text-slate-500">尚未建立挑戰者。輸入名稱與挑戰密碼即可建立。</div>`;
+                box.innerHTML = `<div class="text-center text-slate-500">尚未建立挑戰者。請按「註冊」建立新玩家；建立後也可直接在帳號欄輸入名稱登入。</div>`;
                 return;
             }
             box.innerHTML = players.map(p => {
                 const state = JSON.parse(localStorage.getItem(getPlayerStateKey(p.id)) || 'null');
                 const stateText = state ? `Level ${state.level}｜${state.score} 分` : `最高 ${p.bestScore || 0} 分`;
                 const active = p.id === selectedPlayerId ? 'border-blue-500 bg-blue-950/30' : 'border-slate-800 bg-slate-950/40';
-                return `<button data-player-id="${p.id}" class="player-card w-full text-left rounded-lg border ${active} px-3 py-2 flex items-center justify-between gap-2"><span class="truncate"><span class="mr-1">${p.avatar || '🎮'}</span><b class="${colorClass(p.color)}">${validateString(p.name,'玩家')}</b><span class="ml-2 text-slate-500">${stateText}</span></span><span class="text-[10px] text-slate-500">選擇</span></button>`;
+                return `<button data-player-id="${p.id}" class="player-card w-full text-left rounded-lg border ${active} px-3 py-2 flex items-center justify-between gap-2"><span class="truncate"><span class="mr-1">${p.avatar || '🎮'}</span><b class="${colorClass(p.color)}">${validateString(p.name,'玩家')}</b><small>${renderTitleText(p.bestLevel || state?.level || 1)}｜${stateText}</small></span><span class="text-[10px] text-cyan-300 font-black">帶入</span></button>`;
             }).join('');
             box.querySelectorAll('[data-player-id]').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2025,6 +2133,7 @@
                     renderPlayerList();
                     const pw = document.getElementById('input-password');
                     if (pw) pw.focus();
+                    renderLoginSelectedHint();
                 });
             });
         }
@@ -2037,9 +2146,15 @@
             const password = String(pwInput?.value || '');
             if (!name) { showToast('請先輸入玩家名稱，或改用 Guest 路人模式'); nameInput?.focus(); return false; }
             if (!password) { showToast('請輸入挑戰密碼'); pwInput?.focus(); return false; }
-            let player = selectedPlayerId ? findPlayerById(selectedPlayerId) : findPlayerByName(name);
+            const selected = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+            let player = (selected && validateString(selected.name, '').toLowerCase() === name.toLowerCase())
+                ? selected
+                : findPlayerByName(name);
             if (!player) {
-                showToast('找不到這位挑戰者，請先按「註冊新挑戰者」建立資料');
+                showToast(`找不到「${name}」這位本機挑戰者。可檢查是否同一瀏覽器，或按「註冊」建立新玩家。`);
+                selectedPlayerId = null;
+                renderLoginSelectedHint();
+                renderPlayerList();
                 return false;
             }
             if (player.passwordHash && player.passwordHash !== simpleHash(password)) {
@@ -2096,7 +2211,8 @@
 
         function showPasswordHint() {
             const name = validateString(document.getElementById('input-nickname')?.value || '', '');
-            const player = (selectedPlayerId && findPlayerById(selectedPlayerId)) || findPlayerByName(name);
+            const selected = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+            const player = (selected && validateString(selected.name, '').toLowerCase() === name.toLowerCase()) ? selected : findPlayerByName(name);
             if (!player) { showToast('找不到此本機玩家，可能尚未建立'); return; }
             alert(`玩家：${player.name}\n密碼提示：${player.hint || '這位玩家沒有設定提示'}\n\n若仍想不起來，之後可在本機資料櫃台選擇重設或清除玩家進度。`);
         }
@@ -3858,7 +3974,8 @@
         }
         function showForgotHintInModal() {
             const name = validateString(document.getElementById('input-nickname')?.value || '');
-            const p = findPlayerByName(name);
+            const selected = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
+            const p = (selected && validateString(selected.name, '').toLowerCase() === name.toLowerCase()) ? selected : findPlayerByName(name);
             const body = document.getElementById('forgot-modal-body');
             if (!body) return;
             if (!name) body.innerText = '請先輸入玩家帳號，或從本機挑戰者清單選擇玩家。';
@@ -3900,7 +4017,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-yellow-300">下一關起點暫存：</b>V1.9.7 會在每次過關後，立即建立下一關的起點暫存。玩家失敗後選擇扣 1000 分或扣 1 技能重玩，會回到該關起點，不會回到死亡前最後一步。</p><p><b class="text-cyan-300">可往前回退：</b>系統仍保留最近數關節點；若扣分後不足以留在本關，可使用上一關起點暫存重新累積分數。</p><p><b class="text-emerald-300">預設龍虎榜稱號：</b>預設名單已依分數補上 Level、代表圖案、消行數與稱號，不會再出現高分玩家卻顯示一般民眾的狀況。</p>
+                    <p><b class="text-yellow-300">帳號輸入：</b>V1.9.8 開始，玩家帳號欄可自由輸入，也可點下方本機挑戰者清單快速帶入。清單只是輔助，不會強迫玩家只能選清單。</p><p><b class="text-cyan-300">切換玩家：</b>若要輸入其他玩家，按「清除 / 改輸入」即可清掉目前帶入的帳號與密碼，再自行輸入新帳號。</p><p><b class="text-emerald-300">產品介紹：</b>版權與產品介紹中的產品介紹已改為正式遊戲說明，版本修改細節統一放在產品更新歷程中。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -3916,14 +4033,15 @@
             } else {
                 title.innerText = '版權與產品介紹';
                 body.innerHTML = `
-                    <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議，一起協作設計本遊戲。</p></div>
+                    <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.9.7｜過關節點暫存・預設榜稱號修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.9.8｜帳號輸入引導・產品介紹修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.9.7 修正重挑邏輯與預設龍虎榜稱號：系統會在每次過關時建立「下一關起點暫存」，玩家失敗後扣分或扣技能重玩時會回到該關起點，而不是死亡前最後一步；預設龍虎榜名單也依分數補上合理 Level、代表圖案與稱號。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，支援手機、平板與電腦快速開啟遊玩。玩家可以註冊本機挑戰者帳號，保存挑戰進度、累積本機龍虎榜成績，並透過 20 關主線、無盡挑戰、HOLD 暫存交換、技能救援、稱號升級與獎牌慶典，逐步挑戰更高分數與更高榮譽。</p>
+                        <p class="mt-2">遊戲資料目前儲存在玩家使用的瀏覽器本機中，適合親子、朋友或同一台裝置多人輪流挑戰；若更換瀏覽器、裝置或清除網站資料，帳號、進度與本機榜單不會自動同步。</p>
                     </div>
                     <details class="info-details">
                         <summary>產品更新歷程（點我展開）</summary>
@@ -3940,7 +4058,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li><li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li>
                         </ul>
                     </details>
                     <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。本遊戲目前為單機本機儲存，跨瀏覽器或跨裝置資料不會自動同步。</p>
@@ -3970,14 +4088,8 @@
         document.getElementById('btn-close-info').addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
         document.getElementById('btn-close-info-top')?.addEventListener('click', () => document.getElementById('info-modal').classList.add('hidden'));
         document.getElementById('info-modal').addEventListener('click', (e) => { if (e.target.id === 'info-modal') e.currentTarget.classList.add('hidden'); });
-        document.getElementById('input-nickname').addEventListener('input', (e) => {
-            const v = validateString(e.target.value, '');
-            const p = findPlayerByName(v);
-            selectedPlayerId = p ? p.id : null;
-            savedStateCache = getSavedState();
-            updateSaveStatus();
-            renderPlayerList();
-        });
+        document.getElementById('input-nickname').addEventListener('input', (e) => handleLoginNameInput(e.target.value));
+        document.getElementById('btn-clear-login-name')?.addEventListener('click', clearLoginNameInput);
         window.addEventListener('pagehide', saveGameState);
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveGameState(); });
         
