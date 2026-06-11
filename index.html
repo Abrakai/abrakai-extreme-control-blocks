@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.0.4 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.0.5 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -1876,7 +1876,7 @@
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.0.4</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.0.5</div>
                     </footer>
                 </main>
             </div>
@@ -1999,7 +1999,7 @@
             </div>
             <div id="data-manager-list" class="space-y-2"></div>
             <div class="modal-footer-fixed">
-                <button id="btn-repair-leaderboard" class="w-full mb-2 px-4 py-3 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-sm font-black">修復 / 重建龍虎榜</button><button id="btn-close-data-manager-bottom" class="w-full px-4 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-600 text-white text-sm font-black">完成，關閉視窗</button>
+                <button id="btn-inspect-local-data" class="w-full mb-2 px-4 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-black">檢查本機資料狀態</button><button id="btn-repair-leaderboard" class="w-full mb-2 px-4 py-3 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-sm font-black">修復 / 重建龍虎榜</button><button id="btn-close-data-manager-bottom" class="w-full px-4 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-600 text-white text-sm font-black">完成，關閉視窗</button>
             </div>
         </div>
     </div>
@@ -2144,8 +2144,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V2.0.4";
-        const GAME_VERSION_NAME = "龍虎榜修復與資料保護版";
+        const GAME_VERSION = "V2.0.5";
+        const GAME_VERSION_NAME = "啟動錯誤修復・玩家資料救援版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2258,7 +2258,7 @@
         let currentPlayer = null;
         let isGuestMode = false;
 
-        let localLeaderboard = loadLocalLeaderboard();
+        let localLeaderboard = []; // V2.0.5：避免啟動時過早呼叫 loadLocalLeaderboard 造成整個系統中斷
 
         // V1.8.8：玩家身分/稱號不在註冊時選，而是依最高關卡自動授予。
         const PLAYER_TITLES = [
@@ -3331,7 +3331,7 @@ function showPasswordHint() {
         function normalizeLeaderboard(list, options = {}) {
             const limit = options.limit || 10;
             const cleaned = (Array.isArray(list) ? list : [])
-                .filter(item => item && typeof item.score === 'number')
+                .filter(item => item && item.score !== undefined && item.score !== null && !Number.isNaN(Number(item.score)))
                 .map(item => {
                     const cleanName = validateString(item.name, "玩家");
                     const cleanScore = Math.max(0, Math.floor(Number(item.score || 0)));
@@ -5016,6 +5016,7 @@ function showPasswordHint() {
         document.getElementById('btn-close-data-manager')?.addEventListener('click', closeDataManager);
         document.getElementById('btn-close-data-manager-bottom')?.addEventListener('click', closeDataManager);
         document.getElementById('btn-refresh-data-manager')?.addEventListener('click', renderDataManagerList);
+        document.getElementById('btn-inspect-local-data')?.addEventListener('click', inspectLocalDataSummary);
         document.getElementById('btn-repair-leaderboard')?.addEventListener('click', repairLeaderboardFromLocalPlayers);
         document.getElementById('local-data-modal')?.addEventListener('click', (e) => { if (e.target.id === 'local-data-modal') closeDataManager(); });
         document.getElementById('data-manager-list')?.addEventListener('click', handleDataManagerClick);
@@ -5073,7 +5074,7 @@ function showPasswordHint() {
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-yellow-300">龍虎榜修復：</b>V2.0.4 修正 V2.0.2 可能造成龍虎榜空白的顯示錯誤。系統會從玩家資料與正式存檔重建真實玩家榜單。</p><p><b class="text-cyan-300">資料保護：</b>儲存龍虎榜前會先備份舊資料；修復只合併真實玩家紀錄，不會把預設挑戰者寫成真實玩家。</p><p><b class="text-emerald-300">手動修復：</b>若榜單仍異常，可到「本機資料管理」按「修復 / 重建龍虎榜」。</p>
+                    <p><b class="text-yellow-300">啟動錯誤修復：</b>V2.0.5 修正 V2.0.4 初始化順序錯誤，避免整個系統啟動中斷，造成玩家帳號、龍虎榜與本機資料管理都無法顯示。</p><p><b class="text-cyan-300">資料救援：</b>系統啟動後會先從玩家帳號、正式存檔與既有龍虎榜資料合併重建榜單。</p><p><b class="text-emerald-300">手動檢查：</b>本機資料管理新增「檢查本機資料狀態」，可查看玩家數、榜單紀錄與可重建紀錄數。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -5091,7 +5092,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.0.4｜龍虎榜修復與資料保護版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.0.5｜啟動錯誤修復・玩家資料救援版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
@@ -5114,7 +5115,7 @@ function showPasswordHint() {
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li><li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li><li><b>V1.9.9</b>：登入與註冊流程分流，註冊改為獨立視窗；新增本機資料管理中心，可封存、恢復與永久刪除本機玩家；玩家資料中心只管理目前登入玩家；永久刪除需挑戰密碼與玩家名稱確認，龍虎榜紀錄預設保留。</li><li><b>V2.0.0</b>：修正註冊與舊用戶登入混淆問題。若玩家名稱已存在，註冊視窗會明確阻止重複建立，並引導玩家回登入區或本機資料管理中心；玩家帳號欄改為純自由輸入，本機玩家清單只做快速帶入；登入提示文字提高對比，避免玩家看不清楚。</li><li><b>V2.0.1</b>：將「清除 / 改輸入」改為「本機玩家帳號清單」；新增帳號清單彈窗與快速帶入功能；強化登入錯誤回饋，包含帳號不存在、帳號封存、密碼錯誤、空白欄位與登入成功提示，讓每個輸入欄位與按鈕都有明確回應。</li><li><b>V2.0.2</b>：登入成功後直接進入遊戲，避免停留在首頁；移除首頁內嵌本機挑戰者清單，改由帳號清單按鈕查詢；阿布拉.凱不再作為本機預設玩家，只保留在預設龍虎榜；預設龍虎榜分數會依真實玩家實力微幅成長，但不會超越已在前方的真實玩家。</li><li><b>V2.0.3</b>：龍虎榜加入真實玩家 / 預設挑戰者高對比識別；真實玩家使用淺藍色塊，預設挑戰者使用淺黃、粉紅、白色等系統保留色；真實玩家可與預設挑戰者同名，仍會以標籤與底色清楚分辨。</li><li><b>V2.0.4</b>：緊急修正 V2.0.2 龍虎榜可能空白的問題；新增從玩家資料與正式存檔重建龍虎榜的保護機制；新增「修復 / 重建龍虎榜」按鈕，避免真實玩家分數因顯示錯誤看似消失。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li><li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li><li><b>V1.9.9</b>：登入與註冊流程分流，註冊改為獨立視窗；新增本機資料管理中心，可封存、恢復與永久刪除本機玩家；玩家資料中心只管理目前登入玩家；永久刪除需挑戰密碼與玩家名稱確認，龍虎榜紀錄預設保留。</li><li><b>V2.0.0</b>：修正註冊與舊用戶登入混淆問題。若玩家名稱已存在，註冊視窗會明確阻止重複建立，並引導玩家回登入區或本機資料管理中心；玩家帳號欄改為純自由輸入，本機玩家清單只做快速帶入；登入提示文字提高對比，避免玩家看不清楚。</li><li><b>V2.0.1</b>：將「清除 / 改輸入」改為「本機玩家帳號清單」；新增帳號清單彈窗與快速帶入功能；強化登入錯誤回饋，包含帳號不存在、帳號封存、密碼錯誤、空白欄位與登入成功提示，讓每個輸入欄位與按鈕都有明確回應。</li><li><b>V2.0.2</b>：登入成功後直接進入遊戲，避免停留在首頁；移除首頁內嵌本機挑戰者清單，改由帳號清單按鈕查詢；阿布拉.凱不再作為本機預設玩家，只保留在預設龍虎榜；預設龍虎榜分數會依真實玩家實力微幅成長，但不會超越已在前方的真實玩家。</li><li><b>V2.0.3</b>：龍虎榜加入真實玩家 / 預設挑戰者高對比識別；真實玩家使用淺藍色塊，預設挑戰者使用淺黃、粉紅、白色等系統保留色；真實玩家可與預設挑戰者同名，仍會以標籤與底色清楚分辨。</li><li><b>V2.0.4</b>：緊急修正 V2.0.2 龍虎榜可能空白的問題；新增從玩家資料與正式存檔重建龍虎榜的保護機制；新增「修復 / 重建龍虎榜」按鈕，避免真實玩家分數因顯示錯誤看似消失。</li><li><b>V2.0.5</b>：修正 V2.0.4 初始化順序錯誤，避免 JavaScript 模組啟動中斷；啟動後自動重建龍虎榜，並新增「檢查本機資料狀態」工具，方便確認玩家帳號與可救援紀錄是否仍在。</li>
                         </ul>
                     </details>
                     <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。本遊戲目前為單機本機儲存，跨瀏覽器或跨裝置資料不會自動同步。</p>
@@ -5178,6 +5179,41 @@ function showPasswordHint() {
             }, { passive: true });
         });
 
+        
+        function startupLeaderboardRecovery() {
+            try {
+                localLeaderboard = loadLocalLeaderboard();
+                renderLeaderboard(localLeaderboard);
+                const realCount = realLeaderboardEntries(localLeaderboard).length;
+                const botCount = localLeaderboard.filter(isDefaultLeaderboardBot).length;
+                if (!localLeaderboard.length) {
+                    console.warn('Leaderboard is empty after startup recovery');
+                } else {
+                    console.info(`Leaderboard recovered: ${realCount} real / ${botCount} default`);
+                }
+            } catch (e) {
+                console.error('startupLeaderboardRecovery failed', e);
+                localLeaderboard = normalizeLeaderboard(buildAdaptiveDefaultBots([]));
+                try { renderLeaderboard(localLeaderboard); } catch (renderError) { console.error(renderError); }
+            }
+        }
+
+        function inspectLocalDataSummary() {
+            const rawPlayers = readJSONSafe(STORAGE_KEY_PLAYERS, []);
+            const rawBoard = readJSONSafe(STORAGE_KEY_BOARD, []);
+            const rebuilt = rebuildLeaderboardFromPlayers();
+            const msg = [
+                `玩家帳號數：${Array.isArray(rawPlayers) ? rawPlayers.length : 0}`,
+                `既有龍虎榜真實紀錄：${Array.isArray(rawBoard) ? realLeaderboardEntries(rawBoard).length : 0}`,
+                `可從玩家/存檔重建紀錄：${rebuilt.length}`,
+                `目前畫面榜單筆數：${Array.isArray(localLeaderboard) ? localLeaderboard.length : 0}`,
+                '',
+                '若榜單異常，請按「本機資料管理 → 修復 / 重建龍虎榜」。'
+            ].join('\n');
+            alert(msg);
+            return msg;
+        }
+
         const rememberedPlayer = selectedPlayerId ? findPlayerById(selectedPlayerId) : null;
         if (rememberedPlayer) {
             selectedPlayerId = rememberedPlayer.id;
@@ -5186,6 +5222,7 @@ function showPasswordHint() {
             const avatarSelect = document.getElementById('select-avatar'); if (avatarSelect) avatarSelect.value = rememberedPlayer.avatar || '🎮';
             const colorSelect = document.getElementById('select-color'); if (colorSelect) colorSelect.value = rememberedPlayer.color || 'cyan';
         }
+        startupLeaderboardRecovery();
         renderPlayerList();
         savedStateCache = getSavedState();
         updateSaveStatus();
