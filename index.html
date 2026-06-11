@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V1.9.6 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V1.9.7 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -1252,6 +1252,18 @@
             }
         }
 
+    
+        /* V1.9.7：過關節點暫存與預設龍虎榜稱號 */
+        .retry-node-note {
+            border-radius: 12px;
+            border: 1px solid rgba(56,189,248,.55);
+            background: rgba(8,47,73,.32);
+            color: #cffafe;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
     </style>
 </head>
 
@@ -1511,7 +1523,7 @@
                     </section>
                     <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.9.6</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V1.9.7</div>
                     </footer>
                 </main>
             </div>
@@ -1674,8 +1686,8 @@
 
     <!-- ================= 遊戲核心邏輯腳本 ================= -->
     <script type="module">
-        const GAME_VERSION = "V1.9.6";
-        const GAME_VERSION_NAME = "首頁登入優先・背景操作隱藏版";
+        const GAME_VERSION = "V1.9.7";
+        const GAME_VERSION_NAME = "過關節點暫存・預設榜稱號修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2173,16 +2185,16 @@
 
         function loadLocalLeaderboard() {
             const defaults = [
-                { name: "阿布拉.凱", score: 42000 },
-                { name: "方塊宗師", score: 36000 },
-                { name: "鍵盤達人", score: 28500 },
-                { name: "手把高手", score: 24000 },
-                { name: "連消高手", score: 18000 },
-                { name: "旋轉達人", score: 15000 },
-                { name: "冷靜玩家", score: 12000 },
-                { name: "極速開拓者", score: 9000 },
-                { name: "挑戰者一號", score: 5000 },
-                { name: "新手勇者", score: 2500 }
+                { name: "阿布拉.凱", avatar: "🐉", color: "yellow", score: 42000, level: 20, bestLevel: 20, lines: 80, mode: "main-line" },
+                { name: "方塊宗師", avatar: "👑", color: "yellow", score: 36000, level: 18, bestLevel: 18, lines: 72, mode: "main-line" },
+                { name: "鍵盤達人", avatar: "⌨️", color: "purple", score: 28500, level: 15, bestLevel: 15, lines: 58, mode: "main-line" },
+                { name: "手把高手", avatar: "🎮", color: "blue", score: 24000, level: 13, bestLevel: 13, lines: 50, mode: "main-line" },
+                { name: "連消高手", avatar: "⚔️", color: "emerald", score: 18000, level: 10, bestLevel: 10, lines: 40, mode: "main-line" },
+                { name: "旋轉達人", avatar: "🔄", color: "cyan", score: 15000, level: 9, bestLevel: 9, lines: 34, mode: "main-line" },
+                { name: "冷靜玩家", avatar: "🧊", color: "slate", score: 12000, level: 7, bestLevel: 7, lines: 28, mode: "main-line" },
+                { name: "極速開拓者", avatar: "⚡", color: "orange", score: 9000, level: 5, bestLevel: 5, lines: 22, mode: "main-line" },
+                { name: "挑戰者一號", avatar: "🚀", color: "blue", score: 5000, level: 3, bestLevel: 3, lines: 12, mode: "main-line" },
+                { name: "新手勇者", avatar: "🙂", color: "cyan", score: 2500, level: 2, bestLevel: 2, lines: 6, mode: "main-line" }
             ];
             try {
                 const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_BOARD) || "[]");
@@ -2193,10 +2205,60 @@
             }
         }
 
+
+        function getDefaultLeaderboardMeta(name, score) {
+            const key = `${validateString(name, '玩家')}-${Math.max(0, Math.floor(Number(score || 0)))}`;
+            const map = {
+                "阿布拉.凱-42000": { avatar: "🐉", color: "yellow", level: 20, bestLevel: 20, lines: 80, mode: "main-line" },
+                "方塊宗師-36000": { avatar: "👑", color: "yellow", level: 18, bestLevel: 18, lines: 72, mode: "main-line" },
+                "鍵盤達人-28500": { avatar: "⌨️", color: "purple", level: 15, bestLevel: 15, lines: 58, mode: "main-line" },
+                "手把高手-24000": { avatar: "🎮", color: "blue", level: 13, bestLevel: 13, lines: 50, mode: "main-line" },
+                "連消高手-18000": { avatar: "⚔️", color: "emerald", level: 10, bestLevel: 10, lines: 40, mode: "main-line" },
+                "旋轉達人-15000": { avatar: "🔄", color: "cyan", level: 9, bestLevel: 9, lines: 34, mode: "main-line" },
+                "冷靜玩家-12000": { avatar: "🧊", color: "slate", level: 7, bestLevel: 7, lines: 28, mode: "main-line" },
+                "極速開拓者-9000": { avatar: "⚡", color: "orange", level: 5, bestLevel: 5, lines: 22, mode: "main-line" },
+                "挑戰者一號-5000": { avatar: "🚀", color: "blue", level: 3, bestLevel: 3, lines: 12, mode: "main-line" },
+                "新手勇者-2500": { avatar: "🙂", color: "cyan", level: 2, bestLevel: 2, lines: 6, mode: "main-line" }
+            };
+            return map[key] || null;
+        }
+
+        function estimateLevelByScore(score) {
+            const s = Math.max(0, Number(score || 0));
+            if (s >= 42000) return 20;
+            if (s >= 36000) return 18;
+            if (s >= 28500) return 15;
+            if (s >= 24000) return 13;
+            if (s >= 18000) return 10;
+            if (s >= 15000) return 9;
+            if (s >= 12000) return 7;
+            if (s >= 9000) return 5;
+            if (s >= 5000) return 3;
+            if (s >= 2500) return 2;
+            return 1;
+        }
+
         function normalizeLeaderboard(list) {
             const cleaned = list
                 .filter(item => item && typeof item.score === 'number')
-                .map(item => ({ playerId: item.playerId || null, name: validateString(item.name, "玩家"), avatar: item.avatar || '🎮', color: item.color || 'cyan', score: Math.max(0, Math.floor(item.score)), level: Number(item.level || item.bestLevel || 1), bestLevel: Number(item.bestLevel || item.level || 1), lines: Number(item.lines || 0), at: item.at || 0, mode: item.mode || 'ten-level' }))
+                .map(item => {
+                    const cleanName = validateString(item.name, "玩家");
+                    const cleanScore = Math.max(0, Math.floor(Number(item.score || 0)));
+                    const meta = getDefaultLeaderboardMeta(cleanName, cleanScore);
+                    const inferredLevel = Number(item.level || item.bestLevel || meta?.level || estimateLevelByScore(cleanScore) || 1);
+                    return {
+                        playerId: item.playerId || null,
+                        name: cleanName,
+                        avatar: (item.avatar && item.avatar !== '🎮') ? item.avatar : (meta?.avatar || item.avatar || '🎮'),
+                        color: (item.color && item.color !== 'cyan') ? item.color : (meta?.color || item.color || 'cyan'),
+                        score: cleanScore,
+                        level: inferredLevel,
+                        bestLevel: Number(item.bestLevel || item.level || meta?.bestLevel || inferredLevel),
+                        lines: Number(item.lines || meta?.lines || 0),
+                        at: item.at || 0,
+                        mode: item.mode || meta?.mode || 'main-line'
+                    };
+                })
                 .sort((a, b) => b.score - a.score);
 
             const unique = [];
@@ -2226,14 +2288,14 @@
             }
             list.slice(0, 5).forEach((item, idx) => {
                 const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
-                container.innerHTML += `<div class="flex justify-between truncate px-1"><span class="text-blue-300 mr-1">${medal} ${item.avatar || '🎮'} ${validateString(item.name)}</span> <span class="text-yellow-400">${item.score}</span></div>`;
+                container.innerHTML += `<div class="flex justify-between truncate px-1"><span class="text-blue-300 mr-1">${medal} ${item.avatar || '🎮'} ${validateString(item.name)} <span class="text-yellow-300">${renderTitleText(item.level || item.bestLevel || 1)}</span></span> <span class="text-yellow-400">${item.score}</span></div>`;
             });
             const full = document.getElementById('leaderboard-full');
             if (full) {
                 full.innerHTML = "";
                 list.slice(0, 10).forEach((item, idx) => {
                     const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
-                    full.innerHTML += `<div class="flex justify-between gap-2"><span class="truncate">${medal} ${item.avatar || '🎮'} ${validateString(item.name)}</span><span class="text-yellow-400">${item.score}</span></div>`;
+                    full.innerHTML += `<div class="flex justify-between gap-2"><span class="truncate">${medal} ${item.avatar || '🎮'} ${validateString(item.name)} <span class="text-yellow-300">${renderTitleText(item.level || item.bestLevel || 1)}</span></span><span class="text-yellow-400">${item.score}</span></div>`;
                 });
             }
         }
@@ -2327,7 +2389,7 @@
 
         function buildStateSnapshot(kind = 'snapshot') {
             return {
-                version: '1.9.4',
+                version: '1.9.7',
                 kind,
                 savedAt: Date.now(),
                 playerId: currentPlayerId,
@@ -2426,6 +2488,87 @@
             clearRetryCheckpoint(false);
         }
 
+        function buildLevelEntrySnapshot(targetLevel, reason = 'level-entry') {
+            const lv = Math.max(1, Math.min(LEVELS.length, Number(targetLevel || level || 1)));
+            return {
+                version: '1.9.7',
+                kind: `level-entry-${lv}`,
+                savedAt: Date.now(),
+                playerId: currentPlayerId,
+                avatar: currentPlayer?.avatar || '🎮',
+                color: currentPlayer?.color || 'cyan',
+                nickname,
+                score,
+                lines,
+                level: lv,
+                stageStartScore: score,
+                stageStartLines: lines,
+                stageResults: cloneForStorage(stageResults || []),
+                skillCharges: cloneForStorage(skillCharges || { row: 0, col: 0, cross: 0 }),
+                grid: cloneForStorage(grid),
+                // 重要：重挑本關時，不回到死亡前最後一步，而是回到「進入本關的起跑點」。
+                activePiece: cloneForStorage(generatePiece()),
+                nextPiece: cloneForStorage(generatePiece()),
+                holdPiece: null,
+                canHold: true,
+                source: reason
+            };
+        }
+
+        function saveLevelEntryCheckpoint(targetLevel, reason = 'after-level-clear') {
+            const lv = Math.max(1, Math.min(LEVELS.length, Number(targetLevel || 1)));
+            const state = buildLevelEntrySnapshot(lv, reason);
+            try {
+                // 若玩家接下來真的進入此關，這份節點就是本關重挑起點。
+                localStorage.setItem(getRetryCheckpointKey(), JSON.stringify(state));
+                saveRetryHistoryState(state);
+            } catch (e) {}
+            return state;
+        }
+
+        function getLevelEntryCheckpoint(targetLevel) {
+            const lv = Math.max(1, Number(targetLevel || level || 1));
+            const history = getRetryHistory();
+            const entry = history.find(item => Number(item.level) === lv && String(item.kind || '').startsWith('level-entry-'));
+            if (entry) return entry;
+            const current = getRetryCheckpoint();
+            if (current && Number(current.level) === lv && String(current.kind || '').startsWith('level-entry-')) return current;
+            return null;
+        }
+
+        function getRetryBaseCheckpoint(targetLevel = level) {
+            const lv = Math.max(1, Number(targetLevel || level || 1));
+            // 優先使用「過關後 / 進入本關前」的節點，避免玩家重玩時回到死亡前一動。
+            const entry = getLevelEntryCheckpoint(lv);
+            if (entry) return cloneForStorage(entry);
+
+            // 若沒有 entry 節點，才退回舊的本關節點。
+            const byLevel = getRetryCheckpointByLevel(lv);
+            if (byLevel) return cloneForStorage(byLevel);
+
+            const current = getRetryCheckpoint();
+            return current ? cloneForStorage(current) : null;
+        }
+
+        function restoreEntrySnapshotForLevel(targetLevel) {
+            const entry = getLevelEntryCheckpoint(targetLevel);
+            if (!entry) return false;
+            grid = cloneForStorage(entry.grid);
+            score = Number(entry.score || 0);
+            lines = Number(entry.lines || 0);
+            level = Math.max(1, Math.min(LEVELS.length, Number(entry.level || targetLevel || 1)));
+            stageStartScore = Number(entry.stageStartScore || score);
+            stageStartLines = Number(entry.stageStartLines || lines);
+            stageResults = Array.isArray(entry.stageResults) ? cloneForStorage(entry.stageResults) : [];
+            skillCharges = cloneForStorage(entry.skillCharges || { row: 0, col: 0, cross: 0 });
+            activePiece = cloneForStorage(entry.activePiece || generatePiece());
+            nextPiece = cloneForStorage(entry.nextPiece || generatePiece());
+            holdPiece = entry.holdPiece || null;
+            canHold = entry.canHold !== false;
+            return true;
+        }
+
+
         function getEntryScoreFloor(targetLevel) {
             const lv = Math.max(1, Number(targetLevel || 1));
             if (lv <= 1) return 0;
@@ -2507,22 +2650,21 @@
         }
 
         function retryCurrentLevelWithScorePenalty() {
-            const cp = getRetryCheckpoint();
-            if (!cp) { showToast('找不到本關暫存點，請重新開始挑戰'); return; }
+            const cp = getRetryBaseCheckpoint(level);
+            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
             const adjustedScore = Number(cp.score || 0) - 1000;
             const floor = getEntryScoreFloor(cp.level);
             if (adjustedScore < floor) {
-                const prevLevel = Math.max(1, Number(cp.level || 1) - 1);
-                const ok = confirm(`重玩本關需扣 1000 分，但扣分後分數不足以達到進入 LEVEL ${cp.level} 的最低門檻。\n\n是否退回 LEVEL ${prevLevel}，使用上一關暫存點重新累積分數後再挑戰？`);
+                const prevLevel = Math.max(1, Number(cp.level || level || 1) - 1);
+                const ok = confirm(`重玩本關需扣 1000 分，但扣分後分數不足以達到進入 LEVEL ${cp.level} 的最低門檻。\n\n是否退回 LEVEL ${prevLevel}，使用上一關起點暫存重新累積分數後再挑戰？`);
                 if (!ok) return;
-                const prevCp = getRetryCheckpointByLevel(prevLevel);
+                const prevCp = getRetryBaseCheckpoint(prevLevel);
                 if (prevCp) {
                     prevCp.score = Math.max(0, adjustedScore);
                     prevCp.stageStartScore = Math.max(0, adjustedScore);
                     applySnapshotToGame(prevCp);
-                    showToast(`已扣 1000 分，退回 LEVEL ${level} 重新累積分數`);
+                    showToast(`已扣 1000 分，退回 LEVEL ${level} 起點重新挑戰`);
                 } else {
-                    applySnapshotToGame(cp);
                     startRetryAtLevel(prevLevel, Math.max(0, adjustedScore), 'retry-back-one-level-clean');
                 }
                 return;
@@ -2530,33 +2672,33 @@
             cp.score = adjustedScore;
             cp.stageStartScore = adjustedScore;
             applySnapshotToGame(cp);
-            showToast(`已扣 1000 分，重玩 LEVEL ${level}`);
+            showToast(`已扣 1000 分，回到 LEVEL ${level} 起點重玩`);
         }
 
         function retryCurrentLevelWithSkillPenalty() {
-            const cp = getRetryCheckpoint();
-            if (!cp) { showToast('找不到本關暫存點，請重新開始挑戰'); return; }
+            const cp = getRetryBaseCheckpoint(level);
+            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
             const key = getBestAvailableSkill(cp.skillCharges || {});
             if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分或重新開始'); return; }
             cp.skillCharges[key] = Math.max(0, Number(cp.skillCharges[key] || 0) - 1);
             applySnapshotToGame(cp);
-            showToast(`已扣除 ${skillName(key)} 技能×1，重玩 LEVEL ${level}`);
+            showToast(`已扣除 ${skillName(key)} 技能×1，回到 LEVEL ${level} 起點重玩`);
         }
 
         function buildRetryPanelHTML(rankInfo = {}) {
-            const cp = getRetryCheckpoint();
+            const cp = getRetryBaseCheckpoint(level);
             if (!cp) {
-                return `<div class="retry-panel"><b>本關重挑：</b><br>目前找不到本關暫存點，請重新開始挑戰。</div>`;
+                return `<div class="retry-panel"><b>本關重挑：</b><br>目前找不到本關起點暫存，請重新開始挑戰。</div>`;
             }
             const skillKey = getBestAvailableSkill(cp.skillCharges || {});
             const adjustedScore = Number(cp.score || 0) - 1000;
             const floor = getEntryScoreFloor(cp.level);
             const scoreHint = adjustedScore >= floor
-                ? `扣 1000 分後可從 LEVEL ${cp.level} 重新挑戰。`
+                ? `扣 1000 分後可回到 LEVEL ${cp.level} 起點重新挑戰。`
                 : `扣 1000 分後不足以留在 LEVEL ${cp.level}，系統會詢問是否使用上一關暫存點回退挑戰。`;
             return `<div class="retry-panel">
                 <div class="font-black text-yellow-200 mb-1">是否重玩本關？</div>
-                <div class="text-[12px] mb-2">系統已在最近數關建立「臨時節點暫存」，不會覆蓋你的正式存檔。重玩或回退需付出代價：</div>
+                <div class="text-[12px] mb-2">系統已在每次過關後建立「下一關起點暫存」，並保留最近數關節點，不會覆蓋正式存檔。重玩或回退需付出代價：</div>
                 <div class="text-[12px] mb-3">① ${scoreHint}<br>② 或扣除 1 項技能${skillKey ? `（目前會扣：${skillName(skillKey)}）` : `（目前沒有可扣技能）`}。</div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button type="button" class="retry-primary" data-retry-action="score">扣 1000 分，重玩本關</button>
@@ -3188,6 +3330,9 @@
             playLevelClearSound();
             updateUI();
             clearSavedState();
+            if (level + 1 <= LEVELS.length) {
+                saveLevelEntryCheckpoint(level + 1, `after-level-${level}-clear`);
+            }
             if (level >= LEVELS.length) {
                 winGame();
                 return;
@@ -3229,17 +3374,20 @@
             document.getElementById('overlay')?.classList.remove('levelclear-overlay');
             hideOverlay();
             level++;
-            stageStartScore = score;
-            stageStartLines = lines;
+            const restoredEntry = restoreEntrySnapshotForLevel(level);
+            if (!restoredEntry) {
+                stageStartScore = score;
+                stageStartLines = lines;
+                if (!activePiece || checkCollision(activePiece.matrix, activePiece.x, activePiece.y)) {
+                    activePiece = nextPiece || generatePiece();
+                    nextPiece = generatePiece();
+                    canHold = true;
+                }
+            }
             pendingLevelClear = false;
             isPaused = false;
             isRapidDescending = false;
             overlayMode = 'playing';
-            if (!activePiece || checkCollision(activePiece.matrix, activePiece.x, activePiece.y)) {
-                activePiece = nextPiece || generatePiece();
-                nextPiece = generatePiece();
-                canHold = true;
-            }
             updateUI();
             resetGravityTimer();
             saveGameState();
@@ -3752,7 +3900,7 @@
             if (type === 'guide') {
                 title.innerText = '新手村遊戲說明';
                 body.innerHTML = `
-                    <p><b class="text-yellow-300">首頁登入優先：</b>V1.9.6 將首頁重新整理為「先登入 / 註冊 / 訪客」的使用流程。玩家最常用的帳號與挑戰密碼輸入區會優先出現。</p><p><b class="text-cyan-300">背景操作隱藏：</b>首頁、暫停、過關與 Game Over 等罩幕開啟時，背景棋盤、方向鍵與功能鍵會完全隱藏，不會再跑到登入畫面下方。</p><p><b class="text-emerald-300">資訊移到下方：</b>關卡資訊、偵測到的本機進度、玩家稱號說明與龍虎榜都移到登入區之後，避免佔住首頁一開頭。</p>
+                    <p><b class="text-yellow-300">下一關起點暫存：</b>V1.9.7 會在每次過關後，立即建立下一關的起點暫存。玩家失敗後選擇扣 1000 分或扣 1 技能重玩，會回到該關起點，不會回到死亡前最後一步。</p><p><b class="text-cyan-300">可往前回退：</b>系統仍保留最近數關節點；若扣分後不足以留在本關，可使用上一關起點暫存重新累積分數。</p><p><b class="text-emerald-300">預設龍虎榜稱號：</b>預設名單已依分數補上 Level、代表圖案、消行數與稱號，不會再出現高分玩家卻顯示一般民眾的狀況。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
@@ -3770,12 +3918,12 @@
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.9.6｜首頁登入優先・背景操作隱藏版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V1.9.7｜過關節點暫存・預設榜稱號修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.9.6 修正首頁登入流程 UI：首頁罩幕開啟時會完全隱藏背景遊戲棋盤與操作按鈕，避免玩家輸入帳號密碼時看到方向鍵與技能鍵；同時重新排序首頁內容，讓帳號與挑戰密碼輸入區成為第一視覺焦點，關卡資訊、進度與稱號說明移到登入區下方。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，設計重點為手機、平板與電腦皆可快速開啟遊玩；玩家可透過本機挑戰者帳號保存進度，挑戰 10 關技能關卡，並以本機龍虎榜累積成就感。V1.9.7 修正重挑邏輯與預設龍虎榜稱號：系統會在每次過關時建立「下一關起點暫存」，玩家失敗後扣分或扣技能重玩時會回到該關起點，而不是死亡前最後一步；預設龍虎榜名單也依分數補上合理 Level、代表圖案與稱號。</p>
                     </div>
                     <details class="info-details">
                         <summary>產品更新歷程（點我展開）</summary>
@@ -3792,7 +3940,7 @@
                             <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
                             <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li>
                         </ul>
                     </details>
                     <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。本遊戲目前為單機本機儲存，跨瀏覽器或跨裝置資料不會自動同步。</p>
