@@ -1,4 +1,4 @@
-import { Firestore, FieldValue } from '@google-cloud/firestore';
+import { Firestore, FieldValue, Timestamp } from '@google-cloud/firestore';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 function requiredEnv(name) {
@@ -28,6 +28,48 @@ async function countQuery(query) {
   return snapshot.data().count;
 }
 
+
+function safeInteger(value, minimum = 0, maximum = 2147483647) {
+  const number = Math.floor(Number(value ?? 0));
+  if (!Number.isFinite(number)) return minimum;
+  return Math.min(maximum, Math.max(minimum, number));
+}
+
+function safeText(value, fallback = '', maxLength = 80) {
+  const text = String(value ?? fallback).trim();
+  return (text || fallback).slice(0, maxLength);
+}
+
+function worldCupSort(a, b) {
+  return (
+    b.bestScore - a.bestScore ||
+    b.highestLevel - a.highestLevel ||
+    b.lines - a.lines ||
+    a.achievedAtLocal - b.achievedAtLocal ||
+    a.nickname.localeCompare(b.nickname, 'zh-Hant')
+  );
+}
+
+function sanitizeWorldCupCandidate(snapshot) {
+  const data = snapshot.data() || {};
+  return {
+    nickname: safeText(data.nickname, '玩家', 24),
+    avatar: safeText(data.avatar, '🎮', 16),
+    color: safeText(data.color, 'cyan', 32),
+    bestScore: safeInteger(data.bestScore),
+    highestLevel: safeInteger(data.highestLevel, 1, 9999),
+    lines: safeInteger(data.lines, 0, 999999),
+    achievedAtLocal: safeInteger(
+      data.achievedAtLocal ||
+        data.updatedAt?.toMillis?.() ||
+        Date.now(),
+      0,
+      Number.MAX_SAFE_INTEGER
+    ),
+    gameVersion: safeText(data.gameVersion, '', 24)
+  };
+}
+
 async function main() {
   const projectId = requiredEnv('GCP_PROJECT_ID');
   const propertyId = requiredEnv('GA4_PROPERTY_ID').replace(/^properties\//, '');
@@ -36,39 +78,143 @@ async function main() {
   // Both clients below automatically read those ADC credentials.
   const db = new Firestore({ projectId });
   const analyticsClient = new BetaAnalyticsDataClient();
+  const publicSummaryRef = db.collection('public_stats').doc('summary');
+  const previousSummarySnapshot = await publicSummaryRef.get();
+  const previousSummary = previousSummarySnapshot.exists
+    ? previousSummarySnapshot.data() || {}
+    : {};
 
-  const [registeredPlayers, level10Players, level20Players] = await Promise.all([
+  const now = new Date();
+  const taipeiDateParts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(now).reduce((acc, part) => {
+    if (part.type !== 'literal') acc[part.type] = part.value;
+    return acc;
+  }, {});
+  const taipeiStartUtc = new Date(
+    `${taipeiDateParts.year}-${taipeiDateParts.month}-${taipeiDateParts.day}T00:00:00+08:00`
+  );
+  const todayStart = Timestamp.fromDate(taipeiStartUtc);
+
+  const usageEvents = db.collection('usage_events');
+
+  const worldCupCandidates = db.collection('world_cup_candidates');
+
+  const [
+    registeredPlayers,
+    totalPageLaunches,
+    todayPageLaunches,
+    successfulLoginPlays,
+    level10Players,
+    level20Players,
+    worldCupCandidateDevices,
+    worldCupCandidateSnapshot
+  ] = await Promise.all([
     countQuery(db.collection('players')),
+    countQuery(usageEvents.where('eventType', '==', 'page_launch')),
+    countQuery(
+      usageEvents
+        .where('eventType', '==', 'page_launch')
+        .where('occurredAt', '>=', todayStart)
+    ),
+    countQuery(usageEvents.where('eventType', '==', 'player_login_play')),
     countQuery(db.collection('milestones').where('milestone', '==', 10)),
-    countQuery(db.collection('milestones').where('milestone', '==', 20))
+    countQuery(db.collection('milestones').where('milestone', '==', 20)),
+    countQuery(worldCupCandidates),
+    worldCupCandidates.orderBy('bestScore', 'desc').limit(100).get()
   ]);
 
-  const [totalPageViews, todayPageViews] = await Promise.all([
-    queryPageViews(analyticsClient, propertyId, '2020-01-01', 'today'),
-    queryPageViews(analyticsClient, propertyId, 'today', 'today')
-  ]);
+  const worldCupEntries = worldCupCandidateSnapshot.docs
+    .map(sanitizeWorldCupCandidate)
+    .filter(entry => entry.bestScore > 0)
+    .sort(worldCupSort);
+
+  const worldCupTopTen = worldCupEntries.slice(0, 10).map((entry, index) => ({
+    rank: index + 1,
+    title: index === 0 ? '世界盃冠軍' : `世界盃第 ${index + 1} 名`,
+    ...entry
+  }));
+
+  const champion = worldCupTopTen[0] || {
+    title: '等待首位挑戰者',
+    nickname: '等待首位挑戰者',
+    avatar: '🏆',
+    color: 'npcGold',
+    bestScore: 0,
+    highestLevel: 1,
+    lines: 0,
+    achievedAtLocal: 0,
+    gameVersion: ''
+  };
+
+  let totalPageViews = safeInteger(previousSummary.totalPageViews || 0);
+  let todayPageViews = safeInteger(previousSummary.todayPageViews || 0);
+  let gaStatus = 'ok';
+  try {
+    [totalPageViews, todayPageViews] = await Promise.all([
+      queryPageViews(analyticsClient, propertyId, '2020-01-01', 'today'),
+      queryPageViews(analyticsClient, propertyId, 'today', 'today')
+    ]);
+  } catch (error) {
+    gaStatus = 'error';
+    console.warn('GA4 report temporarily unavailable; keeping previous values:', error?.message || error);
+  }
 
   const summary = {
     registeredPlayers,
+    totalPageLaunches,
+    todayPageLaunches,
+    successfulLoginPlays,
     totalPageViews,
     todayPageViews,
     level10Players,
     level20Players,
+    worldCupCandidateDevices,
+    worldCupChampionTitle: champion.title,
+    worldCupChampionName: champion.nickname,
+    worldCupChampionAvatar: champion.avatar,
+    worldCupChampionColor: champion.color,
+    worldCupChampionScore: champion.bestScore,
+    worldCupChampionLevel: champion.highestLevel,
+    worldCupChampionLines: champion.lines,
+    worldCupChampionGameVersion: champion.gameVersion,
     updatedAt: FieldValue.serverTimestamp(),
-    gaStatus: 'ok',
+    worldCupUpdatedAt: FieldValue.serverTimestamp(),
+    gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 2,
-    gameVersion: 'V2.2.4'
+    schemaVersion: 4,
+    gameVersion: 'V2.2.7'
   };
 
-  await db.collection('public_stats').doc('summary').set(summary, { merge: true });
+  const worldCupPublic = {
+    title: '雲端世界盃',
+    champion,
+    entries: worldCupTopTen,
+    candidateDevices: worldCupCandidateDevices,
+    updatedAt: FieldValue.serverTimestamp(),
+    gameVersion: 'V2.2.7'
+  };
 
-  console.log('Public stats updated successfully:', {
+  await Promise.all([
+    publicSummaryRef.set(summary, { merge: true }),
+    db.collection('world_cup').doc('current').set(worldCupPublic)
+  ]);
+
+  console.log('Public stats and World Cup updated successfully:', {
     registeredPlayers,
+    totalPageLaunches,
+    todayPageLaunches,
+    successfulLoginPlays,
     totalPageViews,
     todayPageViews,
     level10Players,
-    level20Players
+    level20Players,
+    worldCupCandidateDevices,
+    worldCupChampion: champion.nickname,
+    worldCupChampionScore: champion.bestScore
   });
 }
 

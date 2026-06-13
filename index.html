@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.2.4 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.2.7 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -1396,6 +1396,43 @@
         }
 
     
+
+        /* V2.2.5：手機鍵盤登入視窗修正 */
+        @media (max-width: 768px) {
+            body.keyboard-open #overlay {
+                height: var(--vvh) !important;
+                max-height: var(--vvh) !important;
+                overflow-y: auto !important;
+                overscroll-behavior: contain !important;
+            }
+            body.keyboard-open #overlay > .home-shell {
+                min-height: var(--vvh) !important;
+                padding-top: 8px !important;
+                padding-bottom: 18px !important;
+                align-items: flex-start !important;
+            }
+            body.keyboard-open #overlay main > .mb-4,
+            body.keyboard-open #overlay #level-brief,
+            body.keyboard-open #overlay #save-status,
+            body.keyboard-open #overlay #title-system-panel,
+            body.keyboard-open #overlay .login-helper-note {
+                display: none !important;
+            }
+            body.keyboard-open #overlay .home-card-bright {
+                margin-top: 4px !important;
+                padding-top: 14px !important;
+                padding-bottom: 18px !important;
+            }
+            body.keyboard-open #overlay #username-form {
+                scroll-margin-top: 8px;
+                scroll-margin-bottom: 120px;
+            }
+            body.keyboard-open #overlay input:focus {
+                position: relative;
+                z-index: 2;
+            }
+        }
+
         /* V2.0.0：註冊防呆、玩家切換、文字可讀性 */
         .login-helper-note {
             border: 1px solid rgba(125,211,252,.85) !important;
@@ -1999,6 +2036,82 @@
             background: rgba(69,26,3,.28);
         }
         .global-stats-wide .global-stat-label { color: #fde68a; }
+
+        .world-cup-champion-card {
+            --champion-accent: #f59e0b;
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            border: 1px solid color-mix(in srgb, var(--champion-accent) 70%, white 10%);
+            background:
+                radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--champion-accent) 22%, transparent), transparent 34%),
+                linear-gradient(135deg, rgba(69,26,3,.88), rgba(15,23,42,.94) 52%, rgba(49,46,129,.62));
+            box-shadow: 0 0 24px color-mix(in srgb, var(--champion-accent) 20%, transparent);
+            padding: 14px 15px;
+            margin-bottom: 10px;
+        }
+        .world-cup-champion-card::after {
+            content: "WORLD CUP";
+            position: absolute;
+            right: -8px;
+            top: 9px;
+            color: rgba(255,255,255,.055);
+            font-size: 28px;
+            font-weight: 1000;
+            letter-spacing: .12em;
+            transform: rotate(-7deg);
+            pointer-events: none;
+        }
+        .world-cup-kicker {
+            color: #fde68a;
+            font-size: 11px;
+            font-weight: 1000;
+            letter-spacing: .13em;
+        }
+        .world-cup-name {
+            margin-top: 5px;
+            color: #fff7d6;
+            font-size: clamp(19px, 5.5vw, 29px);
+            line-height: 1.08;
+            font-weight: 1000;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 0 14px color-mix(in srgb, var(--champion-accent) 45%, transparent);
+        }
+        .world-cup-meta {
+            margin-top: 7px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px 9px;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 900;
+        }
+        .world-cup-score {
+            color: #fef3c7;
+            font-size: clamp(24px, 7vw, 38px);
+            line-height: 1;
+            font-weight: 1000;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            display: inline-block;
+            max-width: 100%;
+            transform-origin: center center;
+        }
+        .world-cup-device-count {
+            color: #bae6fd;
+        }
+        .world-cup-integrity-note {
+            margin-top: 7px;
+            color: #94a3b8;
+            font-size: 9px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
         .global-stats-status {
             border-radius: 12px;
             border: 1px solid rgba(148,163,184,.35);
@@ -2032,7 +2145,7 @@
         }
 
         @media (min-width: 640px) {
-            .global-stats-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            .global-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .global-stats-wide { grid-column: auto; min-height: 74px; }
         }
 
@@ -2262,18 +2375,18 @@
                             <div>過關獎勵：解鎖清除一行技能。</div>
                         </div>
                         <div id="save-status" class="hidden mb-4 rounded-xl border border-emerald-400 bg-emerald-50 p-3 text-[12px] text-emerald-900 leading-relaxed"></div><div id="title-system-panel" class="mb-4 rounded-2xl p-3 text-[12px] leading-relaxed"><div class="text-yellow-300 font-black text-center mb-1">玩家稱號會隨關卡升級</div><div class="text-slate-200 text-center">註冊時只選代表圖案與代表色；身分稱號由系統依最高關卡自動授予。</div><div class="mt-2 flex flex-wrap gap-1 justify-center"><span class="player-title-badge">🙂 一般民眾</span><span class="player-title-badge">🛡️ 見習騎士</span><span class="player-title-badge">👑 皇家守護者</span><span class="player-title-badge">🔥 賽亞戰士</span></div></div>
-                        <div id="username-form" class="space-y-3">
+                        <div id="username-form" class="space-y-3" role="form" autocomplete="off" data-form-type="other">
                             <div>
                                 <div class="flex items-center justify-between gap-2 mb-1">
                                     <label class="home-field-label block text-[13px]">玩家帳號</label>
                                     <button id="btn-clear-login-name" type="button" class="clear-login-btn">本機玩家帳號清單</button>
                                 </div>
-                                <input type="text" id="input-nickname" maxlength="12" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="可自行輸入玩家帳號" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="text" id="input-nickname" name="abrakai-player-alias" maxlength="12" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" placeholder="可自行輸入玩家帳號" value="" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors">
                                 <datalist id="player-suggestions"></datalist>
                                 <div id="login-selected-hint" class="login-selected-hint free mt-2">可自行輸入玩家帳號；若已有本機帳號，也可點下方清單快速帶入。</div>
                                 <div class="login-helper-note mt-2">帳號欄可自由輸入。若不確定帳號怎麼拼，請按右上方「本機玩家帳號清單」查看目前這台裝置可登入的玩家。</div>
                             </div>
-                            <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" maxlength="16" autocomplete="current-password" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
+                            <div><label class="home-field-label block text-[13px] mb-1">挑戰密碼</label><input type="password" id="input-password" name="abrakai-challenge-code" maxlength="16" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" placeholder="請輸入挑戰密碼" class="w-full rounded-xl px-3 py-3 text-center font-black focus:outline-none focus:border-blue-500 transition-colors"></div>
                             <div class="text-right"><button id="btn-password-hint" class="forgot-link text-[12px] bg-transparent border-0 p-0">忘記密碼？</button></div>
                         </div>
                         <div id="register-home-hint" class="register-open-hint hidden mt-3">
@@ -2292,9 +2405,20 @@
                         <div class="flex items-center justify-between gap-3 mb-3">
                             <div>
                                 <div class="text-[13px] font-black tracking-[0.16em] text-cyan-300">🌍 全球挑戰數據</div>
-                                <div class="mt-1 text-[11px] leading-relaxed text-slate-400">由 Firebase、Google Analytics 與 GitHub Actions 定時彙整。</div>
+                                <div class="mt-1 text-[11px] leading-relaxed text-slate-400">每次開啟網頁、成功登入及各裝置最高分都先寫入 Firebase；GitHub Actions 約每 5 分鐘完成全球 PK 與公開數據彙整。</div>
                             </div>
-                            <button id="btn-refresh-public-stats" type="button" class="shrink-0 rounded-xl border border-cyan-400/50 bg-cyan-950/50 px-3 py-2 text-[11px] font-black text-cyan-200">重新整理</button>
+                            <button id="btn-refresh-public-stats" type="button" class="shrink-0 rounded-xl border border-cyan-400/50 bg-cyan-950/50 px-3 py-2 text-[11px] font-black text-cyan-200">讀取最新彙整</button>
+                        </div>
+                        <div id="world-cup-champion-card" class="world-cup-champion-card text-center">
+                            <div class="world-cup-kicker">🏆 雲端世界盃冠軍</div>
+                            <div id="world-cup-champion-name" class="world-cup-name">等待首位挑戰者</div>
+                            <div class="world-cup-meta">
+                                <span><span id="world-cup-champion-score" class="world-cup-score">0</span> 分</span>
+                                <span id="world-cup-champion-level">Level —</span>
+                                <span id="world-cup-champion-lines">消除 — 行</span>
+                                <span id="world-cup-device-count" class="world-cup-device-count">參賽裝置 0</span>
+                            </div>
+                            <div class="world-cup-integrity-note">每個瀏覽器／裝置只送出一位本機最高分玩家參賽；正式獎金賽前仍建議加入伺服器端防作弊驗證。</div>
                         </div>
                         <div class="global-stats-grid">
                             <div class="global-stat-tile">
@@ -2302,12 +2426,16 @@
                                 <div class="global-stat-label">全球註冊挑戰者</div>
                             </div>
                             <div class="global-stat-tile">
-                                <div id="stat-total-pageviews" class="global-stat-value">—</div>
-                                <div class="global-stat-label">累積瀏覽量</div>
+                                <div id="stat-total-launches" class="global-stat-value">—</div>
+                                <div class="global-stat-label">網頁程式啟動</div>
                             </div>
-                            <div class="global-stat-tile global-stats-wide">
-                                <div id="stat-today-pageviews" class="global-stat-value">—</div>
-                                <div class="global-stat-label">今日瀏覽量</div>
+                            <div class="global-stat-tile">
+                                <div id="stat-today-launches" class="global-stat-value">—</div>
+                                <div class="global-stat-label">今日程式啟動</div>
+                            </div>
+                            <div class="global-stat-tile">
+                                <div id="stat-login-plays" class="global-stat-value">—</div>
+                                <div class="global-stat-label">成功登入遊玩</div>
                             </div>
                             <div class="global-stat-tile">
                                 <div id="stat-level10-players" class="global-stat-value">—</div>
@@ -2319,11 +2447,11 @@
                             </div>
                         </div>
                         <div id="global-public-stats-status" class="global-stats-status warn mt-3">正在連線全球公開統計…</div>
-                        <div class="mt-2 text-[10px] leading-relaxed text-slate-500 text-center">挑戰者數為全球建立的玩家檔案數；瀏覽量為頁面瀏覽次數，不等於不重複真人數。數字會依卡片寬度自動縮小並完整保持單行；統計資料可能延遲更新。</div>
+                        <div class="mt-2 text-[10px] leading-relaxed text-slate-500 text-center">「網頁程式啟動」與「成功登入遊玩」均為發生次數，不是不重複真人數。世界盃由每個瀏覽器／裝置的本機最高分玩家參賽，雲端每 5 分鐘重新比對冠軍；GitHub 排程繁忙時可能短暫延遲。</div>
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.4</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.7</div>
                     </footer>
                 </main>
             </div>
@@ -2596,9 +2724,9 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
-        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.2.4";
-        const GAME_VERSION_NAME = "全球統計數字自適應版";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
+        const GAME_VERSION = "V2.2.7";
+        const GAME_VERSION_NAME = "雲端世界盃冠軍五分鐘更新版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2754,6 +2882,171 @@
             }
         }
 
+
+        const USAGE_EVENT_COLLECTION = 'usage_events';
+        const PAGE_LAUNCH_SESSION_KEY = `abrakai_page_launch_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+        let pageLaunchRecorded = false;
+
+        function safeEventIdPart(value, fallback = 'event') {
+            return String(value || fallback)
+                .replace(/[^A-Za-z0-9_-]/g, '_')
+                .slice(0, 80);
+        }
+
+        async function recordUsageEvent(eventType, player = null, extra = {}) {
+            if (!GLOBAL_STATS_CONFIG.enabled) return false;
+            const allowedTypes = new Set(['page_launch', 'player_login_play']);
+            if (!allowedTypes.has(eventType)) return false;
+
+            try {
+                const user = await ensureFirebaseUser();
+                if (!user || !firebaseDb) return false;
+
+                const now = Date.now();
+                const randomPart = (crypto?.randomUUID?.() || Math.random().toString(36).slice(2))
+                    .replace(/[^A-Za-z0-9]/g, '')
+                    .slice(0, 18);
+                const playerPart = player?.id ? safeEventIdPart(player.id, 'player') : 'visitor';
+                const eventId = [
+                    safeEventIdPart(user.uid, 'uid'),
+                    eventType,
+                    playerPart,
+                    now,
+                    randomPart
+                ].join('_').slice(0, 240);
+
+                await setDoc(doc(firebaseDb, USAGE_EVENT_COLLECTION, eventId), {
+                    ownerUid: user.uid,
+                    eventType,
+                    playerId: player?.id ? String(player.id).slice(0, 80) : '',
+                    nickname: player?.name ? validateString(player.name, '玩家').slice(0, 24) : '',
+                    sessionKey: PAGE_LAUNCH_SESSION_KEY,
+                    occurredAt: serverTimestamp(),
+                    occurredAtLocal: now,
+                    gameVersion: GAME_VERSION,
+                    source: 'github-pages',
+                    ...extra
+                });
+
+                return true;
+            } catch (error) {
+                console.warn('Usage event record failed', eventType, error?.code || error);
+                return false;
+            }
+        }
+
+        async function recordPageLaunchOnce() {
+            if (pageLaunchRecorded) return true;
+            pageLaunchRecorded = true;
+            const ok = await recordUsageEvent('page_launch', null, {
+                path: String(location.pathname || '/').slice(0, 160)
+            });
+            if (!ok) pageLaunchRecorded = false;
+            return ok;
+        }
+
+
+        function normalizeWorldCupInteger(value, minimum = 0, maximum = 2147483647) {
+            const number = Math.floor(Number(value || 0));
+            if (!Number.isFinite(number)) return minimum;
+            return Math.min(maximum, Math.max(minimum, number));
+        }
+
+        function compareWorldCupEntries(a, b) {
+            return (
+                Number(b?.bestScore || 0) - Number(a?.bestScore || 0) ||
+                Number(b?.highestLevel || 1) - Number(a?.highestLevel || 1) ||
+                Number(b?.lines || 0) - Number(a?.lines || 0) ||
+                Number(a?.achievedAtLocal || Number.MAX_SAFE_INTEGER) -
+                    Number(b?.achievedAtLocal || Number.MAX_SAFE_INTEGER) ||
+                String(a?.nickname || '').localeCompare(String(b?.nickname || ''), 'zh-Hant')
+            );
+        }
+
+        function getLocalDeviceWorldCupChampion() {
+            const candidates = (Array.isArray(players) ? players : [])
+                .filter(player => player && player.id)
+                .map(player => {
+                    const state = readPlayerSavedStateById(player.id);
+                    const bestScore = normalizeWorldCupInteger(Math.max(
+                        Number(player.bestScore || 0),
+                        Number(state?.score || 0),
+                        Number(state?.bestScore || 0)
+                    ));
+                    const highestLevel = normalizeWorldCupInteger(Math.max(
+                        1,
+                        Number(player.bestLevel || 1),
+                        Number(state?.level || 1),
+                        Number(state?.bestLevel || 1)
+                    ), 1, 9999);
+                    const lines = normalizeWorldCupInteger(Math.max(
+                        Number(player.clearCount || 0),
+                        Number(player.lines || 0),
+                        Number(state?.lines || 0)
+                    ), 0, 999999);
+                    return {
+                        localPlayerId: String(player.id || '').slice(0, 80),
+                        nickname: validateString(player.name || '玩家', '玩家'),
+                        avatar: String(player.avatar || '🎮').slice(0, 8),
+                        color: String(player.color || 'cyan').slice(0, 24),
+                        bestScore,
+                        highestLevel,
+                        lines,
+                        achievedAtLocal: normalizeWorldCupInteger(
+                            player.updatedAt || state?.savedAt || player.createdAt || Date.now(),
+                            0,
+                            Number.MAX_SAFE_INTEGER
+                        )
+                    };
+                })
+                .filter(entry => entry.bestScore > 0)
+                .sort(compareWorldCupEntries);
+
+            return candidates[0] || null;
+        }
+
+        async function syncDeviceWorldCupCandidate(reason = 'sync') {
+            if (isGuestMode || !GLOBAL_STATS_CONFIG.enabled) return false;
+            const champion = getLocalDeviceWorldCupChampion();
+            if (!champion) return false;
+
+            try {
+                const user = await ensureFirebaseUser();
+                if (!user || !firebaseDb) return false;
+
+                const candidateRef = doc(firebaseDb, 'world_cup_candidates', user.uid);
+                const currentSnapshot = await getDoc(candidateRef);
+                const current = currentSnapshot.exists() ? currentSnapshot.data() : null;
+                const proposed = {
+                    ...champion,
+                    ownerUid: user.uid
+                };
+
+                if (current && compareWorldCupEntries(proposed, current) > 0) {
+                    // Existing cloud record still outranks this device's current local data.
+                    return true;
+                }
+
+                await setDoc(candidateRef, {
+                    ...proposed,
+                    updatedAt: serverTimestamp(),
+                    gameVersion: GAME_VERSION,
+                    syncReason: String(reason || 'sync').slice(0, 32),
+                    source: 'github-pages'
+                }, { merge: true });
+
+                trackGameEvent('world_cup_candidate_sync', {
+                    score: proposed.bestScore,
+                    level: proposed.highestLevel,
+                    reason: String(reason || 'sync').slice(0, 32)
+                });
+                return true;
+            } catch (error) {
+                console.warn('World Cup candidate sync failed', reason, error?.code || error);
+                return false;
+            }
+        }
+
         function cloudPlayerDocumentId(player, uid = firebaseUser?.uid || '') {
             const raw = `${uid}_${player?.id || 'player'}`;
             return raw.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 240);
@@ -2784,6 +3077,7 @@
                 }, { merge: true });
                 if (highestLevel >= 10) void createCloudMilestone(player, 10, bestScoreCloud);
                 if (highestLevel >= 20) void createCloudMilestone(player, 20, bestScoreCloud);
+                void syncDeviceWorldCupCandidate(reason);
                 return true;
             } catch (error) {
                 console.warn('Cloud player sync failed', reason, error);
@@ -2821,9 +3115,10 @@
 
 
 
-        const PUBLIC_STATS_REFRESH_MS = 5 * 60 * 1000;
+        const PUBLIC_STATS_REFRESH_MS = 60 * 1000;
         let publicStatsLastLoadedAt = 0;
         let publicStatsLoading = false;
+        let publicStatsUnsubscribe = null;
 
         function formatPublicStatNumber(value) {
             const n = Number(value);
@@ -2889,8 +3184,9 @@
         function renderPublicStats(data = {}) {
             const mapping = {
                 'stat-registered-players': data.registeredPlayers,
-                'stat-total-pageviews': data.totalPageViews,
-                'stat-today-pageviews': data.todayPageViews,
+                'stat-total-launches': data.totalPageLaunches,
+                'stat-today-launches': data.todayPageLaunches,
+                'stat-login-plays': data.successfulLoginPlays,
                 'stat-level10-players': data.level10Players,
                 'stat-level20-players': data.level20Players
             };
@@ -2902,13 +3198,58 @@
                 el.dataset.fullValue = formatted;
                 el.title = formatted;
             }
-            requestAnimationFrame(fitAllPublicStatValues);
+            const championName = document.getElementById('world-cup-champion-name');
+            const championScore = document.getElementById('world-cup-champion-score');
+            const championLevel = document.getElementById('world-cup-champion-level');
+            const championLines = document.getElementById('world-cup-champion-lines');
+            const championDevices = document.getElementById('world-cup-device-count');
+            const championCard = document.getElementById('world-cup-champion-card');
+
+            const worldCupScore = normalizeWorldCupInteger(data.worldCupChampionScore || 0);
+            const worldCupName = validateString(
+                data.worldCupChampionName || (worldCupScore > 0 ? '世界盃冠軍' : '等待首位挑戰者'),
+                worldCupScore > 0 ? '世界盃冠軍' : '等待首位挑戰者'
+            );
+            if (championName) {
+                championName.textContent = `${String(data.worldCupChampionAvatar || '🏆').slice(0, 8)} ${worldCupName}`;
+                championName.title = worldCupName;
+            }
+            if (championScore) {
+                const scoreText = formatPublicStatNumber(worldCupScore);
+                championScore.textContent = scoreText;
+                championScore.dataset.fullValue = scoreText;
+                championScore.title = scoreText;
+            }
+            if (championLevel) {
+                championLevel.textContent = worldCupScore > 0
+                    ? `Level ${normalizeWorldCupInteger(data.worldCupChampionLevel || 1, 1, 9999)}`
+                    : 'Level —';
+            }
+            if (championLines) {
+                championLines.textContent = worldCupScore > 0
+                    ? `消除 ${formatPublicStatNumber(normalizeWorldCupInteger(data.worldCupChampionLines || 0, 0, 999999))} 行`
+                    : '消除 — 行';
+            }
+            if (championDevices) {
+                championDevices.textContent = `參賽裝置 ${formatPublicStatNumber(data.worldCupCandidateDevices || 0)}`;
+            }
+            if (championCard) {
+                championCard.style.setProperty(
+                    '--champion-accent',
+                    playerAccentColor(String(data.worldCupChampionColor || 'npcGold'))
+                );
+            }
+
+            requestAnimationFrame(() => {
+                fitAllPublicStatValues();
+                fitPublicStatValue(championScore);
+            });
             const updated = firestoreTimestampToDate(data.updatedAt);
             const updatedText = updated && !Number.isNaN(updated.getTime())
                 ? updated.toLocaleString('zh-TW', { hour12: false })
                 : '時間待同步';
-            const gaNote = data.gaStatus === 'error' ? '；GA4 瀏覽量暫時沿用上次結果' : '';
-            setPublicStatsStatus(`最後彙整：${updatedText}${gaNote}`, data.gaStatus === 'error' ? 'warn' : 'ok');
+            const gaNote = data.gaStatus === 'error' ? '；GA4 後台資料暫時沿用上次結果' : '';
+            setPublicStatsStatus(`最後彙整：${updatedText}｜世界盃與全球數據約每 5 分鐘更新${gaNote}`, data.gaStatus === 'error' ? 'warn' : 'ok');
         }
 
         async function loadPublicStatsSummary(force = false) {
@@ -2939,6 +3280,66 @@
         }
 
 
+        function startPublicStatsRealtimeListener() {
+            if (!firebaseDb || publicStatsUnsubscribe) return;
+            try {
+                publicStatsUnsubscribe = onSnapshot(
+                    doc(firebaseDb, 'public_stats', 'summary'),
+                    (snapshot) => {
+                        if (!snapshot.exists()) {
+                            setPublicStatsStatus('尚未產生公開統計；系統會在下一次 5 分鐘彙整後顯示。', 'warn');
+                            return;
+                        }
+                        publicStatsLastLoadedAt = Date.now();
+                        renderPublicStats(snapshot.data() || {});
+                    },
+                    (error) => {
+                        console.warn('Public stats realtime listener failed', error);
+                        setPublicStatsStatus('即時監聽暫時中斷，可按「讀取最新彙整」重新讀取。', 'warn');
+                    }
+                );
+            } catch (error) {
+                console.warn('Unable to start public stats listener', error);
+            }
+        }
+
+
+
+        let loginKeyboardTimer = null;
+
+        function isLoginField(element) {
+            return element && (element.id === 'input-nickname' || element.id === 'input-password');
+        }
+
+        function syncLoginKeyboardState() {
+            const active = document.activeElement;
+            const vv = window.visualViewport;
+            const viewportHeight = vv?.height || window.innerHeight;
+            const keyboardLikelyOpen = isLoginField(active)
+                && viewportHeight < Math.max(520, window.innerHeight * 0.82);
+
+            document.body.classList.toggle('keyboard-open', keyboardLikelyOpen);
+
+            if (keyboardLikelyOpen && active) {
+                clearTimeout(loginKeyboardTimer);
+                loginKeyboardTimer = setTimeout(() => {
+                    active.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 120);
+            }
+        }
+
+        function prepareLoginFieldForManualEntry(event) {
+            const input = event.currentTarget;
+            // Clear browser-created autofill state without touching the player's typed value.
+            input.setAttribute('autocomplete', 'off');
+            input.setAttribute('data-form-type', 'other');
+            setTimeout(syncLoginKeyboardState, 40);
+        }
+
         function updateVisualViewportSize() {
             const vv = window.visualViewport;
             const h = Math.max(320, Math.floor((vv && vv.height) ? vv.height : window.innerHeight));
@@ -2963,10 +3364,30 @@
                 publicStatsResizeObserver.observe(tile);
             });
         }
+
+        ['input-nickname', 'input-password'].forEach((id) => {
+            const field = document.getElementById(id);
+            field?.addEventListener('focus', prepareLoginFieldForManualEntry);
+            field?.addEventListener('click', prepareLoginFieldForManualEntry);
+            field?.addEventListener('blur', () => {
+                clearTimeout(loginKeyboardTimer);
+                loginKeyboardTimer = setTimeout(() => {
+                    document.body.classList.remove('keyboard-open');
+                    updateVisualViewportSize();
+                }, 180);
+            });
+        });
+
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void loadPublicStatsSummary(false); });
         if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', updateVisualViewportSize);
-            window.visualViewport.addEventListener('scroll', updateVisualViewportSize);
+            window.visualViewport.addEventListener('resize', () => {
+                updateVisualViewportSize();
+                syncLoginKeyboardState();
+            });
+            window.visualViewport.addEventListener('scroll', () => {
+                updateVisualViewportSize();
+                syncLoginKeyboardState();
+            });
         }
 
         function isIOSDevice() {
@@ -3562,6 +3983,9 @@ function clearInputValidation() {
             }
             setCurrentPlayer(player);
             trackGameEvent('login_success', { has_saved_progress: getSavedState() ? 'yes' : 'no' });
+            void recordUsageEvent('player_login_play', player, {
+                hasSavedProgress: Boolean(getSavedState())
+            });
             void syncCloudPlayer(player, 'login');
             setLoginFeedback('ok', `驗證成功：${player.avatar || '🎮'} ${player.name}。正在進入遊戲…`, 'password');
             return true;
@@ -4411,6 +4835,7 @@ function showPasswordHint() {
             renderLeaderboard(localLeaderboard);
             renderPlayerList();
             updateUI();
+            void syncDeviceWorldCupCandidate('score_submit');
 
             const rank = localLeaderboard.findIndex(item => ((player && item.playerId === player.id) || (!player && item.name === cleanName && !item.isDefault))) + 1;
             const isRanked = rank > 0 && rank <= 10;
@@ -6538,7 +6963,11 @@ function showPasswordHint() {
         // 才能正確呼叫 initializeGlobalStats() 與 loadPublicStatsSummary()。
         document.getElementById('btn-hold-help')?.addEventListener('click', () => document.getElementById('hold-help-modal')?.classList.remove('hidden'));
         document.getElementById('btn-refresh-public-stats')?.addEventListener('click', () => void loadPublicStatsSummary(true));
-        void initializeGlobalStats();
+        void initializeGlobalStats().then(() => {
+            void recordPageLaunchOnce();
+            void syncDeviceWorldCupCandidate('page_launch');
+            startPublicStatsRealtimeListener();
+        });
 
 </script>
 </body>

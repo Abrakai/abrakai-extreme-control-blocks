@@ -18,6 +18,60 @@ service cloud.firestore {
                   && resource.data.ownerUid == request.auth.uid;
       allow update, delete: if false;
     }
+    match /usage_events/{eventId} {
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.eventType in ['page_launch', 'player_login_play']
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.occurredAt == request.time;
+      allow read, update, delete: if false;
+    }
+
+    match /world_cup_candidates/{deviceUid} {
+      allow create: if request.auth != null
+                    && deviceUid == request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.nickname is string
+                    && request.resource.data.nickname.size() >= 1
+                    && request.resource.data.nickname.size() <= 24
+                    && request.resource.data.avatar is string
+                    && request.resource.data.avatar.size() <= 16
+                    && request.resource.data.color is string
+                    && request.resource.data.color.size() <= 32
+                    && request.resource.data.bestScore is int
+                    && request.resource.data.bestScore > 0
+                    && request.resource.data.bestScore <= 2147483647
+                    && request.resource.data.highestLevel is int
+                    && request.resource.data.highestLevel >= 1
+                    && request.resource.data.highestLevel <= 9999
+                    && request.resource.data.lines is int
+                    && request.resource.data.lines >= 0
+                    && request.resource.data.lines <= 999999
+                    && request.resource.data.updatedAt == request.time;
+
+      allow update: if request.auth != null
+                    && deviceUid == request.auth.uid
+                    && resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.bestScore is int
+                    && request.resource.data.bestScore >= resource.data.bestScore
+                    && request.resource.data.bestScore <= 2147483647
+                    && request.resource.data.highestLevel is int
+                    && request.resource.data.highestLevel >= 1
+                    && request.resource.data.highestLevel <= 9999
+                    && request.resource.data.lines is int
+                    && request.resource.data.lines >= 0
+                    && request.resource.data.lines <= 999999
+                    && request.resource.data.updatedAt == request.time;
+
+      allow read, delete: if false;
+    }
+
+    match /world_cup/{documentId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /public_stats/{documentId} {
       allow read: if true;
       allow write: if false;

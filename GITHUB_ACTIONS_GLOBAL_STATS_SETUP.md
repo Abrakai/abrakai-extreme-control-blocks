@@ -106,3 +106,21 @@ Repository → Settings → Secrets and variables → Actions
 
 ## 若舊版卡在 Install dependencies
 V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改回 npm 官方公開 registry。請取消舊執行、上傳 V2.2.2 後重新執行。
+
+
+## V2.2.6 排程與資料來源
+- 工作流程排程：`*/10 * * * *`，約每 10 分鐘執行一次。
+- `usage_events` 由網頁前端建立，只允許已通過 Firebase Anonymous Authentication 的使用者新增。
+- 公開摘要仍由 GitHub Actions 的無金鑰 WIF 身分寫入。
+- 上傳新版後，請把新版 `firestore.rules` 複製到 Firebase Console 的 Firestore 規則並發布。
+
+
+## V2.2.7 世界盃資料與五分鐘排程
+1. 將新版 `firestore.rules` 完整貼到 Firebase Console → Firestore → 規則，並按「發布」。
+2. 工作流程排程為 `2-57/5 * * * *`，即每小時的 02、07、12、17……57 分執行。
+3. 首次上傳新版後，請到 GitHub Actions 手動執行一次 `Update public global stats`，不必等待排程。
+4. Firestore 應出現：
+   - `world_cup_candidates/{匿名UID}`：每個瀏覽器／裝置的本機最高分候選者。
+   - `world_cup/current`：全球冠軍與前十名公開資料。
+   - `public_stats/summary`：首頁公開統計與冠軍欄位。
+5. 既有三個 GitHub Secrets 不需變更。

@@ -3,8 +3,8 @@ name: Update public global stats
 on:
   workflow_dispatch:
   schedule:
-    # GitHub Actions cron uses UTC. Run at minute 17 every hour.
-    - cron: '17 * * * *'
+    # GitHub Actions cron uses UTC. Run every 5 minutes at :02, :07, :12 ... to avoid the busiest top-of-hour minute.
+    - cron: '2-57/5 * * * *'
 
 permissions:
   contents: read
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   update-stats:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     env:
       GCP_PROJECT_ID: project-44be44c7-5433-4079-aaa
       GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
