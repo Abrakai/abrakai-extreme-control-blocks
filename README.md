@@ -1,37 +1,9 @@
-# 極限操控方塊 V2.2.2｜全球統計無金鑰驗證版
+# 極限操控方塊 V2.2.3｜全球統計讀取啟動修正版
 
-## 本版重點
-
-- GitHub Actions 改用 OIDC + Google Cloud Workload Identity Federation。
-- 不需要建立或保存長效 Service Account JSON 私鑰。
-- 使用 `google-github-actions/auth@v3` 取得短效 Application Default Credentials。
-- Firestore 統計改用 `@google-cloud/firestore`，與 WIF/ADC 相容。
-- GA4 Data API 也使用同一組短效 ADC 憑證。
-- 首頁全球挑戰數據看板維持不變。
-
-## GitHub Secrets
-
-需要三個 Repository Secrets：
-
-- `GA4_PROPERTY_ID`：`541602933`
-- `GCP_WORKLOAD_IDENTITY_PROVIDER`：建立 Provider 後取得的完整 resource name
-- `GCP_SERVICE_ACCOUNT`：`github-stats@project-44be44c7-5433-4079-aaa.iam.gserviceaccount.com`
-
-不再需要：
-
-- `FIREBASE_SERVICE_ACCOUNT`
-
-## 部署
-
-把 ZIP 內全部檔案覆蓋至 Repository 根目錄，保留 `.github` 隱藏資料夾。
-
-測試網址：
-
-`https://abrakai.github.io/abrakai-extreme-control-blocks/?v=221`
-
-
-## V2.2.2 GitHub Actions 安裝修正
-- 修正 `package-lock.json` 誤含內部套件來源網址，造成 GitHub Actions 卡在 `npm ci`。
-- 全部套件來源改為公開的 `https://registry.npmjs.org/`。
-- Workflow 明確設定 npm registry，並加入合理的下載重試與逾時。
-- 不變更 Firebase、GA4、Firestore 或 WIF Secrets。
+## 修正重點
+- 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
+- 根因：`initializeGlobalStats()` 被放在一般 `<script>` 中，無法存取 ES Module 內的 Firebase 函式，因此初始化根本沒有啟動。
+- 已將 Firebase 初始化與「讀取最新彙整」按鈕事件移回同一個 ES Module 作用域。
+- 公開統計會在首頁載入時自動讀取 `public_stats/summary`。
+- 手動按鈕改名為「讀取最新彙整」。
+- GitHub Actions 更新為 Node.js 24、`actions/checkout@v5` 與 `actions/setup-node@v5`。
