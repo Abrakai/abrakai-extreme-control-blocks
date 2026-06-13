@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.2.8 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.2.9 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2418,7 +2418,7 @@
                                 <span id="world-cup-champion-lines">消除 — 行</span>
                                 <span id="world-cup-device-count" class="world-cup-device-count">參賽裝置 0</span>
                             </div>
-                            <div class="world-cup-integrity-note">每個瀏覽器／裝置只送出一位本機最高分玩家參賽；正式獎金賽前仍建議加入伺服器端防作弊驗證。</div>
+                            <div class="world-cup-integrity-note">本榜為全球榮譽排行。每個瀏覽器／裝置只保留一位本機最高分玩家；開啟程式、登入成功、開始遊戲、過關、結算及分數提交時，系統都會重新檢查並同步較高紀錄。</div>
                         </div>
                         <div class="global-stats-grid">
                             <div class="global-stat-tile">
@@ -2447,11 +2447,11 @@
                             </div>
                         </div>
                         <div id="global-public-stats-status" class="global-stats-status warn mt-3">正在連線全球公開統計…</div>
-                        <div class="mt-2 text-[10px] leading-relaxed text-slate-500 text-center">「網頁程式啟動」與「成功登入遊玩」均為發生次數，不是不重複真人數。世界盃由每個瀏覽器／裝置的本機最高分玩家參賽，雲端每 5 分鐘重新比對冠軍；GitHub 排程繁忙時可能短暫延遲。</div>
+                        <div class="mt-2 text-[10px] leading-relaxed text-slate-500 text-center">「網頁程式啟動」與「成功登入遊玩」均為發生次數，不是不重複真人數。世界盃候選資料以每個瀏覽器／裝置一筆為原則，重複開啟或登入只會檢查並更新較高紀錄，不會新增同一裝置的重複參賽名額；雲端約每 5 分鐘重新比對全球榮譽冠軍。</div>
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.8</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.9</div>
                     </footer>
                 </main>
             </div>
@@ -2725,8 +2725,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.2.8";
-        const GAME_VERSION_NAME = "統計免複合索引穩定版";
+        const GAME_VERSION = "V2.2.9";
+        const GAME_VERSION_NAME = "世界盃榮譽榜說明修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 

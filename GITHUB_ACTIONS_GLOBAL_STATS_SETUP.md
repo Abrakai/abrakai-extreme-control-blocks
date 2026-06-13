@@ -128,3 +128,11 @@ V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改�
 
 ## V2.2.8 索引說明
 本版已取消 `eventType + occurredAt` 的複合聚合查詢。今日事件改為單獨查詢 `occurredAt`，再由 Node.js 分類計算，因此不需要在 Firebase Console 額外建立複合索引。上傳後直接手動執行一次 GitHub Actions 即可驗證。
+
+
+## V2.2.9 榮譽榜定位與候選同步
+世界盃功能定位為全球榮譽排行，只做成績與頭銜展示。
+
+每個 Firebase 匿名 UID 只保存一份 `world_cup_candidates/{uid}`。
+候選紀錄會在網頁開啟、正式玩家登入、開始遊戲、過關、結算與分數提交時重新檢查；
+只有較高的本機最高分才會覆寫同一份雲端候選紀錄。
