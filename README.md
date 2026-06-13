@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.2.1｜全球統計無金鑰驗證版
+# 極限操控方塊 V2.2.2｜全球統計無金鑰驗證版
 
 ## 本版重點
 
@@ -28,3 +28,10 @@
 測試網址：
 
 `https://abrakai.github.io/abrakai-extreme-control-blocks/?v=221`
+
+
+## V2.2.2 GitHub Actions 安裝修正
+- 修正 `package-lock.json` 誤含內部套件來源網址，造成 GitHub Actions 卡在 `npm ci`。
+- 全部套件來源改為公開的 `https://registry.npmjs.org/`。
+- Workflow 明確設定 npm registry，並加入合理的下載重試與逾時。
+- 不變更 Firebase、GA4、Firestore 或 WIF Secrets。

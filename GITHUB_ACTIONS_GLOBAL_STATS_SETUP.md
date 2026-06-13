@@ -1,4 +1,4 @@
-# V2.2.1｜GitHub Actions 無金鑰驗證設定
+# V2.2.2｜GitHub Actions 無金鑰驗證設定
 
 本版使用 GitHub OIDC + Google Cloud Workload Identity Federation，不建立 Service Account 私密金鑰。
 
@@ -78,7 +78,7 @@ Repository → Settings → Secrets and variables → Actions
 
 不需要建立 `FIREBASE_SERVICE_ACCOUNT`。
 
-## 四、上傳 V2.2.1 檔案
+## 四、上傳 V2.2.2 檔案
 
 必須包含：
 
@@ -102,3 +102,7 @@ Repository → Settings → Secrets and variables → Actions
   - `summary`
 
 首頁按「重新整理」即可讀取。
+
+
+## 若舊版卡在 Install dependencies
+V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改回 npm 官方公開 registry。請取消舊執行、上傳 V2.2.2 後重新執行。
