@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.2.7 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.2.8 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2405,7 +2405,7 @@
                         <div class="flex items-center justify-between gap-3 mb-3">
                             <div>
                                 <div class="text-[13px] font-black tracking-[0.16em] text-cyan-300">🌍 全球挑戰數據</div>
-                                <div class="mt-1 text-[11px] leading-relaxed text-slate-400">每次開啟網頁、成功登入及各裝置最高分都先寫入 Firebase；GitHub Actions 約每 5 分鐘完成全球 PK 與公開數據彙整。</div>
+                                <div class="mt-1 text-[11px] leading-relaxed text-slate-400">每次開啟網頁、成功登入及各裝置最高分都先寫入 Firebase；GitHub Actions 約每 5 分鐘以免複合索引方式完成全球 PK 與公開數據彙整。</div>
                             </div>
                             <button id="btn-refresh-public-stats" type="button" class="shrink-0 rounded-xl border border-cyan-400/50 bg-cyan-950/50 px-3 py-2 text-[11px] font-black text-cyan-200">讀取最新彙整</button>
                         </div>
@@ -2451,7 +2451,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.7</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.2.8</div>
                     </footer>
                 </main>
             </div>
@@ -2725,8 +2725,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.2.7";
-        const GAME_VERSION_NAME = "雲端世界盃冠軍五分鐘更新版";
+        const GAME_VERSION = "V2.2.8";
+        const GAME_VERSION_NAME = "統計免複合索引穩定版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 

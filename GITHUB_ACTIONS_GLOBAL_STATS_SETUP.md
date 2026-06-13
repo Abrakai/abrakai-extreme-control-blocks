@@ -124,3 +124,7 @@ V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改�
    - `world_cup/current`：全球冠軍與前十名公開資料。
    - `public_stats/summary`：首頁公開統計與冠軍欄位。
 5. 既有三個 GitHub Secrets 不需變更。
+
+
+## V2.2.8 索引說明
+本版已取消 `eventType + occurredAt` 的複合聚合查詢。今日事件改為單獨查詢 `occurredAt`，再由 Node.js 分類計算，因此不需要在 Firebase Console 額外建立複合索引。上傳後直接手動執行一次 GitHub Actions 即可驗證。

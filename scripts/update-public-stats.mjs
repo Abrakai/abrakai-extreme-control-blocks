@@ -23,9 +23,32 @@ async function queryPageViews(client, propertyId, startDate, endDate) {
   return metricValue(response);
 }
 
-async function countQuery(query) {
-  const snapshot = await query.count().get();
-  return snapshot.data().count;
+async function countQuery(query, label = 'collection') {
+  try {
+    const snapshot = await query.count().get();
+    return Number(snapshot.data().count || 0);
+  } catch (error) {
+    console.error(`Firestore count failed [${label}]:`, error?.message || error);
+    throw error;
+  }
+}
+
+async function countTodayUsageEvents(usageEvents, todayStart) {
+  const snapshot = await usageEvents
+    .where('occurredAt', '>=', todayStart)
+    .select('eventType')
+    .get();
+
+  let pageLaunches = 0;
+  let loginPlays = 0;
+
+  for (const document of snapshot.docs) {
+    const eventType = document.get('eventType');
+    if (eventType === 'page_launch') pageLaunches += 1;
+    if (eventType === 'player_login_play') loginPlays += 1;
+  }
+
+  return { pageLaunches, loginPlays, scannedDocuments: snapshot.size };
 }
 
 
@@ -103,29 +126,36 @@ async function main() {
 
   const worldCupCandidates = db.collection('world_cup_candidates');
 
+  console.log('Starting Firestore aggregation without composite-index queries...');
+
   const [
     registeredPlayers,
     totalPageLaunches,
-    todayPageLaunches,
     successfulLoginPlays,
     level10Players,
     level20Players,
     worldCupCandidateDevices,
-    worldCupCandidateSnapshot
+    worldCupCandidateSnapshot,
+    todayUsageCounts
   ] = await Promise.all([
-    countQuery(db.collection('players')),
-    countQuery(usageEvents.where('eventType', '==', 'page_launch')),
-    countQuery(
-      usageEvents
-        .where('eventType', '==', 'page_launch')
-        .where('occurredAt', '>=', todayStart)
-    ),
-    countQuery(usageEvents.where('eventType', '==', 'player_login_play')),
-    countQuery(db.collection('milestones').where('milestone', '==', 10)),
-    countQuery(db.collection('milestones').where('milestone', '==', 20)),
-    countQuery(worldCupCandidates),
-    worldCupCandidates.orderBy('bestScore', 'desc').limit(100).get()
+    countQuery(db.collection('players'), 'players'),
+    countQuery(usageEvents.where('eventType', '==', 'page_launch'), 'usage_events/page_launch'),
+    countQuery(usageEvents.where('eventType', '==', 'player_login_play'), 'usage_events/player_login_play'),
+    countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
+    countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
+    countQuery(worldCupCandidates, 'world_cup_candidates'),
+    worldCupCandidates.orderBy('bestScore', 'desc').limit(100).get(),
+    countTodayUsageEvents(usageEvents, todayStart)
   ]);
+
+  const todayPageLaunches = todayUsageCounts.pageLaunches;
+  const todaySuccessfulLoginPlays = todayUsageCounts.loginPlays;
+
+  console.log('Today usage scan completed:', {
+    scannedDocuments: todayUsageCounts.scannedDocuments,
+    todayPageLaunches,
+    todaySuccessfulLoginPlays
+  });
 
   const worldCupEntries = worldCupCandidateSnapshot.docs
     .map(sanitizeWorldCupCandidate)
@@ -168,6 +198,7 @@ async function main() {
     totalPageLaunches,
     todayPageLaunches,
     successfulLoginPlays,
+    todaySuccessfulLoginPlays,
     totalPageViews,
     todayPageViews,
     level10Players,
@@ -185,8 +216,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 4,
-    gameVersion: 'V2.2.7'
+    schemaVersion: 5,
+    gameVersion: 'V2.2.8'
   };
 
   const worldCupPublic = {
@@ -195,7 +226,7 @@ async function main() {
     entries: worldCupTopTen,
     candidateDevices: worldCupCandidateDevices,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.2.7'
+    gameVersion: 'V2.2.8'
   };
 
   await Promise.all([
@@ -208,6 +239,7 @@ async function main() {
     totalPageLaunches,
     todayPageLaunches,
     successfulLoginPlays,
+    todaySuccessfulLoginPlays,
     totalPageViews,
     todayPageViews,
     level10Players,
@@ -219,6 +251,9 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('Public stats update failed:', error?.stack || error);
+  console.error('Public stats update failed.');
+  console.error('Error code:', error?.code ?? 'unknown');
+  console.error('Error details:', error?.details ?? error?.message ?? 'unknown');
+  console.error(error?.stack || error);
   process.exitCode = 1;
 });
