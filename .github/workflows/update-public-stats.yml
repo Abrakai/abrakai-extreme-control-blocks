@@ -3,11 +3,12 @@ name: Update public global stats
 on:
   workflow_dispatch:
   schedule:
-    # GitHub Actions cron uses UTC. Run at minute 17 every hour to avoid the top-of-hour queue peak.
+    # GitHub Actions cron uses UTC. Run at minute 17 every hour.
     - cron: '17 * * * *'
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: update-public-global-stats
@@ -17,9 +18,22 @@ jobs:
   update-stats:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      GCP_PROJECT_ID: project-44be44c7-5433-4079-aaa
+      GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud without a key
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -31,7 +45,4 @@ jobs:
         run: npm ci
 
       - name: Update Firestore public summary
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
         run: npm run update-stats

@@ -1,65 +1,86 @@
-# V2.2.0｜GitHub Actions 全球統計設定
+# V2.2.1｜GitHub Actions 無金鑰驗證設定
 
-這套方案保留 Firebase Spark 免費方案，使用 GitHub Actions 每小時彙整：
+本版使用 GitHub OIDC + Google Cloud Workload Identity Federation，不建立 Service Account 私密金鑰。
 
-- Firestore `players`：全球註冊挑戰者數
-- Firestore `milestones`：突破第 10 關與第 20 關人數
-- GA4 `screenPageViews`：累積瀏覽量與今日瀏覽量
-- Firestore `public_stats/summary`：提供遊戲首頁唯讀顯示
+## 已知專案資料
 
-## 一、取得數字形式的 GA4 Property ID
+- Google Cloud Project ID：`project-44be44c7-5433-4079-aaa`
+- Google Cloud Project Number：`287079960129`
+- GitHub Repository：`Abrakai/abrakai-extreme-control-blocks`
+- GA4 Property ID：`541602933`
+- 專用 Service Account：`github-stats@project-44be44c7-5433-4079-aaa.iam.gserviceaccount.com`
 
-Measurement ID `G-JWWG3ZN83M` 不能直接拿來查詢 Data API。請到：
+## 一、用 Cloud Shell 建立 WIF
 
-1. Google Analytics
-2. 左下角「管理」
-3. 選擇 AbraKai Game Studio 對應的資源
-4. 「資源設定」
-5. 複製純數字的「資源 ID／Property ID」
+進入 Google Cloud Console，確認選到 `project-44be44c7-5433-4079-aaa`，開啟右上角 Cloud Shell，完整貼上：
 
-例如：`123456789`
+```bash
+set -euo pipefail
 
-## 二、啟用 Google Analytics Data API
+PROJECT_ID="project-44be44c7-5433-4079-aaa"
+PROJECT_NUMBER="287079960129"
+REPO="Abrakai/abrakai-extreme-control-blocks"
+POOL_ID="github-actions"
+PROVIDER_ID="abrakai-extreme-control-blocks"
+SA_NAME="github-stats"
+SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
-在正確的 Google Cloud 專案 `project-44be44c7-5433-4079-aaa` 中啟用：
+gcloud config set project "$PROJECT_ID"
 
-`Google Analytics Data API`
+gcloud services enable   iam.googleapis.com   iamcredentials.googleapis.com   sts.googleapis.com   firestore.googleapis.com   analyticsdata.googleapis.com
 
-## 三、建立 GitHub Actions 專用服務帳戶金鑰
+if ! gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" >/dev/null 2>&1; then
+  gcloud iam service-accounts create "$SA_NAME"     --project="$PROJECT_ID"     --display-name="GitHub Global Stats"
+fi
 
-1. Google Cloud → IAM 與管理 → 服務帳戶
-2. 可使用 Firebase Admin SDK 服務帳戶，或建立專用服務帳戶
-3. 讓它具備讀寫 Firestore 的權限（建議最小權限；測試階段可使用 Cloud Datastore User）
-4. 建立 JSON 金鑰並下載
-5. JSON 只放 GitHub Secret，禁止提交到 Repository
+gcloud projects add-iam-policy-binding "$PROJECT_ID"   --member="serviceAccount:${SA_EMAIL}"   --role="roles/datastore.user"   --condition=None
 
-## 四、把服務帳戶加入 GA4 資源
+if ! gcloud iam workload-identity-pools describe "$POOL_ID"   --project="$PROJECT_ID" --location="global" >/dev/null 2>&1; then
+  gcloud iam workload-identity-pools create "$POOL_ID"     --project="$PROJECT_ID"     --location="global"     --display-name="GitHub Actions Pool"
+fi
+
+if ! gcloud iam workload-identity-pools providers describe "$PROVIDER_ID"   --project="$PROJECT_ID" --location="global"   --workload-identity-pool="$POOL_ID" >/dev/null 2>&1; then
+  gcloud iam workload-identity-pools providers create-oidc "$PROVIDER_ID"     --project="$PROJECT_ID"     --location="global"     --workload-identity-pool="$POOL_ID"     --display-name="AbraKai global stats"     --issuer-uri="https://token.actions.githubusercontent.com"     --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner,attribute.ref=assertion.ref"     --attribute-condition="assertion.repository == '${REPO}' && assertion.ref == 'refs/heads/main'"
+fi
+
+POOL_NAME=$(gcloud iam workload-identity-pools describe "$POOL_ID"   --project="$PROJECT_ID" --location="global" --format="value(name)")
+
+PROVIDER_NAME=$(gcloud iam workload-identity-pools providers describe "$PROVIDER_ID"   --project="$PROJECT_ID" --location="global"   --workload-identity-pool="$POOL_ID" --format="value(name)")
+
+gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL"   --project="$PROJECT_ID"   --role="roles/iam.workloadIdentityUser"   --member="principalSet://iam.googleapis.com/${POOL_NAME}/attribute.repository/${REPO}"
+
+echo "========================================"
+echo "GCP_WORKLOAD_IDENTITY_PROVIDER=${PROVIDER_NAME}"
+echo "GCP_SERVICE_ACCOUNT=${SA_EMAIL}"
+echo "========================================"
+```
+
+執行完成後，請複製最後兩行等號右邊的值。
+
+## 二、把 Service Account 加入 GA4
 
 1. Google Analytics → 管理
-2. 資源存取權管理
-3. 新增使用者
-4. 輸入 JSON 內的 `client_email`
-5. 權限選「檢視者」
+2. 資源 → 資源存取權管理
+3. 右上角 `+` → 新增使用者
+4. Email：`github-stats@project-44be44c7-5433-4079-aaa.iam.gserviceaccount.com`
+5. 角色：`檢視者`
+6. 新增
 
-## 五、建立 GitHub Repository Secrets
+## 三、建立 GitHub Secrets
 
-Repository：`abrakai-extreme-control-blocks`
+Repository → Settings → Secrets and variables → Actions
 
-路徑：Settings → Secrets and variables → Actions → New repository secret
+建立／更新：
 
-新增兩個 Secrets：
+- `GA4_PROPERTY_ID` = `541602933`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER` = Cloud Shell 最後輸出的 Provider 完整名稱
+- `GCP_SERVICE_ACCOUNT` = `github-stats@project-44be44c7-5433-4079-aaa.iam.gserviceaccount.com`
 
-### `FIREBASE_SERVICE_ACCOUNT`
+不需要建立 `FIREBASE_SERVICE_ACCOUNT`。
 
-內容：完整貼上服務帳戶 JSON。
+## 四、上傳 V2.2.1 檔案
 
-### `GA4_PROPERTY_ID`
-
-內容：純數字 Property ID，例如 `123456789`。
-
-## 六、上傳檔案
-
-請保留以下路徑：
+必須包含：
 
 - `.github/workflows/update-public-stats.yml`
 - `scripts/update-public-stats.mjs`
@@ -67,21 +88,17 @@ Repository：`abrakai-extreme-control-blocks`
 - `package-lock.json`
 - `index.html`
 
-## 七、第一次手動執行
+## 五、第一次手動執行
 
-1. GitHub Repository → Actions
-2. 左側選 `Update public global stats`
-3. 按 `Run workflow`
-4. 等待綠色勾勾
-5. Firebase → Firestore → `public_stats` → `summary`
-6. 遊戲首頁按「重新整理」，應顯示公開數字
+1. GitHub → Actions
+2. `Update public global stats`
+3. `Run workflow`
+4. Branch 選 `main`
+5. 按綠色 `Run workflow`
 
-## 八、統計定義
+若成功，Firebase Firestore 會出現：
 
-- 全球註冊挑戰者：Firestore `players` 文件數
-- 突破第 10 關：`milestones` 中 `milestone == 10` 文件數
-- 突破第 20 關：`milestones` 中 `milestone == 20` 文件數
-- 累積瀏覽量：GA4 `screenPageViews` 自 2020-01-01 至今天
-- 今日瀏覽量：GA4 今日 `screenPageViews`
+- `public_stats`
+  - `summary`
 
-GA4 可能有資料處理延遲；GitHub 排程也不保證精準到分鐘，因此首頁會顯示最後彙整時間。
+首頁按「重新整理」即可讀取。

@@ -1,23 +1,10 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { Firestore, FieldValue } from '@google-cloud/firestore';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 function requiredEnv(name) {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Missing required environment variable: ${name}`);
   return value;
-}
-
-function parseServiceAccount(raw) {
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed.client_email || !parsed.private_key || !parsed.project_id) {
-      throw new Error('service account JSON lacks client_email/private_key/project_id');
-    }
-    return parsed;
-  } catch (error) {
-    throw new Error(`FIREBASE_SERVICE_ACCOUNT is invalid JSON: ${error.message}`);
-  }
 }
 
 function metricValue(response) {
@@ -42,24 +29,13 @@ async function countQuery(query) {
 }
 
 async function main() {
-  const serviceAccount = parseServiceAccount(requiredEnv('FIREBASE_SERVICE_ACCOUNT'));
+  const projectId = requiredEnv('GCP_PROJECT_ID');
   const propertyId = requiredEnv('GA4_PROPERTY_ID').replace(/^properties\//, '');
 
-  if (!getApps().length) {
-    initializeApp({
-      credential: cert(serviceAccount),
-      projectId: serviceAccount.project_id
-    });
-  }
-
-  const db = getFirestore();
-  const analyticsClient = new BetaAnalyticsDataClient({
-    credentials: {
-      client_email: serviceAccount.client_email,
-      private_key: serviceAccount.private_key
-    },
-    projectId: serviceAccount.project_id
-  });
+  // google-github-actions/auth creates short-lived Application Default Credentials.
+  // Both clients below automatically read those ADC credentials.
+  const db = new Firestore({ projectId });
+  const analyticsClient = new BetaAnalyticsDataClient();
 
   const [registeredPlayers, level10Players, level20Players] = await Promise.all([
     countQuery(db.collection('players')),
@@ -80,9 +56,9 @@ async function main() {
     level20Players,
     updatedAt: FieldValue.serverTimestamp(),
     gaStatus: 'ok',
-    source: 'github-actions',
-    schemaVersion: 1,
-    gameVersion: 'V2.2.0'
+    source: 'github-actions-wif',
+    schemaVersion: 2,
+    gameVersion: 'V2.2.1'
   };
 
   await db.collection('public_stats').doc('summary').set(summary, { merge: true });

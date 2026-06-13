@@ -1,6 +1,6 @@
 {
   "name": "abrakai-extreme-control-blocks-stats",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@google-analytics/data": "6.1.0",
-    "firebase-admin": "14.0.0"
+    "@google-cloud/firestore": "8.6.0"
   },
   "overrides": {
     "uuid": "11.1.1"
