@@ -58,7 +58,7 @@ async function main() {
     gaStatus: 'ok',
     source: 'github-actions-wif',
     schemaVersion: 2,
-    gameVersion: 'V2.2.3'
+    gameVersion: 'V2.2.4'
   };
 
   await db.collection('public_stats').doc('summary').set(summary, { merge: true });
