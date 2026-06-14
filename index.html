@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.6 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.3.7 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2561,7 +2561,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.6</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.7</div>
                     </footer>
                 </main>
             </div>
@@ -2835,8 +2835,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.6";
-        const GAME_VERSION_NAME = "世界盃即時回填修正版";
+        const GAME_VERSION = "V2.3.7";
+        const GAME_VERSION_NAME = "世界盃顯示來源分離修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -3765,6 +3765,12 @@
         let publicStatsLoading = false;
         let publicStatsUnsubscribe = null;
 
+        // V2.3.7：世界盃冠軍畫面只以 world_cup/current 為唯一正式來源。
+        // public_stats/summary 可能是五分鐘前的備份，不能再覆蓋即時冠軍。
+        let worldCupCurrentLastLoadedAt = 0;
+        let worldCupCurrentLoading = false;
+        let lastWorldCupCurrentData = null;
+
         function formatPublicStatNumber(value) {
             const n = Number(value);
             if (!Number.isFinite(n) || n < 0) return '—';
@@ -3829,6 +3835,7 @@
         function renderPublicStats(data = {}) {
             lastOfficialStats = { ...data };
             lastOfficialStatsUpdatedAt = firestoreTimestampToDate(data.updatedAt);
+
             const mapping = {
                 'stat-registered-players': data.registeredPlayers,
                 'stat-total-launches': data.totalPageLaunches,
@@ -3839,6 +3846,7 @@
                 'stat-level10-players': data.level10Players,
                 'stat-level20-players': data.level20Players
             };
+
             for (const [id, value] of Object.entries(mapping)) {
                 const el = document.getElementById(id);
                 if (!el) continue;
@@ -3847,60 +3855,22 @@
                 el.dataset.fullValue = formatted;
                 el.title = formatted;
             }
-            const championName = document.getElementById('world-cup-champion-name');
-            const championScore = document.getElementById('world-cup-champion-score');
-            const championLevel = document.getElementById('world-cup-champion-level');
-            const championLines = document.getElementById('world-cup-champion-lines');
-            const championDevices = null;
-            const championCard = document.getElementById('world-cup-champion-card');
 
-            const worldCupScore = normalizeWorldCupInteger(data.worldCupChampionScore || 0);
-            const worldCupName = validateString(
-                data.worldCupChampionName || (worldCupScore > 0 ? '世界盃冠軍' : '等待首位挑戰者'),
-                worldCupScore > 0 ? '世界盃冠軍' : '等待首位挑戰者'
-            );
-            if (championName) {
-                championName.textContent = `${String(data.worldCupChampionAvatar || '🏆').slice(0, 8)} ${worldCupName}`;
-                championName.title = worldCupName;
-            }
-            if (championScore) {
-                const scoreText = formatPublicStatNumber(worldCupScore);
-                championScore.textContent = scoreText;
-                championScore.dataset.fullValue = scoreText;
-                championScore.title = scoreText;
-            }
-            if (championLevel) {
-                championLevel.textContent = worldCupScore > 0
-                    ? `Level ${normalizeWorldCupInteger(data.worldCupChampionLevel || 1, 1, 9999)}`
-                    : 'Level —';
-            }
-            if (championLines) {
-                championLines.textContent = worldCupScore > 0
-                    ? `消除 ${formatPublicStatNumber(normalizeWorldCupInteger(data.worldCupChampionLines || 0, 0, 999999))} 行`
-                    : '消除 — 行';
-            }
-            if (championDevices) {
-                championDevices.textContent = `參賽裝置 ${formatPublicStatNumber(data.worldCupCandidateDevices || 0)}`;
-            }
-            if (championCard) {
-                championCard.style.setProperty(
-                    '--champion-accent',
-                    playerAccentColor(String(data.worldCupChampionColor || 'npcGold'))
-                );
-            }
+            requestAnimationFrame(fitAllPublicStatValues);
 
-            requestAnimationFrame(() => {
-                fitAllPublicStatValues();
-                fitPublicStatValue(championScore);
-            });
             const updated = firestoreTimestampToDate(data.updatedAt);
             const updatedText = updated && !Number.isNaN(updated.getTime())
                 ? updated.toLocaleString('zh-TW', { hour12: false })
                 : '時間待同步';
+
             const backupStatus = document.getElementById('global-public-stats-status');
             if (backupStatus) {
-                backupStatus.textContent = `全球榮譽榜備份彙整：${updatedText}｜系統約每 5 分鐘更新一次`;
+                backupStatus.textContent =
+                    `全球榮譽榜備份彙整：${updatedText}｜系統約每 5 分鐘更新一次`;
             }
+
+            // 注意：此函式不得改動世界盃冠軍卡片。
+            // 冠軍卡片只由 world_cup/current 的即時監聽或主動讀取更新。
             setTimeout(() => void loadLivePublicStats(true), 60);
         }
 
@@ -3932,7 +3902,49 @@
         }
 
 
+        async function loadWorldCupCurrent(force = false) {
+            if (!firebaseDb || worldCupCurrentLoading) return false;
+
+            const now = Date.now();
+            if (!force && now - worldCupCurrentLastLoadedAt < 15 * 1000) {
+                return true;
+            }
+
+            worldCupCurrentLoading = true;
+            try {
+                const snapshot = await getDoc(doc(firebaseDb, 'world_cup', 'current'));
+                worldCupCurrentLastLoadedAt = Date.now();
+
+                if (!snapshot.exists()) {
+                    const syncStatus = document.getElementById('world-cup-sync-status');
+                    if (syncStatus && !lastWorldCupCurrentData) {
+                        syncStatus.textContent =
+                            '第一位全球榮譽冠軍，正等待你來挑戰！';
+                    }
+                    return false;
+                }
+
+                const data = snapshot.data() || {};
+                lastWorldCupCurrentData = data;
+                renderWorldCupDocument(data);
+                return true;
+            } catch (error) {
+                console.warn('World Cup current read failed', error?.code || error);
+                const syncStatus = document.getElementById('world-cup-sync-status');
+                if (syncStatus) {
+                    syncStatus.textContent =
+                        '世界盃即時紀錄暫時無法讀取，系統稍後會自動再試。';
+                }
+                return false;
+            } finally {
+                worldCupCurrentLoading = false;
+            }
+        }
+
         function renderWorldCupDocument(data = {}) {
+            lastWorldCupCurrentData = { ...data };
+            worldCupCurrentLastLoadedAt = Date.now();
+
             const champion = data.champion || {};
             const score = normalizeWorldCupInteger(
                 champion.bestScore ?? data.worldCupChampionScore ?? 0
@@ -3990,7 +4002,10 @@
                 doc(firebaseDb, 'world_cup', 'current'),
                 snapshot => {
                     if (snapshot.exists()) {
-                        renderWorldCupDocument(snapshot.data() || {});
+                        const data = snapshot.data() || {};
+                        lastWorldCupCurrentData = data;
+                        worldCupCurrentLastLoadedAt = Date.now();
+                        renderWorldCupDocument(data);
                     } else {
                         const syncStatus = document.getElementById('world-cup-sync-status');
                         if (syncStatus) syncStatus.textContent = '第一位全球榮譽冠軍，正等待你來挑戰！';
@@ -7778,7 +7793,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.6｜世界盃即時回填修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.7｜世界盃顯示來源分離修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
@@ -7925,10 +7940,43 @@ function showPasswordHint() {
         // V2.2.3：以下初始化必須留在 ES Module 作用域內，
         // 才能正確呼叫 initializeGlobalStats() 與 loadPublicStatsSummary()。
         document.getElementById('btn-hold-help')?.addEventListener('click', () => document.getElementById('hold-help-modal')?.classList.remove('hidden'));
-        document.getElementById('btn-refresh-public-stats')?.addEventListener('click', () => {
-            void loadPublicStatsSummary(true);
-            void loadLivePublicStats(true);
-            scheduleWorldCupSync('manual_refresh');
+        document.getElementById('btn-refresh-public-stats')?.addEventListener('click', async (event) => {
+            const button = event.currentTarget;
+            const originalText = button?.textContent || '更新數據';
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = '更新中…';
+                button.setAttribute('aria-busy', 'true');
+            }
+
+            const syncStatus = document.getElementById('world-cup-sync-status');
+            if (syncStatus) {
+                syncStatus.textContent =
+                    '正在送出本機最高分並讀取最新世界盃冠軍…';
+            }
+
+            try {
+                // 統計摘要與即時活動數字可平行更新。
+                await Promise.allSettled([
+                    loadPublicStatsSummary(true),
+                    loadLivePublicStats(true)
+                ]);
+
+                // 先送出／比較本機最高分，完成後再讀取 world_cup/current。
+                await syncDeviceWorldCupCandidate('manual_refresh');
+                await loadWorldCupCurrent(true);
+
+                // 額外排程重試，處理行動網路短暫不穩。
+                setTimeout(() => void loadWorldCupCurrent(true), 1200);
+                setTimeout(() => void loadWorldCupCurrent(true), 5000);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.removeAttribute('aria-busy');
+                }
+            }
         });
         document.getElementById('btn-global-stats-info')?.addEventListener('click', () => showInfoModal('globalStats'));
         void initializeGlobalStats().then(async () => {
@@ -7938,7 +7986,9 @@ function showPasswordHint() {
             startPublicStatsRealtimeListener();
             startWorldCupRealtimeListener();
             setTimeout(() => void loadLivePublicStats(true), 500);
+            setTimeout(() => void loadWorldCupCurrent(true), 700);
             setInterval(() => void loadLivePublicStats(false), 60 * 1000);
+            setInterval(() => void loadWorldCupCurrent(false), 60 * 1000);
             setInterval(() => scheduleWorldCupSync('five_minute_recheck'), 5 * 60 * 1000);
         });
 

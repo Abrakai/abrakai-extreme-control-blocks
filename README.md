@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.3.6｜全球統計讀取啟動修正版
+# 極限操控方塊 V2.3.7｜全球統計讀取啟動修正版
 
 ## 修正重點
 - 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
@@ -176,3 +176,25 @@ V2.3.6 修正：
   2. 該匿名使用者自己的 `world_cup_submissions/{submissionId}`。
 - 若 candidates 寫入暫時失敗，仍可使用 submissions 證據即時回填冠軍。
 - GitHub Actions 仍會每 5 分鐘從 submissions + candidates 雙來源校正。
+
+
+## V2.3.7 世界盃顯示來源分離修正
+
+### 問題原因
+`world_cup/current` 已有 1,662,276 分冠軍，因此 F5 後即時監聽可以正確顯示。
+
+但「更新數據」按鈕同時重新讀取 `public_stats/summary`。該文件是 GitHub Actions
+約每 5 分鐘建立的備份摘要，在下一次彙整前仍可能保存舊的 0 分世界盃欄位。
+V2.3.6 的 `renderPublicStats()` 會把這個舊值重新畫到冠軍卡片，因此畫面看起來像冠軍消失；
+Firebase 的 `world_cup/current` 實際上並未被刪除。
+
+### V2.3.7 修正
+- 全球統計數字仍由 `public_stats/summary` 與即時活動事件提供。
+- 世界盃冠軍卡片只由 `world_cup/current` 提供，不再接受備份摘要覆蓋。
+- 按「更新數據」時依序：
+  1. 更新統計摘要與即時活動數字。
+  2. 送出並比較本機最高分。
+  3. 最後主動重新讀取 `world_cup/current`。
+  4. 1.2 秒與 5 秒後各再讀取一次，處理網路或 Firestore 傳播延遲。
+- 每 60 秒也會重新確認一次 `world_cup/current`。
+- 本版不修改 Firestore Rules 或資料庫結構。
