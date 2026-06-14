@@ -36,21 +36,38 @@ async function countQuery(query, label = 'collection') {
 async function countTodayUsageEvents(usageEvents, todayStart) {
   const snapshot = await usageEvents
     .where('occurredAt', '>=', todayStart)
-    .select('eventType')
+    .select('eventType', 'ownerUid', 'playerId')
     .get();
 
   let pageLaunches = 0;
   let loginPlays = 0;
   let gameStarts = 0;
+  const activePlayers = new Set();
 
   for (const document of snapshot.docs) {
     const eventType = document.get('eventType');
+    const ownerUid = String(document.get('ownerUid') || '');
+    const playerId = String(document.get('playerId') || '');
+
     if (eventType === 'page_launch') pageLaunches += 1;
     if (eventType === 'player_login_play') loginPlays += 1;
     if (eventType === 'game_start') gameStarts += 1;
+
+    if (
+      ownerUid &&
+      (eventType === 'player_login_play' || eventType === 'game_start')
+    ) {
+      activePlayers.add(playerId ? `${ownerUid}:${playerId}` : `${ownerUid}:guest`);
+    }
   }
 
-  return { pageLaunches, loginPlays, gameStarts, scannedDocuments: snapshot.size };
+  return {
+    pageLaunches,
+    loginPlays,
+    gameStarts,
+    activePlayers: activePlayers.size,
+    scannedDocuments: snapshot.size
+  };
 }
 
 
@@ -140,6 +157,7 @@ async function main() {
     gameStarts,
     level10Players,
     level20Players,
+    level30Players,
     worldCupCandidateDocumentCount,
     worldCupCandidateSnapshot,
     worldCupSubmissionSnapshot,
@@ -151,6 +169,7 @@ async function main() {
     countQuery(usageEvents.where('eventType', '==', 'game_start'), 'usage_events/game_start'),
     countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
     countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
+    countQuery(db.collection('milestones').where('milestone', '==', 30), 'milestones/level30'),
     countQuery(worldCupCandidates, 'world_cup_candidates'),
     worldCupCandidates.get(),
     worldCupSubmissions.get(),
@@ -160,6 +179,7 @@ async function main() {
   const todayPageLaunches = todayUsageCounts.pageLaunches;
   const todaySuccessfulLoginPlays = todayUsageCounts.loginPlays;
   const todayGameStarts = todayUsageCounts.gameStarts;
+  const todayActivePlayers = todayUsageCounts.activePlayers;
 
   console.log('Today usage scan completed:', {
     scannedDocuments: todayUsageCounts.scannedDocuments,
@@ -224,14 +244,17 @@ async function main() {
     registeredPlayers,
     totalPageLaunches,
     todayPageLaunches,
+    todayActivePlayers,
     successfulLoginPlays,
     todaySuccessfulLoginPlays,
+    todayActivePlayers,
     gameStarts,
     todayGameStarts,
     totalPageViews,
     todayPageViews,
     level10Players,
     level20Players,
+    level30Players,
     worldCupCandidateDevices,
     worldCupCandidateDocuments: worldCupCandidateDocumentCount,
     worldCupSubmissionRecords: worldCupSubmissionSnapshot.size,
@@ -247,8 +270,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 8,
-    gameVersion: 'V2.3.6'
+    schemaVersion: 9,
+    gameVersion: 'V2.4.1'
   };
 
   const worldCupPublic = {
@@ -259,7 +282,7 @@ async function main() {
     candidateDocuments: worldCupCandidateDocumentCount,
     submissionRecords: worldCupSubmissionSnapshot.size,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.3.6'
+    gameVersion: 'V2.4.1'
   };
 
   await Promise.all([
@@ -279,6 +302,7 @@ async function main() {
     todayPageViews,
     level10Players,
     level20Players,
+    level30Players,
     worldCupCandidateDevices,
     worldCupCandidateDocuments: worldCupCandidateDocumentCount,
     worldCupSubmissionRecords: worldCupSubmissionSnapshot.size,

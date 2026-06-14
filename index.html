@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.4.0 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.4.1 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2500,7 +2500,7 @@
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div>
                                 <div class="text-[13px] font-black tracking-[0.16em] text-cyan-300">🌍 全球挑戰榮譽榜</div>
-                                <div class="mt-1 text-[11px] leading-relaxed text-slate-300">每一次開啟、登入與正式挑戰，都會一起累積全球方塊紀錄。持續刷新自己，下一位榮譽冠軍可能就是你！</div>
+                                <div class="mt-1 text-[11px] leading-relaxed text-slate-300">公開數據以玩家、實際對局與關卡里程碑為主；網頁重新整理與重複登入不再作為熱門程度指標。</div>
                             </div>
                             <div class="shrink-0 flex flex-col gap-2">
                                 <button id="btn-refresh-public-stats" type="button" class="rounded-xl border border-cyan-400/50 bg-cyan-950/50 px-3 py-2 text-[11px] font-black text-cyan-100">更新數據</button>
@@ -2527,24 +2527,16 @@
                                 <div class="global-stat-label">全球玩家帳號</div>
                             </div>
                             <div class="global-stat-tile">
-                                <div id="stat-total-launches" class="global-stat-value">—</div>
-                                <div class="global-stat-label">累積開啟遊戲</div>
-                            </div>
-                            <div class="global-stat-tile">
-                                <div id="stat-today-launches" class="global-stat-value">—</div>
-                                <div class="global-stat-label">今日開啟遊戲</div>
-                            </div>
-                            <div class="global-stat-tile">
-                                <div id="stat-login-plays" class="global-stat-value">—</div>
-                                <div class="global-stat-label">成功登入次數</div>
+                                <div id="stat-today-active-players" class="global-stat-value">—</div>
+                                <div class="global-stat-label">今日活躍玩家</div>
                             </div>
                             <div class="global-stat-tile">
                                 <div id="stat-game-starts" class="global-stat-value">—</div>
-                                <div class="global-stat-label">累積遊戲開局</div>
+                                <div class="global-stat-label">累積對局數</div>
                             </div>
                             <div class="global-stat-tile">
                                 <div id="stat-today-game-starts" class="global-stat-value">—</div>
-                                <div class="global-stat-label">今日遊戲開局</div>
+                                <div class="global-stat-label">今日對局數</div>
                             </div>
                             <div class="global-stat-tile">
                                 <div id="stat-level10-players" class="global-stat-value">—</div>
@@ -2554,6 +2546,10 @@
                                 <div id="stat-level20-players" class="global-stat-value">—</div>
                                 <div class="global-stat-label">突破第 20 關玩家</div>
                             </div>
+                            <div class="global-stat-tile global-stats-wide">
+                                <div id="stat-level30-players" class="global-stat-value">—</div>
+                                <div class="global-stat-label">突破第 30 關玩家</div>
+                            </div>
                         </div>
 
                         <div id="global-live-stats-status" class="global-stats-status warn mt-3">正在讀取最新活動數據…</div>
@@ -2561,7 +2557,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.0</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.1</div>
                     </footer>
                 </main>
             </div>
@@ -2872,8 +2868,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.4.0";
-        const GAME_VERSION_NAME = "真實成績校正・預設玩家防超車版";
+        const GAME_VERSION = "V2.4.1";
+        const GAME_VERSION_NAME = "公開數據精簡・陪跑漸進・30關統計版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -2889,6 +2885,7 @@
         const STORAGE_KEY_RETRY_HISTORY = 'abk_tetris_retry_history_v1';
         const STORAGE_KEY_PLAYERS = 'abk_tetris_players_v1';
         const STORAGE_KEY_CURRENT_PLAYER = 'abk_tetris_current_player_id_v1';
+        const STORAGE_KEY_BOT_PROGRESS = 'abk_tetris_default_bot_progress_v241';
 
         // V2.1.9：Firebase Analytics + Anonymous Authentication + Cloud Firestore。
         // firebaseConfig 是 Web App 識別設定，不包含管理員私鑰。
@@ -3034,6 +3031,7 @@
         const PUBLIC_PLAYER_COLLECTION = 'public_player_markers';
         const PUBLIC_MILESTONE10_COLLECTION = 'public_milestone10_markers';
         const PUBLIC_MILESTONE20_COLLECTION = 'public_milestone20_markers';
+        const PUBLIC_MILESTONE30_COLLECTION = 'public_milestone30_markers';
 
         let lastOfficialStats = {};
         let lastOfficialStatsUpdatedAt = null;
@@ -3105,11 +3103,19 @@
         }
 
         async function syncPublicMilestoneMarker(player, milestone, uid = firebaseUser?.uid || '') {
-            if (!player?.id || !uid || ![10, 20].includes(Number(milestone)) || isGuestMode) return false;
+            const level = Number(milestone);
+            if (!player?.id || !uid || ![10, 20, 30].includes(level) || isGuestMode) return false;
+
+            const collectionName = level === 10
+                ? PUBLIC_MILESTONE10_COLLECTION
+                : level === 20
+                    ? PUBLIC_MILESTONE20_COLLECTION
+                    : PUBLIC_MILESTONE30_COLLECTION;
+
             return createPublicMarker(
-                Number(milestone) === 10 ? PUBLIC_MILESTONE10_COLLECTION : PUBLIC_MILESTONE20_COLLECTION,
-                `${cloudPlayerDocumentId(player, uid)}_level${milestone}`,
-                `milestone_${milestone}`
+                collectionName,
+                `${cloudPlayerDocumentId(player, uid)}_level${level}`,
+                `milestone_${level}`
             );
         }
 
@@ -3129,6 +3135,7 @@
                 );
                 if (bestLevel >= 10) jobs.push(syncPublicMilestoneMarker(player, 10, user.uid));
                 if (bestLevel >= 20) jobs.push(syncPublicMilestoneMarker(player, 20, user.uid));
+                if (bestLevel >= 30) jobs.push(syncPublicMilestoneMarker(player, 30, user.uid));
             }
             await Promise.allSettled(jobs);
         }
@@ -3179,9 +3186,14 @@
                     ...extra
                 });
 
+                const actorKey = await stablePublicMarkerId(
+                    `${user.uid}_${player?.id || 'guest'}`
+                );
+
                 const publicWrite = setDoc(doc(firebaseDb, PUBLIC_ACTIVITY_COLLECTION, eventId), {
                     eventType,
                     bucket: `${eventType}_${dateKey}`,
+                    actorKey,
                     occurredAt: serverTimestamp(),
                     gameVersion: GAME_VERSION
                 });
@@ -3612,6 +3624,7 @@
                     highestLevel,
                     reachedLevel10: highestLevel >= 10,
                     reachedLevel20: highestLevel >= 20,
+                    reachedLevel30: highestLevel >= 30,
                     createdAtLocal: Number(player.createdAt || Date.now()),
                     updatedAt: serverTimestamp(),
                     gameVersion: GAME_VERSION,
@@ -3626,6 +3639,10 @@
                     void createCloudMilestone(player, 20, bestScoreCloud);
                     void syncPublicMilestoneMarker(player, 20, user.uid);
                 }
+                if (highestLevel >= 30) {
+                    void createCloudMilestone(player, 30, bestScoreCloud);
+                    void syncPublicMilestoneMarker(player, 30, user.uid);
+                }
                 void syncDeviceWorldCupCandidate(reason);
                 return true;
             } catch (error) {
@@ -3635,7 +3652,7 @@
         }
 
         async function createCloudMilestone(player, milestone, milestoneScore = 0) {
-            if (!player || isGuestMode || ![10, 20].includes(Number(milestone))) return false;
+            if (!player || isGuestMode || ![10, 20, 30].includes(Number(milestone))) return false;
             try {
                 const user = await ensureFirebaseUser();
                 if (!user || !firebaseDb) return false;
@@ -3670,6 +3687,10 @@
             return Number(snapshot.data().count || 0);
         }
 
+        function taipeiDayStartDate(date = new Date()) {
+            return new Date(`${taipeiDateKey(date)}T00:00:00+08:00`);
+        }
+
         async function loadLivePublicStats(force = false) {
             if (!firebaseDb) return false;
             const now = Date.now();
@@ -3683,6 +3704,7 @@
                 const afterTimestamp = Timestamp.fromDate(
                     Number.isNaN(officialUpdated.getTime()) ? new Date(0) : officialUpdated
                 );
+                const todayStartTimestamp = Timestamp.fromDate(taipeiDayStartDate());
 
                 const pendingSnapshotPromise = getDocs(
                     query(
@@ -3690,38 +3712,52 @@
                         where('occurredAt', '>', afterTimestamp)
                     )
                 );
+                const todaySnapshotPromise = getDocs(
+                    query(
+                        collection(firebaseDb, PUBLIC_ACTIVITY_COLLECTION),
+                        where('occurredAt', '>=', todayStartTimestamp)
+                    )
+                );
 
                 const [
                     publicPlayers,
                     publicLevel10,
                     publicLevel20,
-                    pendingSnapshot
+                    publicLevel30,
+                    pendingSnapshot,
+                    todaySnapshot
                 ] = await Promise.all([
                     countPublicCollection(PUBLIC_PLAYER_COLLECTION),
                     countPublicCollection(PUBLIC_MILESTONE10_COLLECTION),
                     countPublicCollection(PUBLIC_MILESTONE20_COLLECTION),
-                    pendingSnapshotPromise
+                    countPublicCollection(PUBLIC_MILESTONE30_COLLECTION),
+                    pendingSnapshotPromise,
+                    todaySnapshotPromise
                 ]);
 
-                const pending = {
-                    page_launch: 0,
-                    player_login_play: 0,
-                    game_start: 0,
-                    today_page_launch: 0,
-                    today_game_start: 0
-                };
-                const todayKey = taipeiDateKey();
-
+                let pendingGameStarts = 0;
                 pendingSnapshot.forEach(snapshot => {
-                    const data = snapshot.data() || {};
-                    const type = String(data.eventType || '');
-                    const bucket = String(data.bucket || '');
-                    if (type in pending) pending[type] += 1;
-                    if (type === 'page_launch' && bucket === `page_launch_${todayKey}`) {
-                        pending.today_page_launch += 1;
+                    if (String(snapshot.data()?.eventType || '') === 'game_start') {
+                        pendingGameStarts += 1;
                     }
-                    if (type === 'game_start' && bucket === `game_start_${todayKey}`) {
-                        pending.today_game_start += 1;
+                });
+
+                let todayGameStarts = 0;
+                const todayActiveActorKeys = new Set();
+
+                todaySnapshot.forEach(snapshot => {
+                    const data = snapshot.data() || {};
+                    const eventType = String(data.eventType || '');
+                    const actorKey = String(data.actorKey || '');
+
+                    if (eventType === 'game_start') {
+                        todayGameStarts += 1;
+                    }
+                    if (
+                        actorKey &&
+                        (eventType === 'player_login_play' || eventType === 'game_start')
+                    ) {
+                        todayActiveActorKeys.add(actorKey);
                     }
                 });
 
@@ -3731,20 +3767,20 @@
                         Number(lastOfficialStats.registeredPlayers || 0),
                         publicPlayers
                     ),
-                    totalPageLaunches:
-                        Number(lastOfficialStats.totalPageLaunches || 0) + pending.page_launch,
-                    todayPageLaunches:
-                        (officialIsToday ? Number(lastOfficialStats.todayPageLaunches || 0) : 0)
-                        + pending.today_page_launch,
-                    successfulLoginPlays:
-                        Number(lastOfficialStats.successfulLoginPlays || 0)
-                        + pending.player_login_play,
+                    todayActivePlayers: Math.max(
+                        officialIsToday
+                            ? Number(lastOfficialStats.todayActivePlayers || 0)
+                            : 0,
+                        todayActiveActorKeys.size
+                    ),
                     gameStarts:
-                        Number(lastOfficialStats.gameStarts || 0)
-                        + pending.game_start,
-                    todayGameStarts:
-                        (officialIsToday ? Number(lastOfficialStats.todayGameStarts || 0) : 0)
-                        + pending.today_game_start,
+                        Number(lastOfficialStats.gameStarts || 0) + pendingGameStarts,
+                    todayGameStarts: Math.max(
+                        officialIsToday
+                            ? Number(lastOfficialStats.todayGameStarts || 0)
+                            : 0,
+                        todayGameStarts
+                    ),
                     level10Players: Math.max(
                         Number(lastOfficialStats.level10Players || 0),
                         publicLevel10
@@ -3752,18 +3788,21 @@
                     level20Players: Math.max(
                         Number(lastOfficialStats.level20Players || 0),
                         publicLevel20
+                    ),
+                    level30Players: Math.max(
+                        Number(lastOfficialStats.level30Players || 0),
+                        publicLevel30
                     )
                 };
 
                 const mapping = {
                     'stat-registered-players': values.registeredPlayers,
-                    'stat-total-launches': values.totalPageLaunches,
-                    'stat-today-launches': values.todayPageLaunches,
-                    'stat-login-plays': values.successfulLoginPlays,
+                    'stat-today-active-players': values.todayActivePlayers,
                     'stat-game-starts': values.gameStarts,
                     'stat-today-game-starts': values.todayGameStarts,
                     'stat-level10-players': values.level10Players,
-                    'stat-level20-players': values.level20Players
+                    'stat-level20-players': values.level20Players,
+                    'stat-level30-players': values.level30Players
                 };
 
                 for (const [id, value] of Object.entries(mapping)) {
@@ -3781,7 +3820,8 @@
                 const status = document.getElementById('global-live-stats-status');
                 if (status) {
                     status.className = 'global-stats-status ok mt-3';
-                    status.textContent = `即時活動數據已更新：${new Date().toLocaleTimeString('zh-TW', { hour12: false })}`;
+                    status.textContent =
+                        `玩家與對局數據已更新：${new Date().toLocaleTimeString('zh-TW', { hour12: false })}`;
                 }
                 return true;
             } catch (error) {
@@ -3789,7 +3829,7 @@
                 const status = document.getElementById('global-live-stats-status');
                 if (status) {
                     status.className = 'global-stats-status warn mt-3';
-                    status.textContent = '最新活動數據正在同步，稍後會自動再試。';
+                    status.textContent = '最新玩家與對局數據正在同步，稍後會自動再試。';
                 }
                 return false;
             } finally {
@@ -3875,13 +3915,12 @@
 
             const mapping = {
                 'stat-registered-players': data.registeredPlayers,
-                'stat-total-launches': data.totalPageLaunches,
-                'stat-today-launches': data.todayPageLaunches,
-                'stat-login-plays': data.successfulLoginPlays,
+                'stat-today-active-players': data.todayActivePlayers,
                 'stat-game-starts': data.gameStarts,
                 'stat-today-game-starts': data.todayGameStarts,
                 'stat-level10-players': data.level10Players,
-                'stat-level20-players': data.level20Players
+                'stat-level20-players': data.level20Players,
+                'stat-level30-players': data.level30Players
             };
 
             for (const [id, value] of Object.entries(mapping)) {
@@ -3906,8 +3945,6 @@
                     `全球榮譽榜備份彙整：${updatedText}｜系統約每 5 分鐘更新一次`;
             }
 
-            // 注意：此函式不得改動世界盃冠軍卡片。
-            // 冠軍卡片只由 world_cup/current 的即時監聽或主動讀取更新。
             setTimeout(() => void loadLivePublicStats(true), 60);
         }
 
@@ -5348,45 +5385,163 @@ function showPasswordHint() {
         }
 
 
-        function buildAdaptiveDefaultBots(realEntries = []) {
-            const realScores = dedupeRealLeaderboardByPlayer(realEntries)
+        function readDefaultBotProgress(realEntries = []) {
+            const raw = readJSONSafe(STORAGE_KEY_BOT_PROGRESS, null);
+            const verifiedReal = dedupeRealLeaderboardByPlayer(realEntries);
+            const realScores = verifiedReal
                 .map(item => Math.max(0, Math.floor(Number(item.score || 0))))
-                .filter(n => n > 0)
+                .filter(score => score > 0)
                 .sort((a, b) => b - a);
 
             const topReal = realScores[0] || 0;
-            const lowestReal = realScores.length ? realScores[realScores.length - 1] : 0;
-            const growthBase = Math.min(52000, Math.max(0, Math.floor(topReal * 0.16)));
-            const strictGap = lowestReal > 0 ? Math.max(100, Math.floor(lowestReal * 0.025)) : 0;
+            const lowestReal = realScores.length
+                ? realScores[realScores.length - 1]
+                : 0;
+            const legacyGrowthBase = Math.min(
+                52000,
+                Math.max(0, Math.floor(topReal * 0.16))
+            );
+            const legacyGap = lowestReal > 0
+                ? Math.max(100, Math.floor(lowestReal * 0.025))
+                : 0;
 
-            return DEFAULT_LEADERBOARD_BOTS.map((bot, idx) => {
-                let score = Number(bot.baseScore || bot.minScore || 0);
+            const scores = {};
+            DEFAULT_LEADERBOARD_BOTS.forEach((bot, index) => {
+                const base = Math.max(0, Math.floor(Number(bot.baseScore || bot.minScore || 0)));
+                const saved = Math.max(0, Math.floor(Number(raw?.scores?.[bot.name] || 0)));
 
-                if (lowestReal > 0) {
-                    const dynamicAdd = Math.floor(growthBase * Math.max(0.12, 1 - idx * 0.075));
-                    const adaptiveTarget = Math.max(
-                        Number(bot.minScore || 0),
-                        Number(bot.minScore || 0) + dynamicAdd
+                let migrationScore = base;
+                if (!raw && lowestReal > 0) {
+                    const legacyTarget =
+                        Number(bot.minScore || 0) +
+                        Math.floor(legacyGrowthBase * Math.max(0.12, 1 - index * 0.075));
+                    const legacyCeiling = Math.max(
+                        base,
+                        lowestReal - legacyGap * (index + 1)
                     );
-                    const strictCeiling = Math.max(0, lowestReal - strictGap * (idx + 1));
-                    score = Math.min(adaptiveTarget, strictCeiling);
+                    migrationScore = Math.min(legacyTarget, legacyCeiling);
                 }
 
-                score = Math.max(0, Math.floor(score));
-                return {
+                scores[bot.name] = Math.max(base, saved, migrationScore);
+            });
+
+            return {
+                schemaVersion: 1,
+                scores,
+                observedRealScores:
+                    raw?.observedRealScores && typeof raw.observedRealScores === 'object'
+                        ? raw.observedRealScores
+                        : {},
+                hasObservedReal: !!raw?.hasObservedReal,
+                updatedAt: Number(raw?.updatedAt || 0)
+            };
+        }
+
+        function saveDefaultBotProgress(state) {
+            try {
+                localStorage.setItem(
+                    STORAGE_KEY_BOT_PROGRESS,
+                    JSON.stringify({
+                        schemaVersion: 1,
+                        scores: state.scores,
+                        observedRealScores: state.observedRealScores,
+                        hasObservedReal: state.hasObservedReal,
+                        updatedAt: Date.now()
+                    })
+                );
+            } catch (error) {}
+        }
+
+        function buildAdaptiveDefaultBots(realEntries = []) {
+            const verifiedReal = dedupeRealLeaderboardByPlayer(realEntries);
+            const state = readDefaultBotProgress(verifiedReal);
+
+            const currentRealScores = {};
+            verifiedReal.forEach(item => {
+                const key = String(item.playerId || item.name || '');
+                currentRealScores[key] = Math.max(0, Math.floor(Number(item.score || 0)));
+            });
+
+            const previousScores = state.observedRealScores || {};
+            const hasImprovement = Object.entries(currentRealScores).some(
+                ([key, score]) => score > Math.max(0, Number(previousScores[key] || 0))
+            );
+
+            const currentHighestBot = Math.max(
+                0,
+                ...DEFAULT_LEADERBOARD_BOTS.map(bot =>
+                    Math.max(
+                        Number(bot.baseScore || 0),
+                        Number(state.scores?.[bot.name] || 0)
+                    )
+                )
+            );
+
+            const qualifiedRealScores = Object.values(currentRealScores)
+                .filter(score => score > currentHighestBot)
+                .sort((a, b) => a - b);
+
+            if (
+                state.hasObservedReal &&
+                hasImprovement &&
+                qualifiedRealScores.length > 0
+            ) {
+                const lowestQualifiedReal = qualifiedRealScores[0];
+
+                DEFAULT_LEADERBOARD_BOTS.forEach((bot, index) => {
+                    const base = Math.max(0, Math.floor(Number(bot.baseScore || 0)));
+                    const current = Math.max(
+                        base,
+                        Math.floor(Number(state.scores?.[bot.name] || base))
+                    );
+                    const step = Math.min(
+                        5000,
+                        Math.max(100, Math.floor(current * 0.03))
+                    );
+                    const safetyGap = Math.max(
+                        100,
+                        Math.floor(lowestQualifiedReal * 0.025)
+                    );
+                    const ceiling = Math.max(
+                        current,
+                        lowestQualifiedReal - safetyGap * (index + 1)
+                    );
+
+                    state.scores[bot.name] = Math.max(
+                        current,
+                        Math.min(current + step, ceiling)
+                    );
+                });
+            }
+
+            state.observedRealScores = currentRealScores;
+            if (verifiedReal.length > 0) state.hasObservedReal = true;
+            saveDefaultBotProgress(state);
+
+            const visibleBotSlots = Math.max(
+                0,
+                10 - Math.min(10, verifiedReal.length)
+            );
+
+            return DEFAULT_LEADERBOARD_BOTS
+                .map(bot => ({
                     playerId: null,
                     name: bot.name,
                     avatar: bot.avatar,
                     color: bot.color,
-                    score,
+                    score: Math.max(
+                        Number(bot.baseScore || 0),
+                        Math.floor(Number(state.scores?.[bot.name] || 0))
+                    ),
                     level: bot.level,
                     bestLevel: bot.bestLevel,
                     lines: bot.lines,
                     at: 0,
                     mode: 'default-bot',
                     isDefault: true
-                };
-            }).filter(bot => lowestReal <= 0 || bot.score < lowestReal);
+                }))
+                .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
+                .slice(0, visibleBotSlots);
         }
 
 
@@ -7952,7 +8107,7 @@ function showPasswordHint() {
                     <p><b class="text-sky-300">手機資訊窗：</b>V1.7.5 已修正手機彈窗高度與捲動，若新手村或產品介紹內容較長，可直接在視窗內上下滑動，底部會保留關閉按鈕。</p>
                     <p><b class="text-cyan-300">沉浸模式：</b>首頁提供「沉浸模式」按鈕；Android/桌機若支援會嘗試全螢幕。iPhone/iPad Safari 建議使用「分享 → 加入主畫面」後，從桌面圖示開啟遊戲，畫面會更完整。</p>
                     <p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p>
-                    <p><b class="text-emerald-300">全球挑戰榮譽榜：</b>首頁會顯示玩家帳號、遊戲開啟、登入、開局、關卡突破與世界盃榮譽冠軍。按「數據說明」可查看每一項數字的計算方式。</p>
+                    <p><b class="text-emerald-300">全球挑戰榮譽榜：</b>首頁公開顯示全球玩家帳號、今日活躍玩家、累積／今日對局數、突破第 10／20／30 關玩家，以及世界盃榮譽冠軍。網頁重新整理與重複登入次數不再作為公開熱門指標。</p>
                     <p><b class="text-rose-300">隱私保護：</b>挑戰密碼、密碼提示及密碼雜湊只留在本機瀏覽器，不會上傳 Firebase。訪客模式不建立雲端玩家資料。</p>
                     <p><b class="text-amber-300">分數與資料保存：</b>本機玩家帳號、進度、技能與龍虎榜主要依賴目前瀏覽器儲存。瀏覽器清除網站資料、無痕模式、儲存空間不足、系統或瀏覽器更新、裝置故障或更換裝置，都可能造成紀錄無法讀取或遺失。本工作室不提供個別成績保管、修護或復原服務。</p>
                     <p><b class="text-orange-300">娛樂與命名規範：</b>本遊戲僅供娛樂，不得用於賭博或其他非法用途。玩家名稱不得含有不雅、侮辱、歧視、仇恨、色情、暴力、威脅、違法、冒用或侵權內容；違規名稱得不列入公開排名或自雲端榮譽榜下架。</p>
@@ -7962,18 +8117,18 @@ function showPasswordHint() {
                 title.innerText = '全球挑戰數據說明';
                 body.innerHTML = `
                     <div class="rounded-xl border border-cyan-400/40 bg-cyan-950/25 p-3">
-                        <p class="font-black text-cyan-200">每一筆挑戰，都在累積全球方塊故事。</p>
-                        <p class="mt-1 text-slate-300">活動數據會在玩家操作後快速更新；全球榮譽榜另有定期備份整理，讓紀錄更穩定。</p>
+                        <p class="font-black text-cyan-200">公開數據只保留玩家容易理解、真正具有參考價值的指標。</p>
+                        <p class="mt-1 text-slate-300">網頁重新整理次數與重複登入次數仍可供系統維運分析，但不再顯示於玩家公開看板。</p>
                     </div>
-                    <p><b class="text-sky-300">全球玩家帳號：</b>已完成雲端同步的玩家帳號數。同一位使用者在不同裝置建立帳號時，會分別計入。</p>
-                    <p><b class="text-sky-300">累積／今日開啟遊戲：</b>遊戲網頁被開啟或重新載入的次數。今日數據以台灣時間計算。</p>
-                    <p><b class="text-emerald-300">成功登入次數：</b>玩家帳號與挑戰密碼驗證成功的次數。</p>
-                    <p><b class="text-emerald-300">累積／今日遊戲開局：</b>真正進入棋盤開始挑戰的次數，包含正式玩家與訪客。</p>
-                    <p><b class="text-yellow-300">突破第 10／20 關玩家：</b>曾經完成指定關卡的玩家帳號數；同一玩家重複過關不會重複增加。</p>
-                    <p><b class="text-amber-300">世界盃榮譽冠軍：</b>比較各裝置送出的最高分紀錄，公開冠軍玩家名稱、最高分、Level 與消除行數。</p>
+                    <p><b class="text-sky-300">全球玩家帳號：</b>已完成雲端同步的獨立玩家帳號數。同一人在不同裝置或瀏覽器另建帳號時，可能分別計入。</p>
+                    <p><b class="text-emerald-300">今日活躍玩家：</b>台灣時間今日曾成功登入或正式開始對局的不重複玩家／匿名裝置數；同一玩家重複登入或遊玩多局，當日只計一次。</p>
+                    <p><b class="text-cyan-300">累積對局數：</b>玩家或訪客真正進入棋盤、正式開始一局的累積次數，不把單純開啟網頁或 F5 重新整理當成對局。</p>
+                    <p><b class="text-cyan-300">今日對局數：</b>台灣時間今日正式開始的遊戲局數；同一位玩家連玩多局，每一局都會計入。</p>
+                    <p><b class="text-yellow-300">突破第 10／20／30 關玩家：</b>曾完成指定關卡的不重複玩家帳號數；同一玩家重複突破同一里程碑不會重複增加。</p>
+                    <p><b class="text-amber-300">資料更新：</b>即時活動會在操作後快速更新；GitHub Actions 約每 5 分鐘建立一次備份彙整。網路或第三方服務延遲時，畫面可能稍後才完成同步。</p>
+                    <p><b class="text-fuchsia-300">世界盃榮譽冠軍：</b>由各裝置送出的真實玩家最高紀錄進行比較，只展示榮譽，不提供獎金、獎品或財產價值。</p>
                     <div class="rounded-xl border border-amber-400/40 bg-amber-950/25 p-3 text-amber-100">
-                        <p>本榜只做成績與頭銜展示，不提供獎金、獎品、財產價值或兌換利益。</p>
-                        <p class="mt-1">玩家名稱若含有不雅、違法、冒用、侵權或其他不適合公開展示的內容，本工作室得取消其公開排名，或將相關雲端紀錄隱藏、下架或移除。</p>
+                        <p>玩家名稱若含有不雅、違法、冒用、侵權或其他不適合公開展示的內容，本工作室得取消其公開排名，或將相關雲端紀錄隱藏、下架或移除。</p>
                     </div>
                 `;
             } else {
@@ -8021,28 +8176,94 @@ function showPasswordHint() {
                         <p>本工作室得因維護、安全、法令、第三方服務調整或產品規劃，變更、暫停或終止部分或全部功能、統計方式、排名規則及資料保存方式。若發現明顯錯誤、作弊、異常分數或系統漏洞，本工作室得更正、重新計算、取消或移除相關紀錄。</p>
                         <p class="mt-2">玩家開始或繼續使用本遊戲，即表示已閱讀並同意本聲明及相關遊戲規範。若不同意，請停止使用本遊戲。</p>
                     </div>
-                    <details class="info-details">
-                        <summary>產品更新歷程（點我展開）</summary>
+                    <div class="rounded-xl border border-blue-500/40 bg-blue-950/20 p-3">
+                        <p class="font-black text-blue-200 mb-2">最近更新</p>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
-                            <li><b>V1.0</b>：完成手機與電腦皆可遊玩的基礎方塊遊戲原型。</li>
-                            <li><b>V1.1</b>：簡化為打開就玩版本，加入本機最高分與基礎排行榜。</li>
-                            <li><b>V1.2</b>：加入 10 關闖關、技能獎勵、過關結算與關卡節奏。</li>
-                            <li><b>V1.3</b>：優化手機直式介面，降低手把遮擋棋盤的問題。</li>
-                            <li><b>V1.4</b>：導入動態比例版面，依螢幕方向與可視高度調整棋盤與控制區。</li>
-                            <li><b>V1.5</b>：加入本機存檔、新手村說明、版權宣告與玩家名稱記憶。</li>
-                            <li><b>V1.6</b>：強化本機龍虎榜、手動儲存與入榜祝賀結算。</li>
-                            <li><b>V1.7</b>：加入本機多人挑戰者帳號、挑戰密碼、代表圖案與代表色。</li>
-                            <li><b>V1.7.1</b>：重整登入 / 註冊流程，加入 Guest 路人模式與高對比輸入介面。</li>
-                            <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
-                            <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
+                            <li><b>V2.4.1</b>：公開數據精簡為全球玩家帳號、今日活躍玩家、累積／今日對局數與突破第 10／20／30 關玩家；網頁開啟與登入次數移至後台。預設挑戰者改為固定門檻、只緩慢向上追分且不因低分新玩家下降；真實玩家增加時，預設角色逐步退出前十名。版本歷程改為由新到舊排列，開發授權備忘移至 README。</li>
+                            <li><b>V2.4.0</b>：修正舊版全域最高分可能錯配給新玩家的問題；真實榜單只採 playerId、玩家資料與玩家專屬存檔驗證，預設挑戰者不得改動真實玩家成績。</li>
+                            <li><b>V2.3.9</b>：新增完整免責聲明、資料保存風險、娛樂用途與玩家命名規範；違規名稱可能喪失世界盃及其他公開排名資格。</li>
+                            <li><b>V2.3.8</b>：同一真實玩家只保留一筆最佳龍虎榜紀錄；過關畫面加入玩家姓名，第 10、20、30 關與其後每十關顯示專屬鼓勵。</li>
+                            <li><b>V2.3.7</b>：世界盃冠軍卡片改以 world_cup/current 為唯一正式來源，避免按下更新數據後被舊統計摘要覆蓋。</li>
+                        </ul>
+                    </div>
+                    <details class="info-details">
+                        <summary>查看完整版本歷程（由新到舊）</summary>
+                        <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.3.6</b>：修正世界盃送件已存在但冠軍未回填的問題，允許使用玩家自己的送件紀錄安全更新世界盃冠軍。</li>
+                            <li><b>V2.3.5</b>：建立單機龍虎榜冠軍送往 world_cup_submissions 的完整管線，並調整倒數提示避免遮住主要盤面資訊。</li>
+                            <li><b>V2.3.4</b>：過關與解除暫停後，先顯示真正要遊玩的棋盤，再於盤面上倒數兩秒。</li>
+                            <li><b>V2.3.3</b>：修正世界盃候選資料讀取與權限流程，避免候選文件尚未建立時同步中斷。</li>
+                            <li><b>V2.3.2</b>：將下一關與解除暫停前的遊戲畫面準備時間調整為兩秒。</li>
+                            <li><b>V2.3.1</b>：新增下一關開始前一秒準備保護，降低畫面切換後立即失敗的風險。</li>
+                            <li><b>V2.3.0</b>：全球數據改為即時活動數字搭配五分鐘備份彙整，並加入世界盃榮譽冠軍公開卡片。</li>
+                            <li><b>V2.2.9</b>：明確定義單機冠軍送往世界盃的同步時機與榮譽榜用途。</li>
+                            <li><b>V2.2.8</b>：全球統計改採不依賴複合索引的查詢方式，降低 GitHub Actions 彙整失敗。</li>
+                            <li><b>V2.2.7</b>：加入雲端世界盃冠軍比較與五分鐘全球統計更新。</li>
+                            <li><b>V2.2.6</b>：新增全球使用事件紀錄與定期更新機制。</li>
+                            <li><b>V2.2.5</b>：修正手機輸入挑戰密碼時畫面被鍵盤遮擋的問題。</li>
+                            <li><b>V2.2.4</b>：全球統計數字加入卡片寬度偵測與自動縮字；數字成長後仍維持完整單行顯示，不換行、不截斷。</li>
+                            <li><b>V2.2.3</b>：修正全球統計初始化被放在一般 script、無法呼叫 ES Module 內函式的作用域錯誤；公開統計現在會在首頁載入時自動讀取，手動按鈕也可正常重新讀取。</li>
+                            <li><b>V2.2.2</b>：新增全球挑戰數據公開看板與 GitHub Actions 定時彙整架構，公開顯示全球註冊挑戰者、累積／今日瀏覽量，以及突破第 10／20 關人數。</li>
+                            <li><b>V2.1.9</b>：正式接入 Firebase Analytics、匿名 Authentication 與 Cloud Firestore；開始收集匿名瀏覽／遊戲事件，並同步註冊玩家、最高關卡及 Level 10／20 里程碑。挑戰密碼、提示與密碼雜湊不會上傳。</li>
+                            <li><b>V2.1.8</b>：技能鍵改為實體 DOM 上移，放在 A/B/X/Y 功能按鈕區正上方；登入欄位新增本次瀏覽抑制旗標，避免清空後再次自動補回舊玩家名稱；預留全球統計設定介面。</li>
+                            <li><b>V2.1.7</b>：修正登入欄位在清空或刪到最後一個字時，又被舊暱稱自動補回的問題；同時調整手機直式畫面的技能鍵位置。</li>
+                            <li><b>V2.1.6</b>：改善本機玩家帳號清單中的清空行為；清空登入欄位時會取消目前帶入玩家與記住登入狀態，但不刪除任何玩家資料，避免清完後又自動帶回舊帳號。</li>
+                            <li><b>V2.1.5</b>：修正註冊新玩家時錯誤帶入首頁登入帳號的問題；註冊視窗改為全新玩家空白表單，註冊與登入完全分流。</li>
+                            <li><b>V2.1.4</b>：修正龍虎榜同一真實玩家重複佔榜問題；同一 playerId 或舊版同名玩家只保留最高分紀錄；本機資料管理新增「合併重複玩家名次」。</li>
+                            <li><b>V2.1.3</b>：修正暫停回首頁後殘留「結束回首頁」按鈕的狀態錯亂；首頁狀態下該按鈕不會顯示，也不會因誤觸重新啟動遊戲。</li>
+                            <li><b>V2.1.2</b>：強化手機 Chrome / Safari 防誤縮放；阻止遊戲區雙擊放大與多指縮放；鎖定頁面寬度避免橫向溢出；新增離開頁面前緊急存檔。</li>
+                            <li><b>V2.1.1</b>：緊急修正登入回饋函式遞迴呼叫自身的錯誤，避免驗證成功後因提示訊息崩潰而停在首頁。</li>
+                            <li><b>V2.1.0</b>：重構登入啟動核心，登入成功後直接建立遊戲狀態並切換至遊戲畫面；若舊暫存異常，依玩家最高關卡與龍虎榜紀錄推估接續關卡。</li>
+                            <li><b>V2.0.9</b>：移除首頁內嵌龍虎榜區塊，避免與底部「龍虎榜揭榜」重複；排行榜改由獨立揭榜視窗統一顯示，首頁回歸登入、註冊、訪客與資料管理主流程。</li>
+                            <li><b>V2.0.8</b>：進一步強化遊戲啟動流程，登入成功後先強制切換到遊戲畫面，再執行 UI 更新、畫布重繪、自動儲存與音樂等非必要流程，避免任何小錯誤造成玩家無法開始遊戲。</li>
+                            <li><b>V2.0.7</b>：修正登入驗證成功後仍停留在首頁的問題；新增存檔完整性檢查，若舊進度格式異常會自動改從新局開始，避免玩家卡在登入區。</li>
+                            <li><b>V2.0.6</b>：優化龍虎榜可讀性，改為單欄完整資訊列；真實玩家使用淺藍底與玩家代表色色條，預設挑戰者統一使用淺黃底；移除畫面上的身份說明文字，避免版面擁擠。</li>
+                            <li><b>V2.0.5</b>：修正 V2.0.4 初始化順序錯誤，避免 JavaScript 模組啟動中斷；啟動後自動重建龍虎榜，並新增「檢查本機資料狀態」工具，方便確認玩家帳號與可救援紀錄是否仍在。</li>
+                            <li><b>V2.0.4</b>：緊急修正 V2.0.2 龍虎榜可能空白的問題；新增從玩家資料與正式存檔重建龍虎榜的保護機制；新增「修復 / 重建龍虎榜」按鈕，避免真實玩家分數因顯示錯誤看似消失。</li>
+                            <li><b>V2.0.3</b>：龍虎榜加入真實玩家 / 預設挑戰者高對比識別；真實玩家使用淺藍色塊，預設挑戰者使用淺黃、粉紅、白色等系統保留色；真實玩家可與預設挑戰者同名，仍會以標籤與底色清楚分辨。</li>
+                            <li><b>V2.0.2</b>：登入成功後直接進入遊戲，避免停留在首頁；移除首頁內嵌本機挑戰者清單，改由帳號清單按鈕查詢；阿布拉.凱不再作為本機預設玩家，只保留在預設龍虎榜；預設龍虎榜分數會依真實玩家實力微幅成長，但不會超越已在前方的真實玩家。</li>
+                            <li><b>V2.0.1</b>：將「清除 / 改輸入」改為「本機玩家帳號清單」；新增帳號清單彈窗與快速帶入功能；強化登入錯誤回饋，包含帳號不存在、帳號封存、密碼錯誤、空白欄位與登入成功提示，讓每個輸入欄位與按鈕都有明確回應。</li>
+                            <li><b>V2.0.0</b>：修正註冊與舊用戶登入混淆問題。若玩家名稱已存在，註冊視窗會明確阻止重複建立，並引導玩家回登入區或本機資料管理中心；玩家帳號欄改為純自由輸入，本機玩家清單只做快速帶入；登入提示文字提高對比，避免玩家看不清楚。</li>
+                            <li><b>V1.9.9</b>：登入與註冊流程分流，註冊改為獨立視窗；新增本機資料管理中心，可封存、恢復與永久刪除本機玩家；玩家資料中心只管理目前登入玩家；永久刪除需挑戰密碼與玩家名稱確認，龍虎榜紀錄預設保留。</li>
+                            <li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li>
+                            <li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li>
+                            <li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li>
+                            <li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li>
+                            <li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li>
+                            <li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li>
+                            <li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li>
+                            <li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li>
+                            <li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li>
+                            <li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li>
+                            <li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li>
+                            <li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li>
+                            <li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li>
+                            <li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li>
+                            <li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li>
+                            <li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li>
+                            <li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li>
+                            <li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li>
+                            <li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li>
+                            <li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li>
+                            <li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li>
+                            <li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li>
+                            <li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li>
+                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li>
                             <li><b>V1.7.4</b>：重新整理首頁 UI/UX，將登入、註冊、Guest、新手村、產品介紹、挑戰者清單與龍虎榜分區呈現，同步更新新手村與產品說明。</li>
-                            <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li><li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li><li><b>V1.9.9</b>：登入與註冊流程分流，註冊改為獨立視窗；新增本機資料管理中心，可封存、恢復與永久刪除本機玩家；玩家資料中心只管理目前登入玩家；永久刪除需挑戰密碼與玩家名稱確認，龍虎榜紀錄預設保留。</li><li><b>V2.0.0</b>：修正註冊與舊用戶登入混淆問題。若玩家名稱已存在，註冊視窗會明確阻止重複建立，並引導玩家回登入區或本機資料管理中心；玩家帳號欄改為純自由輸入，本機玩家清單只做快速帶入；登入提示文字提高對比，避免玩家看不清楚。</li><li><b>V2.0.1</b>：將「清除 / 改輸入」改為「本機玩家帳號清單」；新增帳號清單彈窗與快速帶入功能；強化登入錯誤回饋，包含帳號不存在、帳號封存、密碼錯誤、空白欄位與登入成功提示，讓每個輸入欄位與按鈕都有明確回應。</li><li><b>V2.0.2</b>：登入成功後直接進入遊戲，避免停留在首頁；移除首頁內嵌本機挑戰者清單，改由帳號清單按鈕查詢；阿布拉.凱不再作為本機預設玩家，只保留在預設龍虎榜；預設龍虎榜分數會依真實玩家實力微幅成長，但不會超越已在前方的真實玩家。</li><li><b>V2.0.3</b>：龍虎榜加入真實玩家 / 預設挑戰者高對比識別；真實玩家使用淺藍色塊，預設挑戰者使用淺黃、粉紅、白色等系統保留色；真實玩家可與預設挑戰者同名，仍會以標籤與底色清楚分辨。</li><li><b>V2.0.4</b>：緊急修正 V2.0.2 龍虎榜可能空白的問題；新增從玩家資料與正式存檔重建龍虎榜的保護機制；新增「修復 / 重建龍虎榜」按鈕，避免真實玩家分數因顯示錯誤看似消失。</li><li><b>V2.0.5</b>：修正 V2.0.4 初始化順序錯誤，避免 JavaScript 模組啟動中斷；啟動後自動重建龍虎榜，並新增「檢查本機資料狀態」工具，方便確認玩家帳號與可救援紀錄是否仍在。</li><li><b>V2.0.6</b>：優化龍虎榜可讀性，改為單欄完整資訊列；真實玩家使用淺藍底與玩家代表色色條，預設挑戰者統一使用淺黃底；移除畫面上的身份說明文字，避免版面擁擠。</li><li><b>V2.0.7</b>：修正登入驗證成功後仍停留在首頁的問題；新增存檔完整性檢查，若舊進度格式異常會自動改從新局開始，避免玩家卡在登入區。</li><li><b>V2.0.8</b>：進一步強化遊戲啟動流程，登入成功後先強制切換到遊戲畫面，再執行 UI 更新、畫布重繪、自動儲存與音樂等非必要流程，避免任何小錯誤造成玩家無法開始遊戲。</li><li><b>V2.1.0</b>：重構登入啟動核心，登入成功後直接建立遊戲狀態並切換至遊戲畫面；若舊暫存異常，依玩家最高關卡與龍虎榜紀錄推估接續關卡。</li><li><b>V2.1.1</b>：緊急修正登入回饋函式遞迴呼叫自身的錯誤，避免驗證成功後因提示訊息崩潰而停在首頁。</li><li><b>V2.1.2</b>：強化手機 Chrome / Safari 防誤縮放；阻止遊戲區雙擊放大與多指縮放；鎖定頁面寬度避免橫向溢出；新增離開頁面前緊急存檔。</li><li><b>V2.1.3</b>：修正暫停回首頁後殘留「結束回首頁」按鈕的狀態錯亂；首頁狀態下該按鈕不會顯示，也不會因誤觸重新啟動遊戲。</li><li><b>V2.1.4</b>：修正龍虎榜同一真實玩家重複佔榜問題；同一 playerId 或舊版同名玩家只保留最高分紀錄；本機資料管理新增「合併重複玩家名次」。</li><li><b>V2.1.5</b>：修正註冊新玩家時錯誤帶入首頁登入帳號的問題；註冊視窗改為全新玩家空白表單，註冊與登入完全分流。</li><li><b>V2.1.6</b>：改善本機玩家帳號清單中的清空行為；清空登入欄位時會取消目前帶入玩家與記住登入狀態，但不刪除任何玩家資料，避免清完後又自動帶回舊帳號。</li><li><b>V2.1.7</b>：修正登入欄位在清空或刪到最後一個字時，又被舊暱稱自動補回的問題；同時調整手機直式畫面的技能鍵位置。</li><li><b>V2.1.8</b>：技能鍵改為實體 DOM 上移，放在 A/B/X/Y 功能按鈕區正上方；登入欄位新增本次瀏覽抑制旗標，避免清空後再次自動補回舊玩家名稱；預留全球統計設定介面。</li><li><b>V2.1.9</b>：正式接入 Firebase Analytics、匿名 Authentication 與 Cloud Firestore；開始收集匿名瀏覽／遊戲事件，並同步註冊玩家、最高關卡及 Level 10／20 里程碑。挑戰密碼、提示與密碼雜湊不會上傳。</li><li><b>V2.2.2</b>：新增全球挑戰數據公開看板與 GitHub Actions 定時彙整架構，公開顯示全球註冊挑戰者、累積／今日瀏覽量，以及突破第 10／20 關人數。</li><li><b>V2.2.3</b>：修正全球統計初始化被放在一般 script、無法呼叫 ES Module 內函式的作用域錯誤；公開統計現在會在首頁載入時自動讀取，手動按鈕也可正常重新讀取。</li><li><b>V2.2.4</b>：全球統計數字加入卡片寬度偵測與自動縮字；數字成長後仍維持完整單行顯示，不換行、不截斷。</li><li><b>V2.0.9</b>：移除首頁內嵌龍虎榜區塊，避免與底部「龍虎榜揭榜」重複；排行榜改由獨立揭榜視窗統一顯示，首頁回歸登入、註冊、訪客與資料管理主流程。</li>
+                            <li><b>V1.7.3</b>：強化所有畫面操作按鈕的滑鼠與觸控支援，補上平板適配與版本資訊。</li>
+                            <li><b>V1.7.2</b>：修正桌機右上功能列滑鼠點擊問題，補充新手村本機儲存提醒。</li>
+                            <li><b>V1.7.1</b>：重整登入 / 註冊流程，加入 Guest 路人模式與高對比輸入介面。</li>
+                            <li><b>V1.7</b>：加入本機多人挑戰者帳號、挑戰密碼、代表圖案與代表色。</li>
+                            <li><b>V1.6</b>：強化本機龍虎榜、手動儲存與入榜祝賀結算。</li>
+                            <li><b>V1.5</b>：加入本機存檔、新手村說明、版權宣告與玩家名稱記憶。</li>
+                            <li><b>V1.4</b>：導入動態比例版面，依螢幕方向與可視高度調整棋盤與控制區。</li>
+                            <li><b>V1.3</b>：優化手機直式介面，降低手把遮擋棋盤的問題。</li>
+                            <li><b>V1.2</b>：加入 10 關闖關、技能獎勵、過關結算與關卡節奏。</li>
+                            <li><b>V1.1</b>：簡化為打開就玩版本，加入本機最高分與基礎排行榜。</li>
+                            <li><b>V1.0</b>：完成手機與電腦皆可遊玩的基礎方塊遊戲原型。</li>
                         </ul>
                     </details>
-                    <p class="text-slate-400 text-[12px]">
-                        備註：本作品不使用「Tetris」作為正式遊戲名稱；公開使用時仍應持續檢查素材、音效、字型與第三方資源授權。
-                        本聲明用於清楚說明遊戲資料保存方式、使用規範與責任範圍；如法律另有強制規定，仍以適用法律為準。
-                    </p>
+
                 `;
             }
             modal.classList.remove('hidden');

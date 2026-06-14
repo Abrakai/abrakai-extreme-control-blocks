@@ -33,6 +33,13 @@ service cloud.firestore {
                     && request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
                     && request.resource.data.bucket is string
                     && request.resource.data.bucket.size() <= 48
+                    && (
+                      !('actorKey' in request.resource.data)
+                      || (
+                        request.resource.data.actorKey is string
+                        && request.resource.data.actorKey.size() <= 64
+                      )
+                    )
                     && request.resource.data.gameVersion is string
                     && request.resource.data.occurredAt == request.time;
       allow update, delete: if false;
@@ -60,6 +67,15 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null
                     && request.resource.data.markerType == 'milestone_20'
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /public_milestone30_markers/{markerId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.markerType == 'milestone_30'
                     && request.resource.data.gameVersion is string
                     && request.resource.data.createdAt == request.time;
       allow update, delete: if false;

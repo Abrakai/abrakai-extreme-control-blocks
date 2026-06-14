@@ -173,3 +173,17 @@ GitHub Actions 現在同時讀取：
 ## V2.3.6 必做：重新發布 Firestore Rules
 本版調整 `world_cup/current` 的安全驗證邏輯，允許使用自己的 `world_cup_submissions`
 作為即時回填冠軍的安全證據。請務必發布本版 ZIP 內的 `firestore.rules`。
+
+
+## V2.4.1 更新事項
+本版新增：
+- `public_milestone30_markers`
+- `public_activity_events.actorKey`（匿名雜湊識別，用於今日活躍玩家去重）
+- `public_stats/summary.todayActivePlayers`
+- `public_stats/summary.level30Players`
+
+部署時請：
+1. 上傳完整專案檔案。
+2. 將本版 `firestore.rules` 貼到 Firebase Firestore「規則」頁並發布。
+3. GitHub Actions 成功執行後，約 5 分鐘內會建立正式備份統計。
+4. 舊玩家達到 Level 30 者，開啟新版並完成匿名連線後會自動補送 Level 30 里程碑。
