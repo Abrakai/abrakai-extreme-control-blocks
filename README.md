@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.3.4｜全球統計讀取啟動修正版
+# 極限操控方塊 V2.3.5｜全球統計讀取啟動修正版
 
 ## 修正重點
 - 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
@@ -138,3 +138,25 @@ allow read: if request.auth != null
 - 倒數期間方塊重力、方向、旋轉、下降、HOLD、技能、鍵盤與觸控操作全部鎖定。
 - 倒數結束後才重啟重力與背景音樂。
 - 不變更本機玩家帳號、存檔、龍虎榜、Firebase、世界盃或 Firestore Rules。
+
+
+## V2.3.5 不遮盤倒數・世界盃同步管線
+
+### 兩秒倒數
+- 倒數提示不再是 fixed／absolute 浮層。
+- 倒數暫時取代原本「本關分數／過關目標」HUD 資訊列。
+- 棋盤、HOLD、NEXT、正在落下的方塊與操作區不會被遮住。
+- 過關進下一關與解除暫停都共用相同的 2、1 倒數保護。
+
+### 世界盃三段式同步
+1. 從本機龍虎榜重新載入真實玩家最高分。
+2. 先寫入 `world_cup_submissions`，留下可由後端彙整的送件證據。
+3. 更新 `world_cup_candidates/{anonymousUid}`，保存該裝置最佳紀錄。
+4. 前端立即嘗試比較並更新 `world_cup/current`。
+5. GitHub Actions 每 5 分鐘同時讀取 submissions 與 candidates，依分數、關卡、消行數排序後回填冠軍與前十名。
+
+即使即時更新 `world_cup/current` 因網路或規則暫時失敗，只要 submissions 寫入成功，
+後端彙整仍會在約 5 分鐘內完成世界盃比對。
+
+### 部署必要步驟
+本版新增 Firestore 集合 `world_cup_submissions`，必須重新發布 ZIP 內的 `firestore.rules`。

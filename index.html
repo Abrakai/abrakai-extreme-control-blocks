@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.4 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.3.5 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2038,94 +2038,89 @@
         .global-stats-wide .global-stat-label { color: #fde68a; }
 
 
+        /* V2.3.5：倒數提示只佔用原本 HUD 資訊列，不覆蓋棋盤、HOLD 或 NEXT。 */
+        #game-status-slot {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            height: 34px;
+            margin-bottom: 4px;
+            padding: 0 8px;
+        }
+        #stage-info-row,
         #level-start-grace {
-            position: fixed;
-            inset: 0;
-            z-index: 88;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding:
-                max(78px, calc(env(safe-area-inset-top, 0px) + 64px))
-                14px
-                20px;
-            background: rgba(2, 6, 23, .08);
+            position: absolute;
+            inset: 0 8px;
+            transition: opacity .12s ease, visibility .12s ease;
+        }
+        #stage-info-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px;
+            opacity: 1;
+            visibility: visible;
+        }
+        #level-start-grace {
+            display: grid;
+            grid-template-columns: max-content 30px minmax(0, 1fr);
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            border: 1px solid rgba(56, 189, 248, .72);
+            border-radius: 8px;
+            padding: 3px 8px;
+            background: rgba(8, 47, 73, .88);
+            box-shadow: 0 0 14px rgba(14, 165, 233, .18);
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transition: opacity .12s ease;
         }
-        #level-start-grace.is-active {
+        #game-status-slot.grace-active #stage-info-row {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #game-status-slot.grace-active #level-start-grace {
             opacity: 1;
             visibility: visible;
-            pointer-events: auto;
-        }
-        .level-start-grace-panel {
-            width: min(82vw, 310px);
-            border: 1px solid rgba(56, 189, 248, .82);
-            border-radius: 18px;
-            padding: 10px 14px 12px;
-            text-align: center;
-            background: rgba(3, 13, 31, .82);
-            box-shadow:
-                0 0 0 1px rgba(125, 211, 252, .16) inset,
-                0 8px 30px rgba(2, 6, 23, .48),
-                0 0 24px rgba(14, 165, 233, .22);
         }
         .level-start-grace-level {
+            min-width: 0;
             color: #bae6fd;
-            font-size: clamp(15px, 4vw, 20px);
+            font-size: 9px;
+            line-height: 1.1;
             font-weight: 1000;
-            letter-spacing: .08em;
+            letter-spacing: .04em;
+            white-space: nowrap;
         }
         .level-start-grace-count {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 72px;
-            min-height: 72px;
-            margin-top: 6px;
-            padding: 0 12px;
+            width: 28px;
+            height: 28px;
             border-radius: 999px;
-            border: 2px solid rgba(125, 211, 252, .9);
-            background: rgba(15, 23, 42, .78);
+            border: 1px solid rgba(186, 230, 253, .92);
+            background: rgba(15, 23, 42, .92);
             color: #fff;
-            font-size: clamp(45px, 12vw, 66px);
+            font-size: 19px;
             line-height: 1;
             font-weight: 1000;
             font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-            text-shadow: 0 0 22px rgba(56, 189, 248, .95);
+            text-shadow: 0 0 10px rgba(56, 189, 248, .9);
         }
         .level-start-grace-message {
-            margin-top: 8px;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
             color: #e0f2fe;
-            font-size: clamp(13px, 3.5vw, 16px);
+            font-size: 9px;
+            line-height: 1.15;
             font-weight: 900;
+            white-space: nowrap;
+            text-align: left;
         }
         .level-start-grace-note {
-            margin-top: 4px;
-            color: #cbd5e1;
-            font-size: 10px;
-            line-height: 1.45;
-        }
-
-        @media (orientation: landscape) and (max-height: 620px) {
-            #level-start-grace {
-                padding-top: max(58px, calc(env(safe-area-inset-top, 0px) + 48px));
-            }
-            .level-start-grace-panel {
-                width: min(44vw, 300px);
-                padding: 8px 12px 10px;
-            }
-            .level-start-grace-count {
-                min-width: 58px;
-                min-height: 58px;
-                font-size: 42px;
-            }
-            .level-start-grace-note {
-                display: none;
-            }
+            display: none;
         }
 
         .world-cup-champion-card {
@@ -2265,15 +2260,6 @@
         </div>
     </div>
 
-    <!-- V2.3.1：切換至下一關後提供兩秒準備時間，期間暫停重力與全部遊戲操作 -->
-    <div id="level-start-grace" aria-hidden="true" aria-live="assertive">
-        <div class="level-start-grace-panel" role="status">
-            <div id="level-start-grace-level" class="level-start-grace-level">LEVEL 2</div>
-            <div id="level-start-grace-count" class="level-start-grace-count">2</div>
-            <div id="level-start-grace-message" class="level-start-grace-message">請看清楚目前盤面</div>
-            <div id="level-start-grace-note" class="level-start-grace-note">底下顯示的就是即將繼續遊玩的真實棋盤；倒數結束後才恢復重力與操作。</div>
-        </div>
-    </div>
 
     <!-- 核心響應式容器：直式(Portrait)時垂直排列，橫式(Landscape)時水平排列 -->
     <div class="flex flex-col landscape:flex-row w-full h-full pt-8 landscape:pt-0">
@@ -2338,14 +2324,22 @@
                 </div>
             </div>
 
-            <div class="w-full max-w-[340px] grid grid-cols-2 gap-1 px-2 mb-1 text-center">
-                <div class="bg-slate-900/60 border border-slate-800 rounded px-1 py-1">
-                    <div class="text-[8px] text-slate-500">本關分數</div>
-                    <div id="text-stage-score" class="text-[11px] text-white">0</div>
+            <div id="game-status-slot">
+                <div id="stage-info-row" class="text-center">
+                    <div class="bg-slate-900/60 border border-slate-800 rounded px-1 py-1">
+                        <div class="text-[8px] text-slate-500">本關分數</div>
+                        <div id="text-stage-score" class="text-[11px] text-white">0</div>
+                    </div>
+                    <div class="bg-slate-900/60 border border-slate-800 rounded px-1 py-1">
+                        <div class="text-[8px] text-slate-500">過關目標</div>
+                        <div id="text-stage-goal" class="text-[11px] text-blue-300">800</div>
+                    </div>
                 </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded px-1 py-1">
-                    <div class="text-[8px] text-slate-500">過關目標</div>
-                    <div id="text-stage-goal" class="text-[11px] text-blue-300">800</div>
+                <div id="level-start-grace" aria-hidden="true" aria-live="assertive" role="status">
+                    <div id="level-start-grace-level" class="level-start-grace-level">LEVEL 2</div>
+                    <div id="level-start-grace-count" class="level-start-grace-count">2</div>
+                    <div id="level-start-grace-message" class="level-start-grace-message">請先看清楚盤面</div>
+                    <div id="level-start-grace-note" class="level-start-grace-note"></div>
                 </div>
             </div>
 
@@ -2567,7 +2561,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.4</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.5</div>
                     </footer>
                 </main>
             </div>
@@ -2841,8 +2835,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.4";
-        const GAME_VERSION_NAME = "可視盤面兩秒倒數保護版";
+        const GAME_VERSION = "V2.3.5";
+        const GAME_VERSION_NAME = "不遮盤倒數・世界盃同步管線版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -3194,68 +3188,131 @@
         }
 
         function getLocalDeviceWorldCupChampion() {
+            // 每次同步前重新載入本機榜，避免記憶體中的舊榜單漏掉剛完成的最高分。
+            try {
+                localLeaderboard = loadLocalLeaderboard();
+            } catch (error) {
+                console.warn('Reload local leaderboard before World Cup sync failed', error);
+            }
+
             const realBoard = realLeaderboardEntries(
                 Array.isArray(localLeaderboard) ? localLeaderboard : []
+            ).sort((a, b) =>
+                Number(b?.score || 0) - Number(a?.score || 0) ||
+                Number(b?.level || b?.bestLevel || 1) - Number(a?.level || a?.bestLevel || 1) ||
+                Number(b?.lines || 0) - Number(a?.lines || 0)
             );
 
-            const candidates = (Array.isArray(players) ? players : [])
-                .filter(player => player && player.id && !player.archivedAt)
-                .map(player => {
-                    const state = readPlayerSavedStateById(player.id);
-                    const relatedBoard = realBoard.filter(entry => {
-                        if (!entry || entry.isDefault) return false;
-                        if (entry.playerId && String(entry.playerId) === String(player.id)) return true;
-                        return !entry.playerId
-                            && validateString(entry.name || '', '').toLowerCase()
-                                === validateString(player.name || '', '').toLowerCase();
-                    });
-                    const boardBest = relatedBoard.sort((a, b) =>
-                        Number(b.score || 0) - Number(a.score || 0)
-                    )[0] || null;
+            const playerById = new Map(
+                (Array.isArray(players) ? players : [])
+                    .filter(player => player && player.id && !player.archivedAt)
+                    .map(player => [String(player.id), player])
+            );
+            const playerByName = new Map(
+                (Array.isArray(players) ? players : [])
+                    .filter(player => player && !player.archivedAt)
+                    .map(player => [validateString(player.name, '').toLowerCase(), player])
+            );
 
-                    const bestScore = normalizeWorldCupInteger(Math.max(
+            const candidates = [];
+
+            // 第一來源：龍虎榜中的真實最高紀錄。
+            for (const boardEntry of realBoard) {
+                const linkedPlayer = boardEntry.playerId
+                    ? playerById.get(String(boardEntry.playerId))
+                    : playerByName.get(validateString(boardEntry.name, '').toLowerCase());
+                const state = linkedPlayer?.id
+                    ? readPlayerSavedStateById(linkedPlayer.id)
+                    : null;
+
+                candidates.push({
+                    localPlayerId: String(
+                        linkedPlayer?.id ||
+                        boardEntry.playerId ||
+                        `legacy_${validateString(boardEntry.name, 'player')}`
+                    ).slice(0, 80),
+                    nickname: validateString(
+                        linkedPlayer?.name || boardEntry.name || '玩家',
+                        '玩家'
+                    ),
+                    avatar: String(
+                        linkedPlayer?.avatar || boardEntry.avatar || '🎮'
+                    ).slice(0, 8),
+                    color: String(
+                        linkedPlayer?.color || boardEntry.color || 'cyan'
+                    ).slice(0, 24),
+                    bestScore: normalizeWorldCupInteger(Math.max(
+                        Number(boardEntry.score || 0),
+                        Number(linkedPlayer?.bestScore || 0),
+                        Number(state?.score || 0),
+                        Number(state?.bestScore || 0)
+                    )),
+                    highestLevel: normalizeWorldCupInteger(Math.max(
+                        1,
+                        Number(boardEntry.level || boardEntry.bestLevel || 1),
+                        Number(linkedPlayer?.bestLevel || 1),
+                        Number(state?.level || 1),
+                        Number(state?.bestLevel || 1)
+                    ), 1, 9999),
+                    lines: normalizeWorldCupInteger(Math.max(
+                        Number(boardEntry.lines || 0),
+                        Number(linkedPlayer?.clearCount || 0),
+                        Number(linkedPlayer?.lines || 0),
+                        Number(state?.lines || 0)
+                    ), 0, 999999),
+                    achievedAtLocal: normalizeWorldCupInteger(
+                        boardEntry.at ||
+                        linkedPlayer?.updatedAt ||
+                        state?.savedAt ||
+                        linkedPlayer?.createdAt ||
+                        Date.now(),
+                        0,
+                        Number.MAX_SAFE_INTEGER
+                    ),
+                    sourceType: 'local-leaderboard'
+                });
+            }
+
+            // 第二來源：即使玩家尚未寫入榜單，仍從玩家資料與存檔補抓最高分。
+            for (const player of (Array.isArray(players) ? players : [])) {
+                if (!player?.id || player.archivedAt) continue;
+                const state = readPlayerSavedStateById(player.id);
+                candidates.push({
+                    localPlayerId: String(player.id).slice(0, 80),
+                    nickname: validateString(player.name || '玩家', '玩家'),
+                    avatar: String(player.avatar || '🎮').slice(0, 8),
+                    color: String(player.color || 'cyan').slice(0, 24),
+                    bestScore: normalizeWorldCupInteger(Math.max(
                         Number(player.bestScore || 0),
                         Number(state?.score || 0),
-                        Number(state?.bestScore || 0),
-                        Number(boardBest?.score || 0)
-                    ));
-                    const highestLevel = normalizeWorldCupInteger(Math.max(
+                        Number(state?.bestScore || 0)
+                    )),
+                    highestLevel: normalizeWorldCupInteger(Math.max(
                         1,
                         Number(player.bestLevel || 1),
                         Number(state?.level || 1),
-                        Number(state?.bestLevel || 1),
-                        Number(boardBest?.level || boardBest?.bestLevel || 1)
-                    ), 1, 9999);
-                    const lines = normalizeWorldCupInteger(Math.max(
+                        Number(state?.bestLevel || 1)
+                    ), 1, 9999),
+                    lines: normalizeWorldCupInteger(Math.max(
                         Number(player.clearCount || 0),
                         Number(player.lines || 0),
-                        Number(state?.lines || 0),
-                        Number(boardBest?.lines || 0)
-                    ), 0, 999999);
+                        Number(state?.lines || 0)
+                    ), 0, 999999),
+                    achievedAtLocal: normalizeWorldCupInteger(
+                        player.updatedAt ||
+                        state?.savedAt ||
+                        player.createdAt ||
+                        Date.now(),
+                        0,
+                        Number.MAX_SAFE_INTEGER
+                    ),
+                    sourceType: 'player-profile'
+                });
+            }
 
-                    return {
-                        localPlayerId: String(player.id || '').slice(0, 80),
-                        nickname: validateString(player.name || '玩家', '玩家'),
-                        avatar: String(player.avatar || boardBest?.avatar || '🎮').slice(0, 8),
-                        color: String(player.color || boardBest?.color || 'cyan').slice(0, 24),
-                        bestScore,
-                        highestLevel,
-                        lines,
-                        achievedAtLocal: normalizeWorldCupInteger(
-                            boardBest?.at ||
-                            player.updatedAt ||
-                            state?.savedAt ||
-                            player.createdAt ||
-                            Date.now(),
-                            0,
-                            Number.MAX_SAFE_INTEGER
-                        )
-                    };
-                })
+            return candidates
                 .filter(entry => entry.bestScore > 0)
-                .sort(compareWorldCupEntries);
-
-            return candidates[0] || null;
+                .sort(compareWorldCupEntries)[0] || null;
         }
 
         async function publishWorldCupChampionIfBetter(candidate) {
@@ -3296,61 +3353,205 @@
             }
         }
 
-        async function syncDeviceWorldCupCandidate(reason = 'sync') {
-            if (isGuestMode || !GLOBAL_STATS_CONFIG.enabled) return false;
-            const champion = getLocalDeviceWorldCupChampion();
-            if (!champion) return false;
+        const WORLD_CUP_PENDING_KEY = 'abk_world_cup_pending_v235';
 
+        function worldCupSubmissionId(userUid, candidate) {
+            const raw = [
+                userUid,
+                candidate.localPlayerId || 'player',
+                candidate.bestScore || 0,
+                candidate.highestLevel || 1,
+                candidate.lines || 0,
+                candidate.achievedAtLocal || 0
+            ].join('_');
+            return raw.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 900);
+        }
+
+        function markWorldCupPending(candidate, reason) {
             try {
-                const user = await ensureFirebaseUser();
-                if (!user || !firebaseDb) return false;
+                localStorage.setItem(WORLD_CUP_PENDING_KEY, JSON.stringify({
+                    candidate,
+                    reason: String(reason || 'sync').slice(0, 32),
+                    queuedAt: Date.now()
+                }));
+            } catch (error) {}
+        }
 
-                const candidateRef = doc(firebaseDb, 'world_cup_candidates', user.uid);
-                const currentSnapshot = await getDoc(candidateRef);
-                const current = currentSnapshot.exists() ? currentSnapshot.data() : null;
-                const proposed = {
-                    ...champion,
-                    ownerUid: user.uid
-                };
+        function clearWorldCupPending() {
+            try { localStorage.removeItem(WORLD_CUP_PENDING_KEY); }
+            catch (error) {}
+        }
+
+        async function writeWorldCupSubmissionEvidence(user, candidate, reason) {
+            if (!user || !candidate || !firebaseDb) return false;
+            const submissionId = worldCupSubmissionId(user.uid, candidate);
+            const submissionRef = doc(firebaseDb, 'world_cup_submissions', submissionId);
+
+            await setDoc(submissionRef, {
+                ownerUid: user.uid,
+                localPlayerId: String(candidate.localPlayerId || '').slice(0, 80),
+                nickname: candidate.nickname,
+                avatar: candidate.avatar,
+                color: candidate.color,
+                bestScore: candidate.bestScore,
+                highestLevel: candidate.highestLevel,
+                lines: candidate.lines,
+                achievedAtLocal: candidate.achievedAtLocal,
+                sourceType: String(candidate.sourceType || 'local-leaderboard').slice(0, 32),
+                syncReason: String(reason || 'sync').slice(0, 32),
+                gameVersion: GAME_VERSION,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+
+            return true;
+        }
+
+        async function upsertWorldCupCandidate(user, proposed, reason) {
+            const candidateRef = doc(firebaseDb, 'world_cup_candidates', user.uid);
+            let selectedCandidate = proposed;
+            let wroteCandidate = false;
+
+            await runTransaction(firebaseDb, async transaction => {
+                const currentSnapshot = await transaction.get(candidateRef);
+                const current = currentSnapshot.exists()
+                    ? currentSnapshot.data()
+                    : null;
 
                 if (current && compareWorldCupEntries(proposed, current) > 0) {
-                    await publishWorldCupChampionIfBetter(current);
-                    const syncStatus = document.getElementById('world-cup-sync-status');
-                    if (syncStatus) {
-                        syncStatus.textContent = `本機最高紀錄已在全球榮譽榜候選：${validateString(current.nickname || proposed.nickname, '玩家')}｜${formatPublicStatNumber(current.bestScore || proposed.bestScore)} 分`;
-                    }
-                    return true;
+                    selectedCandidate = current;
+                    return;
                 }
 
-                await setDoc(candidateRef, {
+                transaction.set(candidateRef, {
                     ...proposed,
+                    ownerUid: user.uid,
                     updatedAt: serverTimestamp(),
                     gameVersion: GAME_VERSION,
                     syncReason: String(reason || 'sync').slice(0, 32),
                     source: 'github-pages'
                 }, { merge: true });
+                wroteCandidate = true;
+            });
 
-                trackGameEvent('world_cup_candidate_sync', {
-                    score: proposed.bestScore,
-                    level: proposed.highestLevel,
-                    reason: String(reason || 'sync').slice(0, 32)
-                });
-                await publishWorldCupChampionIfBetter(proposed);
-                const syncStatus = document.getElementById('world-cup-sync-status');
+            return { selectedCandidate, wroteCandidate };
+        }
+
+        async function syncDeviceWorldCupCandidate(reason = 'sync') {
+            if (isGuestMode || !GLOBAL_STATS_CONFIG.enabled) return false;
+
+            const champion = getLocalDeviceWorldCupChampion();
+            const syncStatus = document.getElementById('world-cup-sync-status');
+
+            if (!champion) {
                 if (syncStatus) {
-                    syncStatus.textContent = `本機最高紀錄已送出挑戰：${proposed.nickname}｜${formatPublicStatNumber(proposed.bestScore)} 分`;
-                }
-                return true;
-            } catch (error) {
-                console.warn('World Cup candidate sync failed', reason, error?.code || error);
-                const syncStatus = document.getElementById('world-cup-sync-status');
-                if (syncStatus) {
-                    syncStatus.textContent = error?.code === 'permission-denied'
-                        ? '世界盃候選同步權限尚未更新，請發布最新版 Firestore Rules。'
-                        : '世界盃候選紀錄暫時無法同步，系統稍後會再次嘗試。';
+                    syncStatus.textContent = '本機尚未找到可送出的真實玩家最高分紀錄。';
                 }
                 return false;
             }
+
+            markWorldCupPending(champion, reason);
+
+            let evidenceWritten = false;
+
+            try {
+                const user = await ensureFirebaseUser();
+                if (!user || !firebaseDb) {
+                    if (syncStatus) {
+                        syncStatus.textContent = '世界盃同步等待 Firebase 匿名登入完成。';
+                    }
+                    return false;
+                }
+
+                const proposed = {
+                    ...champion,
+                    ownerUid: user.uid
+                };
+
+                // 第一步：先寫入可供後端彙整的送件證據。
+                // 只要這一步成功，GitHub Actions 最慢約 5 分鐘可完成比較並回填 world_cup/current。
+                try {
+                    evidenceWritten = await writeWorldCupSubmissionEvidence(
+                        user,
+                        proposed,
+                        reason
+                    );
+                } catch (evidenceError) {
+                    console.warn(
+                        'World Cup submission evidence write failed',
+                        reason,
+                        evidenceError?.code || evidenceError
+                    );
+                }
+
+                // 第二步：更新每台裝置唯一的最佳候選紀錄。
+                let selectedCandidate = proposed;
+                try {
+                    const result = await upsertWorldCupCandidate(
+                        user,
+                        proposed,
+                        reason
+                    );
+                    selectedCandidate = result.selectedCandidate || proposed;
+                } catch (candidateError) {
+                    console.warn(
+                        'World Cup candidate upsert failed',
+                        reason,
+                        candidateError?.code || candidateError
+                    );
+
+                    if (evidenceWritten) {
+                        if (syncStatus) {
+                            syncStatus.textContent =
+                                `最高分已送入雲端待彙整：${proposed.nickname}｜${formatPublicStatNumber(proposed.bestScore)} 分；系統約 5 分鐘內比對。`;
+                        }
+                        return true;
+                    }
+                    throw candidateError;
+                }
+
+                // 第三步：嘗試即時更新公開冠軍；若權限或網路暫時失敗，
+                // GitHub Actions 仍會從 submissions/candidates 重新比較並回填。
+                const livePublished = await publishWorldCupChampionIfBetter(
+                    selectedCandidate
+                );
+
+                clearWorldCupPending();
+
+                trackGameEvent('world_cup_candidate_sync', {
+                    score: selectedCandidate.bestScore,
+                    level: selectedCandidate.highestLevel,
+                    reason: String(reason || 'sync').slice(0, 32),
+                    evidence_written: evidenceWritten,
+                    live_published: livePublished
+                });
+
+                if (syncStatus) {
+                    syncStatus.textContent = livePublished
+                        ? `世界盃紀錄已同步：${selectedCandidate.nickname}｜${formatPublicStatNumber(selectedCandidate.bestScore)} 分`
+                        : `最高分已送入雲端：${selectedCandidate.nickname}｜${formatPublicStatNumber(selectedCandidate.bestScore)} 分；等待 5 分鐘彙整確認。`;
+                }
+
+                return true;
+            } catch (error) {
+                console.warn(
+                    'World Cup candidate sync failed',
+                    reason,
+                    error?.code || error
+                );
+
+                if (syncStatus) {
+                    syncStatus.textContent = error?.code === 'permission-denied'
+                        ? '世界盃送件權限尚未更新：請發布 V2.3.5 的 Firestore Rules。'
+                        : '世界盃紀錄暫時未送達，系統會自動重試。';
+                }
+                return false;
+            }
+        }
+
+        function scheduleWorldCupSync(reason = 'sync') {
+            void syncDeviceWorldCupCandidate(reason);
+            setTimeout(() => void syncDeviceWorldCupCandidate(`${reason}_retry_1`), 3000);
+            setTimeout(() => void syncDeviceWorldCupCandidate(`${reason}_retry_2`), 15000);
         }
 
         function cloudPlayerDocumentId(player, uid = firebaseUser?.uid || '') {
@@ -4945,7 +5146,20 @@ function showPasswordHint() {
         ];
 
         function isDefaultLeaderboardBot(item) {
-            return !!item?.isDefault || item?.mode === 'default-bot' || (!item?.playerId && DEFAULT_BOT_NAMES.has(validateString(item?.name, '')));
+            if (!item) return false;
+            if (item.playerId) return false;
+            if (item.isDefault || item.mode === 'default-bot') return true;
+
+            // 舊版真實紀錄可能沒有 playerId；若名稱能對應本機註冊玩家，不可誤判為預設挑戰者。
+            const itemName = validateString(item.name, '').toLowerCase();
+            const matchesRegisteredPlayer = Array.isArray(players)
+                && players.some(player =>
+                    player
+                    && !player.archivedAt
+                    && validateString(player.name, '').toLowerCase() === itemName
+                );
+
+            return !matchesRegisteredPlayer && DEFAULT_BOT_NAMES.has(validateString(item.name, ''));
         }
 
         function realLeaderboardEntries(list) {
@@ -5358,7 +5572,7 @@ function showPasswordHint() {
             renderLeaderboard(localLeaderboard);
             renderPlayerList();
             updateUI();
-            void syncDeviceWorldCupCandidate('score_submit');
+            scheduleWorldCupSync('score_submit');
 
             const rank = localLeaderboard.findIndex(item => ((player && item.playerId === player.id) || (!player && item.name === cleanName && !item.isDefault))) + 1;
             const isRanked = rank > 0 && rank <= 10;
@@ -6475,8 +6689,9 @@ function showPasswordHint() {
             }
             levelStartGraceActive = false;
             const grace = document.getElementById('level-start-grace');
+            const slot = document.getElementById('game-status-slot');
+            if (slot) slot.classList.remove('grace-active');
             if (grace) {
-                grace.classList.remove('is-active');
                 grace.setAttribute('aria-hidden', 'true');
             }
         }
@@ -6540,8 +6755,9 @@ function showPasswordHint() {
                     ? '底下就是暫停前的真實棋盤；倒數結束後才恢復方塊下降與操作。'
                     : '底下就是即將開始的新關卡棋盤；倒數結束後才恢復方塊下降與操作。';
             }
+            const slot = document.getElementById('game-status-slot');
+            if (slot) slot.classList.add('grace-active');
             if (grace) {
-                grace.classList.add('is-active');
                 grace.setAttribute('aria-hidden', 'false');
             }
 
@@ -7564,7 +7780,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.4｜可視盤面兩秒倒數保護版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.5｜不遮盤倒數・世界盃同步管線版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
@@ -7714,17 +7930,18 @@ function showPasswordHint() {
         document.getElementById('btn-refresh-public-stats')?.addEventListener('click', () => {
             void loadPublicStatsSummary(true);
             void loadLivePublicStats(true);
-            void syncDeviceWorldCupCandidate('manual_refresh');
+            scheduleWorldCupSync('manual_refresh');
         });
         document.getElementById('btn-global-stats-info')?.addEventListener('click', () => showInfoModal('globalStats'));
         void initializeGlobalStats().then(async () => {
             await recordPageLaunchOnce();
             await syncExistingPublicMarkers();
-            void syncDeviceWorldCupCandidate('page_launch');
+            scheduleWorldCupSync('page_launch');
             startPublicStatsRealtimeListener();
             startWorldCupRealtimeListener();
             setTimeout(() => void loadLivePublicStats(true), 500);
             setInterval(() => void loadLivePublicStats(false), 60 * 1000);
+            setInterval(() => scheduleWorldCupSync('five_minute_recheck'), 5 * 60 * 1000);
         });
 
 </script>

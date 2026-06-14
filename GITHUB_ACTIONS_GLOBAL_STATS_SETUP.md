@@ -156,3 +156,15 @@ V2.3.2 的 `world_cup_candidates` 規則禁止所有讀取，但前端同步流�
 請將本版 `firestore.rules` 完整貼到 Firebase Console → Firestore → 規則，然後按「發布」。
 
 發布後重新整理正式網站，或按首頁「更新數據」，即可重新觸發世界盃候選同步。
+
+
+## V2.3.5 世界盃雙來源彙整
+GitHub Actions 現在同時讀取：
+- `world_cup_candidates`
+- `world_cup_submissions`
+
+並以匿名裝置 UID 去重，只保留每台裝置的最佳紀錄，再回填：
+- `world_cup/current`
+- `public_stats/summary`
+
+請先發布 V2.3.5 的 `firestore.rules`，否則瀏覽器無法建立 `world_cup_submissions`。

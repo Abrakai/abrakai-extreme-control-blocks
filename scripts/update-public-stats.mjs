@@ -75,9 +75,11 @@ function worldCupSort(a, b) {
   );
 }
 
-function sanitizeWorldCupCandidate(snapshot) {
+function sanitizeWorldCupCandidate(snapshot, source = 'candidate') {
   const data = snapshot.data() || {};
   return {
+    deviceUid: safeText(data.ownerUid || snapshot.id, snapshot.id, 160),
+    source,
     nickname: safeText(data.nickname, '玩家', 24),
     avatar: safeText(data.avatar, '🎮', 16),
     color: safeText(data.color, 'cyan', 32),
@@ -127,6 +129,7 @@ async function main() {
   const usageEvents = db.collection('usage_events');
 
   const worldCupCandidates = db.collection('world_cup_candidates');
+  const worldCupSubmissions = db.collection('world_cup_submissions');
 
   console.log('Starting Firestore aggregation without composite-index queries...');
 
@@ -137,8 +140,9 @@ async function main() {
     gameStarts,
     level10Players,
     level20Players,
-    worldCupCandidateDevices,
+    worldCupCandidateDocumentCount,
     worldCupCandidateSnapshot,
+    worldCupSubmissionSnapshot,
     todayUsageCounts
   ] = await Promise.all([
     countQuery(db.collection('players'), 'players'),
@@ -148,7 +152,8 @@ async function main() {
     countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
     countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
     countQuery(worldCupCandidates, 'world_cup_candidates'),
-    worldCupCandidates.orderBy('bestScore', 'desc').limit(100).get(),
+    worldCupCandidates.get(),
+    worldCupSubmissions.get(),
     countTodayUsageEvents(usageEvents, todayStart)
   ]);
 
@@ -162,10 +167,27 @@ async function main() {
     todaySuccessfulLoginPlays
   });
 
-  const worldCupEntries = worldCupCandidateSnapshot.docs
-    .map(sanitizeWorldCupCandidate)
-    .filter(entry => entry.bestScore > 0)
-    .sort(worldCupSort);
+  // 候選文件與送件證據雙來源彙整；每個匿名裝置只保留最高紀錄。
+  const rawWorldCupEntries = [
+    ...worldCupCandidateSnapshot.docs.map(doc =>
+      sanitizeWorldCupCandidate(doc, 'candidate')
+    ),
+    ...worldCupSubmissionSnapshot.docs.map(doc =>
+      sanitizeWorldCupCandidate(doc, 'submission')
+    )
+  ].filter(entry => entry.bestScore > 0);
+
+  const bestByDevice = new Map();
+  for (const entry of rawWorldCupEntries) {
+    const key = entry.deviceUid || `unknown_${entry.nickname}`;
+    const existing = bestByDevice.get(key);
+    if (!existing || worldCupSort(entry, existing) < 0) {
+      bestByDevice.set(key, entry);
+    }
+  }
+
+  const worldCupEntries = Array.from(bestByDevice.values()).sort(worldCupSort);
+  const worldCupCandidateDevices = bestByDevice.size;
 
   const worldCupTopTen = worldCupEntries.slice(0, 10).map((entry, index) => ({
     rank: index + 1,
@@ -211,6 +233,8 @@ async function main() {
     level10Players,
     level20Players,
     worldCupCandidateDevices,
+    worldCupCandidateDocuments: worldCupCandidateDocumentCount,
+    worldCupSubmissionRecords: worldCupSubmissionSnapshot.size,
     worldCupChampionTitle: champion.title,
     worldCupChampionName: champion.nickname,
     worldCupChampionAvatar: champion.avatar,
@@ -223,8 +247,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 6,
-    gameVersion: 'V2.3.0'
+    schemaVersion: 7,
+    gameVersion: 'V2.3.5'
   };
 
   const worldCupPublic = {
@@ -232,8 +256,10 @@ async function main() {
     champion,
     entries: worldCupTopTen,
     candidateDevices: worldCupCandidateDevices,
+    candidateDocuments: worldCupCandidateDocumentCount,
+    submissionRecords: worldCupSubmissionSnapshot.size,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.3.0'
+    gameVersion: 'V2.3.5'
   };
 
   await Promise.all([
@@ -254,6 +280,8 @@ async function main() {
     level10Players,
     level20Players,
     worldCupCandidateDevices,
+    worldCupCandidateDocuments: worldCupCandidateDocumentCount,
+    worldCupSubmissionRecords: worldCupSubmissionSnapshot.size,
     worldCupChampion: champion.nickname,
     worldCupChampionScore: champion.bestScore
   });

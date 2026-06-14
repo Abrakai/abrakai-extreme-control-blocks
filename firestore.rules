@@ -65,6 +65,42 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+
+    match /world_cup_submissions/{submissionId} {
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.nickname is string
+                    && request.resource.data.nickname.size() >= 1
+                    && request.resource.data.nickname.size() <= 24
+                    && request.resource.data.avatar is string
+                    && request.resource.data.avatar.size() <= 16
+                    && request.resource.data.color is string
+                    && request.resource.data.color.size() <= 32
+                    && request.resource.data.bestScore is int
+                    && request.resource.data.bestScore > 0
+                    && request.resource.data.bestScore <= 2147483647
+                    && request.resource.data.highestLevel is int
+                    && request.resource.data.highestLevel >= 1
+                    && request.resource.data.highestLevel <= 9999
+                    && request.resource.data.lines is int
+                    && request.resource.data.lines >= 0
+                    && request.resource.data.lines <= 999999
+                    && request.resource.data.updatedAt == request.time;
+
+      // 同一筆最高分送件可安全重試，但不得更換擁有者、玩家或成績。
+      allow update: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.localPlayerId == resource.data.localPlayerId
+                    && request.resource.data.bestScore == resource.data.bestScore
+                    && request.resource.data.highestLevel == resource.data.highestLevel
+                    && request.resource.data.lines == resource.data.lines
+                    && request.resource.data.achievedAtLocal == resource.data.achievedAtLocal
+                    && request.resource.data.updatedAt == request.time;
+
+      allow read, delete: if false;
+    }
+
     match /world_cup_candidates/{deviceUid} {
       allow create: if request.auth != null
                     && deviceUid == request.auth.uid
