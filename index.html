@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.9 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.4.0 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2561,7 +2561,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.9</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.0</div>
                     </footer>
                 </main>
             </div>
@@ -2636,6 +2636,10 @@
                         也請勿將真實姓名、電話、電子郵件或其他敏感資訊作為暱稱。
                         違反規範者，本工作室得取消公開排名、隱藏或下架其雲端榮譽榜紀錄。
                     </p>
+                    <label class="mt-2 flex items-start gap-2 rounded-lg border border-cyan-400/35 bg-cyan-950/20 px-3 py-2 text-[11px] leading-relaxed text-cyan-100">
+                        <input id="reg-name-policy-confirm" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-cyan-500">
+                        <span>我確認玩家名稱符合命名規範；違規名稱可能喪失世界盃及其他公開排名資格。</span>
+                    </label>
                 </div>
                 <div>
                     <label class="text-xs text-emerald-200 font-black">挑戰密碼</label>
@@ -2718,6 +2722,13 @@
                 <div>
                     <label>顯示名稱 / 暱稱</label>
                     <input id="profile-name" maxlength="12" class="mt-1 w-full rounded-lg px-3 py-2 font-black text-center" placeholder="玩家名稱">
+                    <div class="mt-2 rounded-lg border border-amber-400/45 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-900">
+                        <b>公開命名提醒：</b>不得使用不雅、侮辱、歧視、仇恨、色情、暴力、威脅、違法、冒用或侵權名稱；違規者可能喪失世界盃及其他公開排名資格。
+                    </div>
+                    <label class="mt-2 flex items-start gap-2 rounded-lg border border-cyan-500/40 bg-cyan-50 px-3 py-2 text-[11px] leading-relaxed text-cyan-900">
+                        <input id="profile-name-policy-confirm" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-cyan-600">
+                        <span>我確認目前玩家名稱符合公開命名規範。</span>
+                    </label>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -2861,8 +2872,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.9";
-        const GAME_VERSION_NAME = "免責聲明・玩家命名規範版";
+        const GAME_VERSION = "V2.4.0";
+        const GAME_VERSION_NAME = "真實成績校正・預設玩家防超車版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -4781,6 +4792,8 @@ function clearInputValidation() {
             document.getElementById('register-existing-box')?.classList.add('hidden');
             const btn = document.getElementById('btn-create-player');
             if (btn) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); btn.innerText = '建立並登入'; }
+            const policyConfirm = document.getElementById('reg-name-policy-confirm');
+            if (policyConfirm) policyConfirm.checked = false;
         }
 
         function showExistingRegisterAccount(existing) {
@@ -4857,6 +4870,10 @@ function createRegisteredPlayer() {
             const avatar = document.getElementById('reg-avatar')?.value || '🎮';
             const color = document.getElementById('reg-color')?.value || 'cyan';
             if (!name) { setRegisterFeedback('err', '請輸入玩家名稱或暱稱'); return; }
+            if (!document.getElementById('reg-name-policy-confirm')?.checked) {
+                setRegisterFeedback('err', '請先確認名稱符合規範；違規名稱可能喪失世界盃及公開排名資格。');
+                return;
+            }
             const duplicated = findAnyPlayerByName(name); if (duplicated) { showExistingRegisterAccount(duplicated); setRegisterFeedback('err', `「${name}」已存在，不能重複註冊。`); return; }
             if (!password) { setRegisterFeedback('err', '請設定挑戰密碼'); return; }
             if (password !== password2) { setRegisterFeedback('err', '兩次輸入的挑戰密碼不一致'); return; }
@@ -5093,6 +5110,8 @@ function showPasswordHint() {
             const modal = document.getElementById('player-profile-modal');
             if (!modal) return;
             document.getElementById('profile-name').value = currentPlayer.name || '';
+            const profilePolicyConfirm = document.getElementById('profile-name-policy-confirm');
+            if (profilePolicyConfirm) profilePolicyConfirm.checked = false;
             document.getElementById('profile-avatar').value = currentPlayer.avatar || '🎮';
             document.getElementById('profile-color').value = currentPlayer.color || 'cyan';
             document.getElementById('profile-hint').value = currentPlayer.hint || '';
@@ -5153,6 +5172,10 @@ function showPasswordHint() {
             const pw2 = String(document.getElementById('profile-password2')?.value || '');
 
             if (!newName) { setProfileFeedback('err', '玩家名稱不可空白。'); return; }
+            if (!document.getElementById('profile-name-policy-confirm')?.checked) {
+                setProfileFeedback('err', '請先確認名稱符合規範；違規名稱可能喪失世界盃及公開排名資格。');
+                return;
+            }
             if ((pw1 || pw2) && pw1 !== pw2) { setProfileFeedback('err', '兩次新挑戰密碼不一致，資料尚未儲存。'); return; }
 
             const updates = { name: newName, avatar, color, hint };
@@ -5228,6 +5251,48 @@ function showPasswordHint() {
             return itemPlayerId ? `id:${itemPlayerId}` : `name:${normalizedName}`;
         }
 
+        function getVerifiedPlayerPerformance(playerId) {
+            if (!playerId) return null;
+            const player = (Array.isArray(players) ? players : []).find(
+                item => item && String(item.id) === String(playerId) && !item.archivedAt
+            );
+            if (!player) return null;
+            const state = readPlayerSavedStateById(player.id);
+            return {
+                player,
+                score: Math.max(0, Number(player.bestScore || 0), Number(state?.score || 0), Number(state?.bestScore || 0)),
+                level: Math.max(1, Number(player.bestLevel || 1), Number(state?.level || 1), Number(state?.bestLevel || 1)),
+                lines: Math.max(0, Number(player.clearCount || 0), Number(player.lines || 0), Number(state?.lines || 0)),
+                at: Math.max(0, Number(player.updatedAt || 0), Number(state?.savedAt || 0), Number(player.createdAt || 0))
+            };
+        }
+
+        function sanitizeRealLeaderboardRecord(rawItem) {
+            if (!rawItem || isDefaultLeaderboardBot(rawItem)) return null;
+            const playerId = String(rawItem.playerId || '').trim();
+
+            // 無 playerId 的舊紀錄不再自動歸戶給同名新玩家。
+            if (!playerId) return null;
+
+            const verified = getVerifiedPlayerPerformance(playerId);
+            if (!verified) return null;
+
+            return {
+                ...rawItem,
+                playerId: verified.player.id,
+                name: validateString(verified.player.name, '玩家'),
+                avatar: verified.player.avatar || rawItem.avatar || '🎮',
+                color: verified.player.color || rawItem.color || 'cyan',
+                score: Math.floor(verified.score),
+                level: Math.floor(verified.level),
+                bestLevel: Math.floor(verified.level),
+                lines: Math.floor(verified.lines),
+                at: Math.floor(verified.at || rawItem.at || Date.now()),
+                mode: 'verified-player-record',
+                verified: true
+            };
+        }
+
         function betterLeaderboardRecord(a, b) {
             const scoreA = Number(a?.score || 0), scoreB = Number(b?.score || 0);
             if (scoreA !== scoreB) return scoreA > scoreB ? a : b;
@@ -5243,44 +5308,36 @@ function showPasswordHint() {
             const map = new Map();
 
             for (const rawItem of realLeaderboardEntries(list)) {
-                const key = getLeaderboardPlayerKey(rawItem);
-                if (!key) continue;
+                const item = sanitizeRealLeaderboardRecord(rawItem);
+                if (!item) continue;
+                const key = `id:${item.playerId}`;
+                const old = map.get(key);
+                map.set(key, old ? betterLeaderboardRecord(old, item) : item);
+            }
 
-                const matchedPlayer = key.startsWith('id:')
-                    ? (Array.isArray(players) ? players : []).find(player =>
-                        player && String(player.id) === key.slice(3)
-                    )
-                    : null;
+            // 玩家資料與玩家專屬存檔是正式成績來源。
+            for (const player of (Array.isArray(players) ? players : [])) {
+                if (!player?.id || player.archivedAt) continue;
+                const verified = getVerifiedPlayerPerformance(player.id);
+                if (!verified) continue;
+                if (verified.score <= 0 && verified.level <= 1 && verified.lines <= 0) continue;
 
                 const item = {
-                    ...rawItem,
-                    playerId: matchedPlayer?.id || rawItem.playerId || null,
-                    name: validateString(matchedPlayer?.name || rawItem.name, '玩家'),
-                    avatar: matchedPlayer?.avatar || rawItem.avatar || '🎮',
-                    color: matchedPlayer?.color || rawItem.color || 'cyan'
+                    playerId: player.id,
+                    name: validateString(player.name, '玩家'),
+                    avatar: player.avatar || '🎮',
+                    color: player.color || 'cyan',
+                    score: Math.floor(verified.score),
+                    level: Math.floor(verified.level),
+                    bestLevel: Math.floor(verified.level),
+                    lines: Math.floor(verified.lines),
+                    at: Math.floor(verified.at || Date.now()),
+                    mode: 'verified-player-record',
+                    verified: true
                 };
-
+                const key = `id:${player.id}`;
                 const old = map.get(key);
-                if (!old) {
-                    map.set(key, item);
-                    continue;
-                }
-
-                const winner = betterLeaderboardRecord(old, item);
-                const loser = winner === old ? item : old;
-                map.set(key, {
-                    ...loser,
-                    ...winner,
-                    playerId: matchedPlayer?.id || winner.playerId || loser.playerId || null,
-                    name: validateString(matchedPlayer?.name || winner.name || loser.name, '玩家'),
-                    avatar: matchedPlayer?.avatar || winner.avatar || loser.avatar || '🎮',
-                    color: matchedPlayer?.color || winner.color || loser.color || 'cyan',
-                    score: Math.max(Number(old.score || 0), Number(item.score || 0)),
-                    level: Math.max(Number(old.level || old.bestLevel || 1), Number(item.level || item.bestLevel || 1)),
-                    bestLevel: Math.max(Number(old.bestLevel || old.level || 1), Number(item.bestLevel || item.level || 1)),
-                    lines: Math.max(Number(old.lines || 0), Number(item.lines || 0)),
-                    at: Math.max(Number(old.at || 0), Number(item.at || 0))
-                });
+                map.set(key, old ? betterLeaderboardRecord(old, item) : item);
             }
 
             return Array.from(map.values()).sort((a, b) =>
@@ -5292,29 +5349,30 @@ function showPasswordHint() {
 
 
         function buildAdaptiveDefaultBots(realEntries = []) {
-            const realScores = realEntries
+            const realScores = dedupeRealLeaderboardByPlayer(realEntries)
                 .map(item => Math.max(0, Math.floor(Number(item.score || 0))))
                 .filter(n => n > 0)
                 .sort((a, b) => b - a);
 
             const topReal = realScores[0] || 0;
+            const lowestReal = realScores.length ? realScores[realScores.length - 1] : 0;
             const growthBase = Math.min(52000, Math.max(0, Math.floor(topReal * 0.16)));
+            const strictGap = lowestReal > 0 ? Math.max(100, Math.floor(lowestReal * 0.025)) : 0;
 
             return DEFAULT_LEADERBOARD_BOTS.map((bot, idx) => {
                 let score = Number(bot.baseScore || bot.minScore || 0);
 
-                // 只讓預設玩家在真實玩家實力提升後「稍微追上」，但不可超過任何已在它前面的真實玩家。
-                const dynamicAdd = Math.floor(growthBase * Math.max(0.12, 1 - idx * 0.075));
-                score = Math.max(score, Number(bot.minScore || 0) + dynamicAdd);
-
-                // 找到第一個比 bot 原始基準高的真實分數，bot 只能在該真實玩家後方追趕，不可超車。
-                const nearestRealAbove = realScores.find(s => s > Number(bot.baseScore || 0));
-                if (nearestRealAbove) {
-                    const margin = Math.max(120, Math.floor(nearestRealAbove * 0.018) + idx * 37);
-                    score = Math.min(score, nearestRealAbove - margin);
+                if (lowestReal > 0) {
+                    const dynamicAdd = Math.floor(growthBase * Math.max(0.12, 1 - idx * 0.075));
+                    const adaptiveTarget = Math.max(
+                        Number(bot.minScore || 0),
+                        Number(bot.minScore || 0) + dynamicAdd
+                    );
+                    const strictCeiling = Math.max(0, lowestReal - strictGap * (idx + 1));
+                    score = Math.min(adaptiveTarget, strictCeiling);
                 }
 
-                score = Math.max(Number(bot.minScore || 0), Math.floor(score));
+                score = Math.max(0, Math.floor(score));
                 return {
                     playerId: null,
                     name: bot.name,
@@ -5328,10 +5386,10 @@ function showPasswordHint() {
                     mode: 'default-bot',
                     isDefault: true
                 };
-            });
+            }).filter(bot => lowestReal <= 0 || bot.score < lowestReal);
         }
 
-        
+
         function readJSONSafe(key, fallback = null) {
             try {
                 const raw = localStorage.getItem(key);
@@ -5395,24 +5453,8 @@ function showPasswordHint() {
                 });
             });
 
-            // 舊版單人資料保險：若曾經只有暱稱與最高分，仍嘗試還原一筆。
-            const legacyBest = Math.max(0, Number(localStorage.getItem(STORAGE_KEY_BEST) || 0));
-            const legacyName = validateString(localStorage.getItem(STORAGE_KEY_NAME) || '', '');
-            if (legacyBest > 0 && legacyName && !rebuilt.some(x => x.name === legacyName && Number(x.score) >= legacyBest)) {
-                rebuilt.push({
-                    playerId: null,
-                    name: legacyName,
-                    avatar: '🎮',
-                    color: 'cyan',
-                    score: Math.floor(legacyBest),
-                    level: estimateLevelByScore(legacyBest),
-                    bestLevel: estimateLevelByScore(legacyBest),
-                    lines: 0,
-                    at: 0,
-                    mode: 'recovered-from-legacy-best',
-                    recovered: true
-                });
-            }
+            // V2.4.0：不再把沒有 playerId 的全域最高分依最後暱稱自動配給玩家。
+            // 該值無法證明屬於哪位玩家，曾造成其他玩家高分錯配給新註冊帳號。
             return rebuilt;
         }
 
