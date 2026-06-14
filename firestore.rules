@@ -21,10 +21,48 @@ service cloud.firestore {
     match /usage_events/{eventId} {
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.eventType in ['page_launch', 'player_login_play']
+                    && request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
                     && request.resource.data.gameVersion is string
                     && request.resource.data.occurredAt == request.time;
       allow read, update, delete: if false;
+    }
+
+    match /public_activity_events/{eventId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
+                    && request.resource.data.bucket is string
+                    && request.resource.data.bucket.size() <= 48
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.occurredAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /public_player_markers/{markerId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.markerType == 'registered_player'
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /public_milestone10_markers/{markerId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.markerType == 'milestone_10'
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /public_milestone20_markers/{markerId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.markerType == 'milestone_20'
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
     }
 
     match /world_cup_candidates/{deviceUid} {
@@ -67,9 +105,52 @@ service cloud.firestore {
       allow read, delete: if false;
     }
 
+    function ownWorldCupCandidate() {
+      return get(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid)).data;
+    }
+
+    function championMatchesOwnCandidate() {
+      let candidate = ownWorldCupCandidate();
+      let champion = request.resource.data.champion;
+      return champion.nickname == candidate.nickname
+             && champion.avatar == candidate.avatar
+             && champion.color == candidate.color
+             && champion.bestScore == candidate.bestScore
+             && champion.highestLevel == candidate.highestLevel
+             && champion.lines == candidate.lines;
+    }
+
+    function candidateOutranksCurrent() {
+      let next = request.resource.data.champion;
+      let current = resource.data.champion;
+      return current == null
+             || next.bestScore > current.bestScore
+             || (next.bestScore == current.bestScore
+                 && next.highestLevel > current.highestLevel)
+             || (next.bestScore == current.bestScore
+                 && next.highestLevel == current.highestLevel
+                 && next.lines > current.lines);
+    }
+
     match /world_cup/{documentId} {
       allow read: if true;
-      allow write: if false;
+
+      allow create: if documentId == 'current'
+                    && request.auth != null
+                    && exists(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid))
+                    && championMatchesOwnCandidate()
+                    && request.resource.data.updatedAt == request.time;
+
+      allow update: if documentId == 'current'
+                    && request.auth != null
+                    && exists(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid))
+                    && championMatchesOwnCandidate()
+                    && candidateOutranksCurrent()
+                    && request.resource.data.updatedAt == request.time
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['title', 'champion', 'updatedAt', 'gameVersion']);
+
+      allow delete: if false;
     }
 
     match /public_stats/{documentId} {

@@ -136,3 +136,16 @@ V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改�
 每個 Firebase 匿名 UID 只保存一份 `world_cup_candidates/{uid}`。
 候選紀錄會在網頁開啟、正式玩家登入、開始遊戲、過關、結算與分數提交時重新檢查；
 只有較高的本機最高分才會覆寫同一份雲端候選紀錄。
+
+
+## V2.3.0 必做設定
+1. 將新版 `firestore.rules` 完整貼到 Firebase Console → Firestore → 規則，按「發布」。
+2. 新增公開安全集合：
+   - `public_activity_events`
+   - `public_player_markers`
+   - `public_milestone10_markers`
+   - `public_milestone20_markers`
+   這些集合由程式自動建立，不需手動新增。
+3. 世界盃候選同步後，可直接更新 `world_cup/current` 的冠軍欄位；GitHub Actions 仍每 5 分鐘整理前十名及官方摘要。
+4. 上傳完成後手動執行一次 `Update public global stats`，建立 V2.3.0 官方基準。
+5. 既有三個 GitHub Secrets 不需修改。

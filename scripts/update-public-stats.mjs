@@ -41,14 +41,16 @@ async function countTodayUsageEvents(usageEvents, todayStart) {
 
   let pageLaunches = 0;
   let loginPlays = 0;
+  let gameStarts = 0;
 
   for (const document of snapshot.docs) {
     const eventType = document.get('eventType');
     if (eventType === 'page_launch') pageLaunches += 1;
     if (eventType === 'player_login_play') loginPlays += 1;
+    if (eventType === 'game_start') gameStarts += 1;
   }
 
-  return { pageLaunches, loginPlays, scannedDocuments: snapshot.size };
+  return { pageLaunches, loginPlays, gameStarts, scannedDocuments: snapshot.size };
 }
 
 
@@ -132,6 +134,7 @@ async function main() {
     registeredPlayers,
     totalPageLaunches,
     successfulLoginPlays,
+    gameStarts,
     level10Players,
     level20Players,
     worldCupCandidateDevices,
@@ -141,6 +144,7 @@ async function main() {
     countQuery(db.collection('players'), 'players'),
     countQuery(usageEvents.where('eventType', '==', 'page_launch'), 'usage_events/page_launch'),
     countQuery(usageEvents.where('eventType', '==', 'player_login_play'), 'usage_events/player_login_play'),
+    countQuery(usageEvents.where('eventType', '==', 'game_start'), 'usage_events/game_start'),
     countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
     countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
     countQuery(worldCupCandidates, 'world_cup_candidates'),
@@ -150,6 +154,7 @@ async function main() {
 
   const todayPageLaunches = todayUsageCounts.pageLaunches;
   const todaySuccessfulLoginPlays = todayUsageCounts.loginPlays;
+  const todayGameStarts = todayUsageCounts.gameStarts;
 
   console.log('Today usage scan completed:', {
     scannedDocuments: todayUsageCounts.scannedDocuments,
@@ -199,6 +204,8 @@ async function main() {
     todayPageLaunches,
     successfulLoginPlays,
     todaySuccessfulLoginPlays,
+    gameStarts,
+    todayGameStarts,
     totalPageViews,
     todayPageViews,
     level10Players,
@@ -216,8 +223,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 5,
-    gameVersion: 'V2.2.9'
+    schemaVersion: 6,
+    gameVersion: 'V2.3.0'
   };
 
   const worldCupPublic = {
@@ -226,7 +233,7 @@ async function main() {
     entries: worldCupTopTen,
     candidateDevices: worldCupCandidateDevices,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.2.9'
+    gameVersion: 'V2.3.0'
   };
 
   await Promise.all([
@@ -240,6 +247,8 @@ async function main() {
     todayPageLaunches,
     successfulLoginPlays,
     todaySuccessfulLoginPlays,
+    gameStarts,
+    todayGameStarts,
     totalPageViews,
     todayPageViews,
     level10Players,
