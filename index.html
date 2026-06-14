@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.7 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.3.9 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2561,7 +2561,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.7</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.9</div>
                     </footer>
                 </main>
             </div>
@@ -2630,6 +2630,12 @@
                     <label class="text-xs text-emerald-200 font-black">玩家名稱 / 暱稱</label>
                     <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="mt-1 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
                     <p class="text-[11px] text-slate-400 mt-1">請輸入新的玩家名稱；不會自動使用首頁登入欄位的舊帳號。</p>
+                    <p class="mt-2 rounded-lg border border-amber-400/45 bg-amber-950/25 px-3 py-2 text-[11px] leading-relaxed text-amber-100">
+                        <b class="text-amber-300">玩家命名規範：</b>
+                        請勿使用侮辱、歧視、仇恨、色情、暴力、威脅、違法、冒用他人或侵害第三人權利的名稱，
+                        也請勿將真實姓名、電話、電子郵件或其他敏感資訊作為暱稱。
+                        違反規範者，本工作室得取消公開排名、隱藏或下架其雲端榮譽榜紀錄。
+                    </p>
                 </div>
                 <div>
                     <label class="text-xs text-emerald-200 font-black">挑戰密碼</label>
@@ -2653,7 +2659,18 @@
                         <select id="reg-color" class="mt-1 w-full rounded-lg px-2 py-2 font-bold focus:outline-none"><option value="cyan">青藍</option><option value="blue">藍色</option><option value="emerald">綠色</option><option value="yellow">黃色</option><option value="orange">橘色</option><option value="rose">玫紅</option><option value="purple">紫色</option><option value="slate">銀灰</option></select>
                     </div>
                 </div>
-                <div class="dm-note">代表圖案只是外觀識別，不是玩家身分或等級；稱號會依最高關卡自動授予。挑戰密碼只存在本機瀏覽器，請勿使用重要密碼。</div>
+                <div class="dm-note">
+                    代表圖案只是外觀識別，不是玩家身分或等級；稱號會依最高關卡自動授予。
+                    挑戰密碼只存在本機瀏覽器，請勿使用重要密碼。
+                    玩家帳號、進度與本機榜單能否完整保留，取決於目前裝置與瀏覽器的儲存設定及狀態。
+                </div>
+                <div class="rounded-xl border border-rose-400/45 bg-rose-950/25 px-3 py-2 text-[11px] leading-relaxed text-rose-100">
+                    建立玩家帳號即表示您已閱讀並同意
+                    <button id="btn-register-view-disclaimer" type="button" class="font-black text-cyan-300 underline underline-offset-2">
+                        《版權・免責聲明》
+                    </button>
+                    與玩家命名規範。本遊戲僅供娛樂，不得用於賭博或其他非法用途。
+                </div>
             </div>
             <div class="modal-footer-fixed grid grid-cols-2 gap-2">
                 <button id="btn-create-player" class="px-3 py-3 bg-emerald-700 hover:bg-emerald-600 rounded-xl text-white text-sm font-black">建立並登入</button>
@@ -2824,7 +2841,16 @@
     <div id="ranking-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-[74] flex items-center justify-center p-4">
         <div class="w-full max-w-md rounded-2xl border border-yellow-400/70 bg-slate-950 text-slate-100 p-5 shadow-[0_0_35px_rgba(250,204,21,.25)]">
             <div class="flex items-center justify-between gap-3 mb-3"><h3 class="text-lg font-black text-yellow-300">龍虎榜揭榜</h3><button id="btn-close-ranking" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold">關閉</button></div>
-            <div class="text-[12px] text-slate-300 mb-3">本榜為目前瀏覽器內的本機紀錄。真實玩家與預設挑戰者會以不同底色呈現；更換瀏覽器、裝置或清除資料後不會自動同步。</div>
+            <div class="text-[12px] text-slate-300 mb-3">
+                本榜為目前瀏覽器內的本機紀錄。真實玩家與預設挑戰者會以不同底色呈現；
+                更換瀏覽器、裝置或清除資料後不會自動同步。
+            </div>
+            <div class="mb-3 rounded-xl border border-amber-400/45 bg-amber-950/25 px-3 py-2 text-[11px] leading-relaxed text-amber-100">
+                <b class="text-amber-300">排名與命名提醒：</b>
+                本榜僅為娛樂性榮譽紀錄，不代表獎金、獎品、財產價值或可兌換利益。
+                使用不雅、違法、冒用或侵權名稱者，本工作室得不予列入公開排名，或將相關雲端榜單紀錄隱藏、下架或移除。
+                本工作室無法主動刪除玩家裝置內的本機帳號；本機資料仍由玩家自行管理。
+            </div>
             <div id="leaderboard-modal-list" class="space-y-1 text-sm"></div>
         </div>
     </div>
@@ -2835,8 +2861,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.7";
-        const GAME_VERSION_NAME = "世界盃顯示來源分離修正版";
+        const GAME_VERSION = "V2.3.9";
+        const GAME_VERSION_NAME = "免責聲明・玩家命名規範版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -5180,10 +5206,26 @@ function showPasswordHint() {
         }
 
         function getLeaderboardPlayerKey(item) {
-            // 真實玩家榜單：同一位玩家只保留一筆最高成績。
-            // 有 playerId 用 playerId；舊版沒有 playerId 的紀錄，退回用玩家名稱合併，避免同一台只有一位玩家卻洗出多筆名次。
             if (!item || isDefaultLeaderboardBot(item)) return '';
-            return item.playerId ? `id:${item.playerId}` : `name:${validateString(item.name, '玩家').toLowerCase()}`;
+
+            const itemPlayerId = String(item.playerId || '').trim();
+            const normalizedName = validateString(item.name, '玩家').trim().toLowerCase();
+            const activePlayers = (Array.isArray(players) ? players : [])
+                .filter(player => player && !player.archivedAt);
+
+            const playerById = itemPlayerId
+                ? activePlayers.find(player => String(player.id) === itemPlayerId)
+                : null;
+            if (playerById) return `id:${playerById.id}`;
+
+            const sameNamePlayers = activePlayers.filter(player =>
+                validateString(player.name, '').trim().toLowerCase() === normalizedName
+            );
+            if (sameNamePlayers.length === 1) {
+                return `id:${sameNamePlayers[0].id}`;
+            }
+
+            return itemPlayerId ? `id:${itemPlayerId}` : `name:${normalizedName}`;
         }
 
         function betterLeaderboardRecord(a, b) {
@@ -5199,13 +5241,53 @@ function showPasswordHint() {
 
         function dedupeRealLeaderboardByPlayer(list) {
             const map = new Map();
-            for (const item of realLeaderboardEntries(list)) {
-                const key = getLeaderboardPlayerKey(item);
+
+            for (const rawItem of realLeaderboardEntries(list)) {
+                const key = getLeaderboardPlayerKey(rawItem);
                 if (!key) continue;
+
+                const matchedPlayer = key.startsWith('id:')
+                    ? (Array.isArray(players) ? players : []).find(player =>
+                        player && String(player.id) === key.slice(3)
+                    )
+                    : null;
+
+                const item = {
+                    ...rawItem,
+                    playerId: matchedPlayer?.id || rawItem.playerId || null,
+                    name: validateString(matchedPlayer?.name || rawItem.name, '玩家'),
+                    avatar: matchedPlayer?.avatar || rawItem.avatar || '🎮',
+                    color: matchedPlayer?.color || rawItem.color || 'cyan'
+                };
+
                 const old = map.get(key);
-                map.set(key, old ? betterLeaderboardRecord(old, item) : item);
+                if (!old) {
+                    map.set(key, item);
+                    continue;
+                }
+
+                const winner = betterLeaderboardRecord(old, item);
+                const loser = winner === old ? item : old;
+                map.set(key, {
+                    ...loser,
+                    ...winner,
+                    playerId: matchedPlayer?.id || winner.playerId || loser.playerId || null,
+                    name: validateString(matchedPlayer?.name || winner.name || loser.name, '玩家'),
+                    avatar: matchedPlayer?.avatar || winner.avatar || loser.avatar || '🎮',
+                    color: matchedPlayer?.color || winner.color || loser.color || 'cyan',
+                    score: Math.max(Number(old.score || 0), Number(item.score || 0)),
+                    level: Math.max(Number(old.level || old.bestLevel || 1), Number(item.level || item.bestLevel || 1)),
+                    bestLevel: Math.max(Number(old.bestLevel || old.level || 1), Number(item.bestLevel || item.level || 1)),
+                    lines: Math.max(Number(old.lines || 0), Number(item.lines || 0)),
+                    at: Math.max(Number(old.at || 0), Number(item.at || 0))
+                });
             }
-            return Array.from(map.values()).sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
+
+            return Array.from(map.values()).sort((a, b) =>
+                Number(b.score || 0) - Number(a.score || 0) ||
+                Number(b.level || b.bestLevel || 1) - Number(a.level || a.bestLevel || 1) ||
+                Number(b.lines || 0) - Number(a.lines || 0)
+            );
         }
 
 
@@ -5348,8 +5430,24 @@ function showPasswordHint() {
 
                 // 重要：V2.0.2 曾因排行榜正規化錯誤導致畫面空白。這裡會從玩家資料與存檔重建真實榜，
                 // 並只回寫真實玩家資料，不會把預設挑戰者當成真實紀錄保存。
-                if (real.length > savedReal.length || (!savedReal.length && real.length)) {
-                    backupLeaderboardRaw('before-recovery-write');
+                const savedCanonical = dedupeRealLeaderboardByPlayer(savedReal);
+                const savedSignature = JSON.stringify(savedCanonical.map(item => ({
+                    playerId: item.playerId || null,
+                    name: item.name,
+                    score: Number(item.score || 0),
+                    level: Number(item.level || item.bestLevel || 1),
+                    lines: Number(item.lines || 0)
+                })));
+                const realSignature = JSON.stringify(real.map(item => ({
+                    playerId: item.playerId || null,
+                    name: item.name,
+                    score: Number(item.score || 0),
+                    level: Number(item.level || item.bestLevel || 1),
+                    lines: Number(item.lines || 0)
+                })));
+
+                if (real.length !== savedReal.length || savedSignature !== realSignature) {
+                    backupLeaderboardRaw('before-v238-canonical-dedupe');
                     localStorage.setItem(STORAGE_KEY_BOARD, JSON.stringify(real));
                 }
 
@@ -5442,9 +5540,16 @@ function showPasswordHint() {
         }
 
         function saveLocalLeaderboard() {
-            const realOnly = realLeaderboardEntries(localLeaderboard).slice(0, 50);
+            const realOnly = dedupeRealLeaderboardByPlayer(
+                realLeaderboardEntries(localLeaderboard)
+            ).slice(0, 50);
+
             backupLeaderboardRaw('before-save');
             localStorage.setItem(STORAGE_KEY_BOARD, JSON.stringify(realOnly));
+            localLeaderboard = normalizeLeaderboard([
+                ...realOnly,
+                ...buildAdaptiveDefaultBots(realOnly)
+            ]);
         }
 
         
@@ -6665,9 +6770,47 @@ function showPasswordHint() {
             overlayMode = 'levelClear';
             document.getElementById('overlay')?.classList.remove('pause-overlay');
             document.getElementById('overlay')?.classList.add('levelclear-overlay');
-            document.getElementById('overlay-title').innerHTML = level === 20 ? `20 關主線完成！` : `CLEAR!`;
-            document.getElementById('overlay-subtitle').innerText = `極限操控方塊｜LEVEL ${level} 過關｜阿布拉.凱 工作室 監製`;
-            document.getElementById('overlay-desc').innerText = level === 20 ? `🎉 恭喜完成 20 關主線！\n本關成績：${stageScore} 分｜消除 ${stageLines} 行\n累計分數：${score} 分｜可選擇進入無盡挑戰，繼續累積更高分。` : `本關成績：${stageScore} 分｜消除 ${stageLines} 行\n累計分數：${score} 分｜過關獎勵：${currentLevel.reward}\n過關加分：+${currentLevel.bonus}`;
+
+            const levelClearPlayerName = isGuestMode
+                ? '訪客遊俠'
+                : validateString(currentPlayer?.name || '玩家', '玩家');
+            const isTenLevelMilestone = level > 0 && level % 10 === 0;
+            const isMainLineComplete = level === 20;
+
+            const overlayTitle = document.getElementById('overlay-title');
+            const overlaySubtitle = document.getElementById('overlay-subtitle');
+            const overlayDesc = document.getElementById('overlay-desc');
+
+            if (overlayTitle) {
+                overlayTitle.innerText = isTenLevelMilestone
+                    ? `🏆 ${levelClearPlayerName} 完成第 ${level} 關！`
+                    : `🎉 恭喜 ${levelClearPlayerName} 過關！`;
+            }
+            if (overlaySubtitle) {
+                overlaySubtitle.innerText =
+                    `極限操控方塊｜${levelClearPlayerName}｜LEVEL ${level} 過關｜阿布拉.凱 工作室 監製`;
+            }
+            if (overlayDesc) {
+                if (isMainLineComplete) {
+                    overlayDesc.innerText =
+                        `🎊 ${levelClearPlayerName}，恭喜完成 20 關主線！\n` +
+                        `你已正式解鎖無盡挑戰，這是值得紀念的重要榮耀！\n` +
+                        `本關成績：${stageScore} 分｜消除 ${stageLines} 行\n` +
+                        `累計分數：${score} 分｜繼續挑戰更高紀錄吧！`;
+                } else if (isTenLevelMilestone) {
+                    overlayDesc.innerText =
+                        `🌟 ${levelClearPlayerName}，恭喜突破第 ${level} 關重要里程碑！\n` +
+                        `你的判斷、速度與穩定度又提升了一個層級。\n` +
+                        `本關成績：${stageScore} 分｜消除 ${stageLines} 行\n` +
+                        `累計分數：${score} 分｜繼續朝下一個十關里程碑前進！`;
+                } else {
+                    overlayDesc.innerText =
+                        `${levelClearPlayerName}，恭喜完成 LEVEL ${level}！\n` +
+                        `本關成績：${stageScore} 分｜消除 ${stageLines} 行\n` +
+                        `累計分數：${score} 分｜過關獎勵：${currentLevel.reward}\n` +
+                        `過關加分：+${currentLevel.bonus}`;
+                }
+            }
             document.getElementById('level-brief').innerHTML = getNextLevelBrief(level + 1, true);
             document.getElementById('btn-start').innerText = level === 20 ? '進入無盡挑戰' : `前進 LEVEL ${level + 1}`;
             document.getElementById('btn-new-game')?.classList.remove('hidden');
@@ -7769,6 +7912,8 @@ function showPasswordHint() {
                     <p><b class="text-amber-300">Guest 路人模式：</b>不用註冊即可開打，但不儲存進度，也不寫入本機龍虎榜。</p>
                     <p><b class="text-emerald-300">全球挑戰榮譽榜：</b>首頁會顯示玩家帳號、遊戲開啟、登入、開局、關卡突破與世界盃榮譽冠軍。按「數據說明」可查看每一項數字的計算方式。</p>
                     <p><b class="text-rose-300">隱私保護：</b>挑戰密碼、密碼提示及密碼雜湊只留在本機瀏覽器，不會上傳 Firebase。訪客模式不建立雲端玩家資料。</p>
+                    <p><b class="text-amber-300">分數與資料保存：</b>本機玩家帳號、進度、技能與龍虎榜主要依賴目前瀏覽器儲存。瀏覽器清除網站資料、無痕模式、儲存空間不足、系統或瀏覽器更新、裝置故障或更換裝置，都可能造成紀錄無法讀取或遺失。本工作室不提供個別成績保管、修護或復原服務。</p>
+                    <p><b class="text-orange-300">娛樂與命名規範：</b>本遊戲僅供娛樂，不得用於賭博或其他非法用途。玩家名稱不得含有不雅、侮辱、歧視、仇恨、色情、暴力、威脅、違法、冒用或侵權內容；違規名稱得不列入公開排名或自雲端榮譽榜下架。</p>
                     <p><b class="text-cyan-300">玩家資料：</b>登入後可按置頂欄「玩家資料設定」修改顯示名稱、代表圖案、代表色、挑戰密碼與密碼提示；排行榜會依 playerId 同步更新。玩家資料設定不再設計成可隱藏欄位，避免使用者誤以為資料消失。</p><p><b class="text-orange-300">訪客暫停：</b>訪客遊玩時按暫停，會顯示專屬暫停畫面，提供「繼續遊戲」與「結束回首頁」，不會直接跳回登入首頁。</p>
                 `;
             } else if (type === 'globalStats') {
@@ -7785,21 +7930,54 @@ function showPasswordHint() {
                     <p><b class="text-yellow-300">突破第 10／20 關玩家：</b>曾經完成指定關卡的玩家帳號數；同一玩家重複過關不會重複增加。</p>
                     <p><b class="text-amber-300">世界盃榮譽冠軍：</b>比較各裝置送出的最高分紀錄，公開冠軍玩家名稱、最高分、Level 與消除行數。</p>
                     <div class="rounded-xl border border-amber-400/40 bg-amber-950/25 p-3 text-amber-100">
-                        本榜只做成績與頭銜展示。享受挑戰、刷新自己，就是最值得紀念的榮耀！
+                        <p>本榜只做成績與頭銜展示，不提供獎金、獎品、財產價值或兌換利益。</p>
+                        <p class="mt-1">玩家名稱若含有不雅、違法、冒用、侵權或其他不適合公開展示的內容，本工作室得取消其公開排名，或將相關雲端紀錄隱藏、下架或移除。</p>
                     </div>
                 `;
             } else {
-                title.innerText = '版權與產品介紹';
+                title.innerText = '版權・免責聲明';
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.7｜世界盃顯示來源分離修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.9｜免責聲明・玩家命名規範版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
                         <p class="font-bold text-blue-200 mb-1">產品介紹</p>
-                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，支援手機、平板與電腦快速開啟遊玩。玩家可以註冊本機挑戰者帳號，保存挑戰進度、累積本機龍虎榜成績，並透過 20 關主線、無盡挑戰、HOLD 暫存交換、技能救援、稱號升級與獎牌慶典，逐步挑戰更高分數與更高榮譽。</p>
-                        <p class="mt-2">遊戲資料目前儲存在玩家使用的瀏覽器本機中，適合親子、朋友或同一台裝置多人輪流挑戰；若更換瀏覽器、裝置或清除網站資料，帳號、進度與本機榜單不會自動同步。</p>
+                        <p>《極限操控方塊》是一款方塊落下型益智闖關小遊戲，支援手機、平板與電腦快速開啟遊玩。玩家可以註冊本機挑戰者帳號，保存挑戰進度、累積本機龍虎榜成績，並透過 20 關主線、無盡挑戰、HOLD 暫存交換、技能救援、稱號升級與榮譽榜，逐步挑戰更高分數與更高榮譽。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-rose-400/55 bg-rose-950/25 p-3">
+                        <p class="font-black text-rose-200 mb-1">一、分數、進度與本機資料保存聲明</p>
+                        <p>玩家帳號、挑戰密碼、遊戲進度、技能、最高分及本機龍虎榜，主要儲存在玩家目前使用的裝置與瀏覽器中。資料是否能持續、完整保存，取決於裝置狀態、瀏覽器設定、網站儲存權限與可用空間。</p>
+                        <p class="mt-2">更換裝置或瀏覽器、清除 Cookie 或網站資料、使用無痕／私密模式、瀏覽器自動清理、系統或瀏覽器更新、儲存空間不足、裝置故障、重設裝置或其他環境變動，均可能造成帳號、進度或分數無法讀取、不同步、毀損或遺失。</p>
+                        <p class="mt-2">本工作室不承擔玩家本機資料之保管、代管、維修、修護、備份或個別復原義務，也不保證任何分數、進度或排名得以永久保存。玩家應自行評估並管理裝置與瀏覽器資料。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-cyan-400/55 bg-cyan-950/25 p-3">
+                        <p class="font-black text-cyan-200 mb-1">二、雲端同步、公開排名與資訊安全</p>
+                        <p>為提供全球統計及榮譽榜，本遊戲可能將玩家暱稱、代表圖案、代表色、最高分、關卡、消除行數、匿名裝置識別碼及必要的技術紀錄傳送至 Firebase、Google Analytics、GitHub Actions 或其他支援本遊戲運作的第三方服務。挑戰密碼、密碼提示及密碼雜湊不會上傳 Firebase。</p>
+                        <p class="mt-2">本工作室會依服務規模採取合理的安全與管理措施，但網路傳輸、第三方平台、瀏覽器、裝置及雲端服務均可能發生中斷、延遲、未同步、錯誤、毀損、遭未授權存取或資料洩漏等風險，無法保證絕對安全或永久可用。</p>
+                        <p class="mt-2">在法律允許的範圍內，因使用者操作、裝置或瀏覽器狀態、網路、第三方服務、不可抗力或其他非可歸責於本工作室之事由所造成的資料遺失、毀損、未同步、無法存取或洩漏，本工作室不負保管、維修、復原或損害賠償責任；但法律明定不得免除或限制之責任，不在此限。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-amber-400/55 bg-amber-950/25 p-3">
+                        <p class="font-black text-amber-200 mb-1">三、娛樂用途與禁止行為</p>
+                        <p>本遊戲僅供休閒娛樂與技巧挑戰，不提供任何獎金、獎品、賭金、財產價值、兌換利益或投資回報。任何分數、稱號、獎牌、龍虎榜或世界盃榮譽榜，均僅為遊戲內的榮譽展示。</p>
+                        <p class="mt-2">不得將本遊戲用於賭博、下注、詐欺、洗錢、非法交易、侵害他人權利、規避法令或其他違法用途。玩家如自行以本遊戲進行任何金錢、財物或利益約定，均屬玩家個人行為，與本工作室無關。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-fuchsia-400/55 bg-fuchsia-950/25 p-3">
+                        <p class="font-black text-fuchsia-200 mb-1">四、玩家命名與公開排名管理</p>
+                        <p>玩家名稱、暱稱或其他公開內容，不得含有侮辱、歧視、仇恨、色情、暴力、威脅、騷擾、違法、冒用他人、侵害商標／著作權／姓名權／名譽權，或其他不適合公開展示的文字、符號與內容。</p>
+                        <p class="mt-2">本工作室得依合理判斷，對違反命名規範、疑似作弊、異常資料或不適合公開展示的紀錄，採取不列入公開排名、取消排名資格、隱藏、下架、移除雲端榮譽榜紀錄或限制後續參與等措施，必要時得不另行通知。</p>
+                        <p class="mt-2">本工作室無法主動刪除玩家裝置內的本機帳號或本機資料；本機玩家之封存與永久刪除，仍須由玩家透過「本機資料管理中心」自行操作。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-slate-500/55 bg-slate-900/70 p-3">
+                        <p class="font-black text-slate-100 mb-1">五、服務變更與責任限制</p>
+                        <p>本工作室得因維護、安全、法令、第三方服務調整或產品規劃，變更、暫停或終止部分或全部功能、統計方式、排名規則及資料保存方式。若發現明顯錯誤、作弊、異常分數或系統漏洞，本工作室得更正、重新計算、取消或移除相關紀錄。</p>
+                        <p class="mt-2">玩家開始或繼續使用本遊戲，即表示已閱讀並同意本聲明及相關遊戲規範。若不同意，請停止使用本遊戲。</p>
                     </div>
                     <details class="info-details">
                         <summary>產品更新歷程（點我展開）</summary>
@@ -7819,13 +7997,17 @@ function showPasswordHint() {
                             <li><b>V1.7.5</b>：修正手機資訊窗高度與捲動問題，加入沉浸模式按鈕、PWA meta 設定與加入主畫面提示，同步更新新手村、產品說明、版本歷程與版權資訊。</li><li><b>V1.7.6</b>：重整首頁流程與高對比視覺，將置頂功能、版中登入/註冊/訪客、版尾說明/版權/龍虎榜分區；修正訪客暫停不應直接回首頁的流程問題。</li><li><b>V1.7.7</b>：修正首頁功能列固定定位造成部分裝置遮擋遊戲畫面的問題，將首頁功能列改為非固定頁面內區塊，並加強遊戲開始後首頁罩幕隱藏機制。</li><li><b>V1.7.8</b>：將首頁音樂、音效與沉浸模式收納進小型設定視窗，避免設定類按鈕與對話框佔據首頁主版面，讓登入/註冊/訪客流程更乾淨。</li><li><b>V1.7.9</b>：修正訪客與玩家暫停時仍顯示首頁登入表單的問題，暫停畫面改為獨立流程，只保留「繼續遊戲」與「結束回首頁」。</li><li><b>V1.8.0</b>：修正過關畫面仍顯示首頁登入表單的問題，過關畫面改為獨立結算流程；同時修正快降/硬降達標時方塊可能停在空中的落地判定問題。</li><li><b>V1.8.1</b>：新增完整玩家資料中心，可修改名稱、代表圖案、代表色、挑戰密碼與密碼提示；放大桌機/大螢幕橫式棋盤與預覽區比例；修正過關後暫停鍵干擾流程的問題。</li><li><b>V1.8.2</b>：玩家資料中心加入目前挑戰密碼驗證、新密碼一致性檢查、儲存成功 / 失敗回饋；說明系統不顯示舊密碼，只能透過目前密碼驗證身份。</li><li><b>V1.8.3</b>：修正首頁設定被遊戲內右上工具列遮擋的問題；首頁、暫停、過關、Game Over 罩幕開啟時自動隱藏遊戲工具列，進入遊戲後才顯示。</li><li><b>V1.8.4</b>：首頁改為科技感深色分區，強化關卡說明、登入、註冊/訪客與排行榜的視覺層次；修正版尾「龍虎榜揭榜」按鈕無反應問題，改為開啟獨立排行榜視窗。</li><li><b>V1.8.5</b>：修正首頁設定內音樂 / 音效按鈕無作用問題，改為直接切換狀態、更新按鈕文字並顯示回饋；沉浸模式若受手機瀏覽器限制，會顯示加入主畫面提示。</li><li><b>V1.8.6</b>：技能鍵移到右下操作區，靠近 A/B/X/Y，方便手機玩家點選；X 鍵改標示為「暫存方塊」，左側 TARGET 改為「過關進度」。</li><li><b>V1.8.7</b>：新增 HOLD 暫存 / 交換方塊說明視窗；主線擴充為 20 關；完成第 20 關後可選擇進入無盡挑戰，繼續累積分數與刷新本機龍虎榜。</li><li><b>V1.8.8</b>：新增玩家角色成長稱號系統；註冊時只設定代表圖案與代表色，身分稱號依最高關卡自動授予，例如一般民眾、見習騎士、大騎士、超人挑戰者、賽亞戰士與宇宙方塊王。</li><li><b>V1.8.9</b>：新增稱號升級慶典、獎牌頒發、煙火動畫、掌聲與煙火音效；突破 Level 5、10、20、30 等里程碑時會獲得銅牌、銀牌、金牌或王者盃回饋；版權頁特別感謝固定移到最上方。</li><li><b>V1.9.0</b>：釐清註冊時的「代表圖案」不是身分；將註冊與玩家資料中心的角色選項改為純圖案名稱，並新增完整稱號階級說明，讓玩家理解身分稱號是靠關卡實力升級而來。</li><li><b>V1.9.1</b>：修正版權頁特別感謝文字，移除內部討論語句；產品更新歷程改為點擊展開；玩家資料中心將進階密碼修改收納，並修正底部儲存 / 取消按鈕容易被遮擋的問題。</li><li><b>V1.9.2</b>：修正舊版 10 關破關帳號升級到新版後可能卡住的相容問題；舊版破關帳號會從 Level 11 繼續；Level 20 以上舊紀錄會從 Level 21 無盡挑戰繼續；並修正稱號升級慶典確認按鈕無法關閉。</li><li><b>V1.9.3</b>：新增本關重挑接續機制；每關開始建立臨時暫存點，不覆蓋正式存檔；Game Over 後可扣 1000 分或扣 1 技能重玩本關，若扣分後不足以達到本關入場門檻，可退回上一關重新累積分數。</li><li><b>V1.9.4</b>：本關重挑升級為多關節點暫存，系統保留最近 8 個不同關卡的臨時暫存點；若扣分後必須退回上一關，會優先還原上一關暫存點，而不是只重建空白棋盤。</li><li><b>V1.9.5</b>：修正遊戲中 UI：顯示遊戲名稱、取消直式手機左右極速肩鍵、放大主棋盤與操作按鈕、技能鍵上移；過關畫面提高文字對比，稱號階級改為由低到高排序；Game Over 結算改以遊戲名稱為主標題，並清楚顯示失敗關卡。</li><li><b>V1.9.6</b>：修正首頁登入 UI。首頁 / 登入罩幕開啟時完全隱藏背景棋盤與方向鍵、功能鍵；首頁內容重新排序，帳號與挑戰密碼輸入區優先顯示，關卡資訊、進度與稱號說明移至登入區下方。</li><li><b>V1.9.7</b>：新增過關後「下一關起點暫存」；重玩本關會回到該關起點，而非死亡前最後一步；同時預設龍虎榜依分數補上合理 Level、代表圖案、消行數與稱號，避免高分預設名單顯示為一般民眾。</li><li><b>V1.9.8</b>：修正玩家帳號輸入體驗，帳號欄可自由輸入，也可從本機玩家清單快速帶入；新增清除 / 改輸入按鈕與登入提示，避免被上一位玩家選取狀態卡住；產品介紹改為正式產品說明，版本修正內容移回產品更新歷程。</li><li><b>V1.9.9</b>：登入與註冊流程分流，註冊改為獨立視窗；新增本機資料管理中心，可封存、恢復與永久刪除本機玩家；玩家資料中心只管理目前登入玩家；永久刪除需挑戰密碼與玩家名稱確認，龍虎榜紀錄預設保留。</li><li><b>V2.0.0</b>：修正註冊與舊用戶登入混淆問題。若玩家名稱已存在，註冊視窗會明確阻止重複建立，並引導玩家回登入區或本機資料管理中心；玩家帳號欄改為純自由輸入，本機玩家清單只做快速帶入；登入提示文字提高對比，避免玩家看不清楚。</li><li><b>V2.0.1</b>：將「清除 / 改輸入」改為「本機玩家帳號清單」；新增帳號清單彈窗與快速帶入功能；強化登入錯誤回饋，包含帳號不存在、帳號封存、密碼錯誤、空白欄位與登入成功提示，讓每個輸入欄位與按鈕都有明確回應。</li><li><b>V2.0.2</b>：登入成功後直接進入遊戲，避免停留在首頁；移除首頁內嵌本機挑戰者清單，改由帳號清單按鈕查詢；阿布拉.凱不再作為本機預設玩家，只保留在預設龍虎榜；預設龍虎榜分數會依真實玩家實力微幅成長，但不會超越已在前方的真實玩家。</li><li><b>V2.0.3</b>：龍虎榜加入真實玩家 / 預設挑戰者高對比識別；真實玩家使用淺藍色塊，預設挑戰者使用淺黃、粉紅、白色等系統保留色；真實玩家可與預設挑戰者同名，仍會以標籤與底色清楚分辨。</li><li><b>V2.0.4</b>：緊急修正 V2.0.2 龍虎榜可能空白的問題；新增從玩家資料與正式存檔重建龍虎榜的保護機制；新增「修復 / 重建龍虎榜」按鈕，避免真實玩家分數因顯示錯誤看似消失。</li><li><b>V2.0.5</b>：修正 V2.0.4 初始化順序錯誤，避免 JavaScript 模組啟動中斷；啟動後自動重建龍虎榜，並新增「檢查本機資料狀態」工具，方便確認玩家帳號與可救援紀錄是否仍在。</li><li><b>V2.0.6</b>：優化龍虎榜可讀性，改為單欄完整資訊列；真實玩家使用淺藍底與玩家代表色色條，預設挑戰者統一使用淺黃底；移除畫面上的身份說明文字，避免版面擁擠。</li><li><b>V2.0.7</b>：修正登入驗證成功後仍停留在首頁的問題；新增存檔完整性檢查，若舊進度格式異常會自動改從新局開始，避免玩家卡在登入區。</li><li><b>V2.0.8</b>：進一步強化遊戲啟動流程，登入成功後先強制切換到遊戲畫面，再執行 UI 更新、畫布重繪、自動儲存與音樂等非必要流程，避免任何小錯誤造成玩家無法開始遊戲。</li><li><b>V2.1.0</b>：重構登入啟動核心，登入成功後直接建立遊戲狀態並切換至遊戲畫面；若舊暫存異常，依玩家最高關卡與龍虎榜紀錄推估接續關卡。</li><li><b>V2.1.1</b>：緊急修正登入回饋函式遞迴呼叫自身的錯誤，避免驗證成功後因提示訊息崩潰而停在首頁。</li><li><b>V2.1.2</b>：強化手機 Chrome / Safari 防誤縮放；阻止遊戲區雙擊放大與多指縮放；鎖定頁面寬度避免橫向溢出；新增離開頁面前緊急存檔。</li><li><b>V2.1.3</b>：修正暫停回首頁後殘留「結束回首頁」按鈕的狀態錯亂；首頁狀態下該按鈕不會顯示，也不會因誤觸重新啟動遊戲。</li><li><b>V2.1.4</b>：修正龍虎榜同一真實玩家重複佔榜問題；同一 playerId 或舊版同名玩家只保留最高分紀錄；本機資料管理新增「合併重複玩家名次」。</li><li><b>V2.1.5</b>：修正註冊新玩家時錯誤帶入首頁登入帳號的問題；註冊視窗改為全新玩家空白表單，註冊與登入完全分流。</li><li><b>V2.1.6</b>：改善本機玩家帳號清單中的清空行為；清空登入欄位時會取消目前帶入玩家與記住登入狀態，但不刪除任何玩家資料，避免清完後又自動帶回舊帳號。</li><li><b>V2.1.7</b>：修正登入欄位在清空或刪到最後一個字時，又被舊暱稱自動補回的問題；同時調整手機直式畫面的技能鍵位置。</li><li><b>V2.1.8</b>：技能鍵改為實體 DOM 上移，放在 A/B/X/Y 功能按鈕區正上方；登入欄位新增本次瀏覽抑制旗標，避免清空後再次自動補回舊玩家名稱；預留全球統計設定介面。</li><li><b>V2.1.9</b>：正式接入 Firebase Analytics、匿名 Authentication 與 Cloud Firestore；開始收集匿名瀏覽／遊戲事件，並同步註冊玩家、最高關卡及 Level 10／20 里程碑。挑戰密碼、提示與密碼雜湊不會上傳。</li><li><b>V2.2.2</b>：新增全球挑戰數據公開看板與 GitHub Actions 定時彙整架構，公開顯示全球註冊挑戰者、累積／今日瀏覽量，以及突破第 10／20 關人數。</li><li><b>V2.2.3</b>：修正全球統計初始化被放在一般 script、無法呼叫 ES Module 內函式的作用域錯誤；公開統計現在會在首頁載入時自動讀取，手動按鈕也可正常重新讀取。</li><li><b>V2.2.4</b>：全球統計數字加入卡片寬度偵測與自動縮字；數字成長後仍維持完整單行顯示，不換行、不截斷。</li><li><b>V2.0.9</b>：移除首頁內嵌龍虎榜區塊，避免與底部「龍虎榜揭榜」重複；排行榜改由獨立揭榜視窗統一顯示，首頁回歸登入、註冊、訪客與資料管理主流程。</li>
                         </ul>
                     </details>
-                    <p class="text-slate-400 text-[12px]">備註：本作品不使用「Tetris」作為正式遊戲名稱；如未來公開商用，仍建議持續檢查素材、音效、字型與第三方資源授權。本遊戲目前為單機本機儲存，跨瀏覽器或跨裝置資料不會自動同步。</p>
+                    <p class="text-slate-400 text-[12px]">
+                        備註：本作品不使用「Tetris」作為正式遊戲名稱；公開使用時仍應持續檢查素材、音效、字型與第三方資源授權。
+                        本聲明用於清楚說明遊戲資料保存方式、使用規範與責任範圍；如法律另有強制規定，仍以適用法律為準。
+                    </p>
                 `;
             }
             modal.classList.remove('hidden');
         }
         document.getElementById('btn-guide').addEventListener('click', () => showInfoModal('guide'));
         document.getElementById('btn-copyright').addEventListener('click', () => showInfoModal('copyright'));
+        document.getElementById('btn-register-view-disclaimer')?.addEventListener('click', () => showInfoModal('copyright'));
         document.getElementById('btn-immersive')?.addEventListener('click', requestImmersiveMode);
         document.getElementById('btn-home-settings')?.addEventListener('click', () => { updateHomeSettingsButtons(); document.getElementById('home-settings-modal')?.classList.remove('hidden'); });
         document.getElementById('btn-close-home-settings')?.addEventListener('click', () => document.getElementById('home-settings-modal')?.classList.add('hidden'));
