@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.4.2｜全球統計讀取啟動修正版
+# 極限操控方塊 V2.4.3｜全球統計讀取啟動修正版
 
 ## 修正重點
 - 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
@@ -270,3 +270,33 @@ Firebase 的 `world_cup/current` 實際上並未被刪除。
 本版需要同步發布新版 `firestore.rules`，以允許不可修改的：
 - `lines_cleared` 事件（amount 1～4）
 - `level_clear` 事件（amount 固定為 1）
+
+
+## V2.4.3 單局摘要批次同步・Firebase 節流
+
+### 新同步方式
+消行與過關不再每次各寫一筆 Firebase 文件。
+
+遊戲期間先在瀏覽器本機累積：
+- 本批次開始對局數
+- 本批次消除行數
+- 本批次過關次數
+
+以下時機會集中送出摘要：
+- Game Over
+- 完成整體挑戰
+- 回到首頁
+- 每 60 秒保險同步
+- 頁面隱藏或下次開啟時補送
+
+每次批次最多寫入：
+- `game_session_summaries` 1 筆
+- `public_session_summaries` 1 筆
+
+這會大幅降低 Firestore 寫入、讀取、儲存與索引成本。
+
+### 資料可靠性
+尚未成功送出的摘要會先保留在 localStorage：
+`abrakai_pending_session_summary_v243`
+
+若當下斷線或關閉頁面，下次開啟遊戲時會再嘗試補送。

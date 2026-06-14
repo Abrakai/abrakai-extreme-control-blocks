@@ -24,23 +24,8 @@ service cloud.firestore {
                     && request.resource.data.eventType in [
                       'page_launch',
                       'player_login_play',
-                      'game_start',
-                      'lines_cleared',
-                      'level_clear'
+                      'game_start'
                     ]
-                    && (
-                      request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
-                      || (
-                        request.resource.data.eventType == 'lines_cleared'
-                        && request.resource.data.amount is int
-                        && request.resource.data.amount >= 1
-                        && request.resource.data.amount <= 4
-                      )
-                      || (
-                        request.resource.data.eventType == 'level_clear'
-                        && request.resource.data.amount == 1
-                      )
-                    )
                     && request.resource.data.gameVersion is string
                     && request.resource.data.occurredAt == request.time;
       allow read, update, delete: if false;
@@ -52,23 +37,8 @@ service cloud.firestore {
                     && request.resource.data.eventType in [
                       'page_launch',
                       'player_login_play',
-                      'game_start',
-                      'lines_cleared',
-                      'level_clear'
+                      'game_start'
                     ]
-                    && (
-                      request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
-                      || (
-                        request.resource.data.eventType == 'lines_cleared'
-                        && request.resource.data.amount is int
-                        && request.resource.data.amount >= 1
-                        && request.resource.data.amount <= 4
-                      )
-                      || (
-                        request.resource.data.eventType == 'level_clear'
-                        && request.resource.data.amount == 1
-                      )
-                    )
                     && request.resource.data.bucket is string
                     && request.resource.data.bucket.size() <= 48
                     && (
@@ -80,6 +50,54 @@ service cloud.firestore {
                     )
                     && request.resource.data.gameVersion is string
                     && request.resource.data.occurredAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /game_session_summaries/{summaryId} {
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.actorKey is string
+                    && request.resource.data.actorKey.size() <= 64
+                    && request.resource.data.gameStarts is int
+                    && request.resource.data.gameStarts >= 0
+                    && request.resource.data.gameStarts <= 20
+                    && request.resource.data.clearedLines is int
+                    && request.resource.data.clearedLines >= 0
+                    && request.resource.data.clearedLines <= 5000
+                    && request.resource.data.levelClears is int
+                    && request.resource.data.levelClears >= 0
+                    && request.resource.data.levelClears <= 500
+                    && (
+                      request.resource.data.gameStarts > 0
+                      || request.resource.data.clearedLines > 0
+                      || request.resource.data.levelClears > 0
+                    )
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.submittedAt == request.time;
+      allow read, update, delete: if false;
+    }
+
+    match /public_session_summaries/{summaryId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.actorKey is string
+                    && request.resource.data.actorKey.size() <= 64
+                    && request.resource.data.gameStarts is int
+                    && request.resource.data.gameStarts >= 0
+                    && request.resource.data.gameStarts <= 20
+                    && request.resource.data.clearedLines is int
+                    && request.resource.data.clearedLines >= 0
+                    && request.resource.data.clearedLines <= 5000
+                    && request.resource.data.levelClears is int
+                    && request.resource.data.levelClears >= 0
+                    && request.resource.data.levelClears <= 500
+                    && (
+                      request.resource.data.gameStarts > 0
+                      || request.resource.data.clearedLines > 0
+                      || request.resource.data.levelClears > 0
+                    )
+                    && request.resource.data.gameVersion is string
+                    && request.resource.data.submittedAt == request.time;
       allow update, delete: if false;
     }
 

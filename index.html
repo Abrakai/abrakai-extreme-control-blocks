@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.4.2 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.4.3 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2565,7 +2565,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.2</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.3</div>
                     </footer>
                 </main>
             </div>
@@ -2876,8 +2876,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.4.2";
-        const GAME_VERSION_NAME = "全球累積成果・九宮格統計版";
+        const GAME_VERSION = "V2.4.3";
+        const GAME_VERSION_NAME = "單局摘要批次同步・Firebase 節流版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -3149,8 +3149,197 @@
         }
 
         const USAGE_EVENT_COLLECTION = 'usage_events';
+        const SESSION_SUMMARY_COLLECTION = 'game_session_summaries';
+        const PUBLIC_SESSION_SUMMARY_COLLECTION = 'public_session_summaries';
+        const SESSION_SUMMARY_STORAGE_KEY = 'abrakai_pending_session_summary_v243';
+        const SESSION_SUMMARY_FLUSH_MS = 60 * 1000;
         const PAGE_LAUNCH_SESSION_KEY = `abrakai_page_launch_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
         let pageLaunchRecorded = false;
+        let sessionSummaryFlushTimer = null;
+        let sessionSummaryFlushInProgress = false;
+
+        function newSessionSummaryState() {
+            return {
+                sessionId: `session_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+                sequence: 0,
+                gameStarts: 0,
+                clearedLines: 0,
+                levelClears: 0,
+                playerId: '',
+                nickname: '',
+                guest: false,
+                startedAtLocal: Date.now(),
+                updatedAtLocal: Date.now()
+            };
+        }
+
+        function loadPendingSessionSummary() {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(SESSION_SUMMARY_STORAGE_KEY) || 'null');
+                if (!parsed || typeof parsed !== 'object') return newSessionSummaryState();
+                return {
+                    ...newSessionSummaryState(),
+                    ...parsed,
+                    gameStarts: Math.max(0, Math.floor(Number(parsed.gameStarts || 0))),
+                    clearedLines: Math.max(0, Math.floor(Number(parsed.clearedLines || 0))),
+                    levelClears: Math.max(0, Math.floor(Number(parsed.levelClears || 0))),
+                    sequence: Math.max(0, Math.floor(Number(parsed.sequence || 0)))
+                };
+            } catch (error) {
+                return newSessionSummaryState();
+            }
+        }
+
+        let pendingSessionSummary = loadPendingSessionSummary();
+
+        function savePendingSessionSummary() {
+            try {
+                pendingSessionSummary.updatedAtLocal = Date.now();
+                localStorage.setItem(
+                    SESSION_SUMMARY_STORAGE_KEY,
+                    JSON.stringify(pendingSessionSummary)
+                );
+            } catch (error) {}
+        }
+
+        function pendingSessionSummaryHasData() {
+            return (
+                Number(pendingSessionSummary.gameStarts || 0) > 0 ||
+                Number(pendingSessionSummary.clearedLines || 0) > 0 ||
+                Number(pendingSessionSummary.levelClears || 0) > 0
+            );
+        }
+
+        function bindPendingSessionToCurrentPlayer() {
+            pendingSessionSummary.playerId = isGuestMode
+                ? ''
+                : String(currentPlayer?.id || '');
+            pendingSessionSummary.nickname = isGuestMode
+                ? 'Guest 路人'
+                : validateString(currentPlayer?.name || nickname || '玩家', '玩家').slice(0, 24);
+            pendingSessionSummary.guest = Boolean(isGuestMode);
+            savePendingSessionSummary();
+        }
+
+        function addToPendingSessionSummary(type, amount = 1) {
+            const value = Math.max(0, Math.floor(Number(amount || 0)));
+            if (value <= 0) return;
+
+            bindPendingSessionToCurrentPlayer();
+
+            if (type === 'game_start') {
+                pendingSessionSummary.gameStarts += value;
+            } else if (type === 'lines_cleared') {
+                pendingSessionSummary.clearedLines += value;
+            } else if (type === 'level_clear') {
+                pendingSessionSummary.levelClears += value;
+            }
+
+            savePendingSessionSummary();
+        }
+
+        function resetPendingSessionSummaryAfterFlush() {
+            const nextSequence = Math.max(0, Number(pendingSessionSummary.sequence || 0)) + 1;
+            pendingSessionSummary = {
+                ...newSessionSummaryState(),
+                sessionId: pendingSessionSummary.sessionId || newSessionSummaryState().sessionId,
+                sequence: nextSequence,
+                playerId: pendingSessionSummary.playerId || '',
+                nickname: pendingSessionSummary.nickname || '',
+                guest: Boolean(pendingSessionSummary.guest),
+                startedAtLocal: pendingSessionSummary.startedAtLocal || Date.now()
+            };
+            savePendingSessionSummary();
+        }
+
+        async function flushPendingSessionSummary(reason = 'manual') {
+            if (!GLOBAL_STATS_CONFIG.enabled) return false;
+            if (sessionSummaryFlushInProgress || !pendingSessionSummaryHasData()) return false;
+
+            sessionSummaryFlushInProgress = true;
+            const snapshot = {
+                ...pendingSessionSummary,
+                gameStarts: Math.max(0, Math.floor(Number(pendingSessionSummary.gameStarts || 0))),
+                clearedLines: Math.max(0, Math.floor(Number(pendingSessionSummary.clearedLines || 0))),
+                levelClears: Math.max(0, Math.floor(Number(pendingSessionSummary.levelClears || 0)))
+            };
+
+            try {
+                const user = await ensureFirebaseUser();
+                if (!user || !firebaseDb) return false;
+
+                const actorKey = await stablePublicMarkerId(
+                    `${user.uid}_${snapshot.playerId || 'guest'}`
+                );
+                const documentId = [
+                    safeEventIdPart(user.uid, 'uid'),
+                    safeEventIdPart(snapshot.sessionId, 'session'),
+                    String(snapshot.sequence || 0)
+                ].join('_').slice(0, 220);
+
+                const privateWrite = setDoc(
+                    doc(firebaseDb, SESSION_SUMMARY_COLLECTION, documentId),
+                    {
+                        ownerUid: user.uid,
+                        actorKey,
+                        playerId: snapshot.playerId,
+                        nickname: snapshot.nickname,
+                        guest: Boolean(snapshot.guest),
+                        sessionId: snapshot.sessionId,
+                        sequence: snapshot.sequence,
+                        gameStarts: snapshot.gameStarts,
+                        clearedLines: snapshot.clearedLines,
+                        levelClears: snapshot.levelClears,
+                        reason: String(reason || 'manual').slice(0, 40),
+                        startedAtLocal: snapshot.startedAtLocal,
+                        submittedAtLocal: Date.now(),
+                        submittedAt: serverTimestamp(),
+                        gameVersion: GAME_VERSION
+                    },
+                    { merge: false }
+                );
+
+                const publicWrite = setDoc(
+                    doc(firebaseDb, PUBLIC_SESSION_SUMMARY_COLLECTION, documentId),
+                    {
+                        actorKey,
+                        guest: Boolean(snapshot.guest),
+                        gameStarts: snapshot.gameStarts,
+                        clearedLines: snapshot.clearedLines,
+                        levelClears: snapshot.levelClears,
+                        submittedAt: serverTimestamp(),
+                        gameVersion: GAME_VERSION
+                    },
+                    { merge: false }
+                );
+
+                const results = await Promise.allSettled([privateWrite, publicWrite]);
+                const privateOk = results[0]?.status === 'fulfilled';
+                const publicOk = results[1]?.status === 'fulfilled';
+
+                if (privateOk || publicOk) {
+                    resetPendingSessionSummaryAfterFlush();
+                    setTimeout(() => void loadLivePublicStats(true), 350);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.warn('Session summary flush failed', reason, error?.code || error);
+                return false;
+            } finally {
+                sessionSummaryFlushInProgress = false;
+                savePendingSessionSummary();
+            }
+        }
+
+        function scheduleSessionSummaryFlush() {
+            if (sessionSummaryFlushTimer) clearInterval(sessionSummaryFlushTimer);
+            sessionSummaryFlushTimer = setInterval(() => {
+                if (pendingSessionSummaryHasData()) {
+                    void flushPendingSessionSummary('interval_60s');
+                }
+            }, SESSION_SUMMARY_FLUSH_MS);
+        }
 
         function safeEventIdPart(value, fallback = 'event') {
             return String(value || fallback)
@@ -3163,9 +3352,7 @@
             const allowedTypes = new Set([
                 'page_launch',
                 'player_login_play',
-                'game_start',
-                'lines_cleared',
-                'level_clear'
+                'game_start'
             ]);
             if (!allowedTypes.has(eventType)) return false;
 
@@ -3187,9 +3374,7 @@
                 ].join('_').slice(0, 240);
 
                 const dateKey = taipeiDateKey(new Date(now));
-                const eventAmount = ['lines_cleared', 'level_clear'].includes(eventType)
-                    ? Math.max(1, Math.floor(Number(extra?.amount || 1)))
-                    : 0;
+                const eventAmount = 0;
 
                 const privateWrite = setDoc(doc(firebaseDb, USAGE_EVENT_COLLECTION, eventId), {
                     ownerUid: user.uid,
@@ -3728,8 +3913,8 @@
 
                 const pendingSnapshotPromise = getDocs(
                     query(
-                        collection(firebaseDb, PUBLIC_ACTIVITY_COLLECTION),
-                        where('occurredAt', '>', afterTimestamp)
+                        collection(firebaseDb, PUBLIC_SESSION_SUMMARY_COLLECTION),
+                        where('submittedAt', '>', afterTimestamp)
                     )
                 );
                 const todaySnapshotPromise = getDocs(
@@ -3761,12 +3946,18 @@
 
                 pendingSnapshot.forEach(snapshot => {
                     const data = snapshot.data() || {};
-                    const eventType = String(data.eventType || '');
-                    const amount = Math.max(0, Math.floor(Number(data.amount || 0)));
-
-                    if (eventType === 'game_start') pendingGameStarts += 1;
-                    if (eventType === 'lines_cleared') pendingClearedLines += amount;
-                    if (eventType === 'level_clear') pendingLevelClears += amount;
+                    pendingGameStarts += Math.max(
+                        0,
+                        Math.floor(Number(data.gameStarts || 0))
+                    );
+                    pendingClearedLines += Math.max(
+                        0,
+                        Math.floor(Number(data.clearedLines || 0))
+                    );
+                    pendingLevelClears += Math.max(
+                        0,
+                        Math.floor(Number(data.levelClears || 0))
+                    );
                 });
 
                 let todayGameStarts = 0;
@@ -6932,16 +7123,7 @@ function showPasswordHint() {
             }, []);
             if (cleared > 0) {
                 lines += cleared;
-                void recordUsageEvent(
-                    'lines_cleared',
-                    isGuestMode ? null : currentPlayer,
-                    {
-                        amount: cleared,
-                        guest: Boolean(isGuestMode),
-                        level: Number(level || 1),
-                        score: Number(score || 0)
-                    }
-                );
+                addToPendingSessionSummary('lines_cleared', cleared);
                 const scoreTable = [0, 100, 300, 500, 800];
                 score += (scoreTable[cleared] || 1000) * level;
                 playClearSound(); if (!skipLevelCheck) checkLevelProgression(); updateUI();
@@ -6999,17 +7181,7 @@ function showPasswordHint() {
             playLevelClearSound();
             updateUI();
             trackGameEvent('level_clear', { level: Number(level), score: Number(score), lines: Number(lines), stage_score: Number(stageScore), stage_lines: Number(stageLines) });
-            void recordUsageEvent(
-                'level_clear',
-                isGuestMode ? null : currentPlayer,
-                {
-                    amount: 1,
-                    guest: Boolean(isGuestMode),
-                    completedLevel: Number(level || 1),
-                    score: Number(score || 0),
-                    lines: Number(lines || 0)
-                }
-            );
+            addToPendingSessionSummary('level_clear', 1);
             if (!isGuestMode && currentPlayer) {
                 void syncCloudPlayer(currentPlayer, 'level_clear', { level, score });
                 if (level === 10 || level === 20) void createCloudMilestone(currentPlayer, level, score);
@@ -7366,6 +7538,7 @@ function showPasswordHint() {
         }
 
         function winGame() {
+            void flushPendingSessionSummary('win_game');
             isGameOver = true; gameStarted = false; stopBgm();
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
             playLevelUpSound(); setTimeout(() => playClearSound(), 300);
@@ -7381,6 +7554,7 @@ function showPasswordHint() {
         }
 
         function endGame() {
+            void flushPendingSessionSummary('game_over');
             isGameOver = true; gameStarted = false; stopBgm();
             if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
             playGameOverSound(); clearSavedState();
@@ -7606,6 +7780,7 @@ function showPasswordHint() {
                 guest: Boolean(isGuestMode),
                 level: Number(level || 1)
             });
+            addToPendingSessionSummary('game_start', 1);
             if (!isGuestMode && currentPlayer) void syncCloudPlayer(currentPlayer, 'game_start', { level, score });
             showToast?.(`開始挑戰：${nickname}`);
             return true;
@@ -7881,13 +8056,30 @@ function showPasswordHint() {
             }
         }
 
-        window.addEventListener('pagehide', () => emergencySaveBeforePageLeaves('pagehide'));
-        window.addEventListener('beforeunload', () => emergencySaveBeforePageLeaves('beforeunload'));
+        window.addEventListener('pagehide', () => {
+            emergencySaveBeforePageLeaves('pagehide');
+            savePendingSessionSummary();
+            void flushPendingSessionSummary('pagehide');
+        });
+        window.addEventListener('beforeunload', () => {
+            emergencySaveBeforePageLeaves('beforeunload');
+            savePendingSessionSummary();
+        });
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') emergencySaveBeforePageLeaves('hidden');
+            if (document.visibilityState === 'hidden') {
+                emergencySaveBeforePageLeaves('hidden');
+                savePendingSessionSummary();
+                void flushPendingSessionSummary('hidden');
+            }
         });
 
         installMobileZoomGuard();
+        scheduleSessionSummaryFlush();
+        setTimeout(() => {
+            if (pendingSessionSummaryHasData()) {
+                void flushPendingSessionSummary('startup_recovery');
+            }
+        }, 1800);
 
 
         // --- STREAMING_CHUNK: Event Listeners (Keyboard & Touch) ---
@@ -7990,6 +8182,7 @@ function showPasswordHint() {
 
 
         function showHomeFromPausedGame() {
+            void flushPendingSessionSummary('return_home');
             cancelLevelStartGrace();
             try { if (gravityTimer) clearInterval(gravityTimer); } catch(e) {}
             try { if (lockDelayTimeout) clearTimeout(lockDelayTimeout); } catch(e) {}
@@ -8026,7 +8219,11 @@ function showPasswordHint() {
             const btn = document.getElementById('btn-start');
             if (overlayMode === 'levelClear') return resumeNextLevel();
             if (overlayMode === 'pause') return togglePause();
-            if (overlayMode === 'gameOver') { document.getElementById('overlay')?.classList.remove('gameover-overlay'); return initGame(true); }
+            if (overlayMode === 'gameOver') {
+                void flushPendingSessionSummary('restart_after_game_over');
+                document.getElementById('overlay')?.classList.remove('gameover-overlay');
+                return initGame(true);
+            }
             const oldText = btn?.innerText || '繼續挑戰';
             btn?.classList.add('login-starting');
             if (btn) btn.innerText = '登入中，準備進入遊戲…';
@@ -8053,6 +8250,7 @@ function showPasswordHint() {
             if (action === 'score') return retryCurrentLevelWithScorePenalty();
             if (action === 'skill') return retryCurrentLevelWithSkillPenalty();
             if (action === 'new') {
+                void flushPendingSessionSummary('retry_new_game');
                 document.getElementById('overlay')?.classList.remove('gameover-overlay');
                 clearSavedState();
                 return initGame(true);
@@ -8176,7 +8374,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-cyan-400/40 bg-cyan-950/25 p-3">
                         <p class="font-black text-cyan-200">公開看板呈現玩家規模、實際對局及全體累積成果。</p>
-                        <p class="mt-1 text-slate-300">數字來自成功送達雲端的正式遊戲事件，不使用預設或虛構數字。網頁重新整理與重複登入不會增加對局、消除行數或過關次數。</p>
+                        <p class="mt-1 text-slate-300">數字來自成功送達雲端的單局摘要，不使用預設或虛構數字。網頁重新整理與重複登入不會增加對局、消除行數或過關次數。</p>
                     </div>
                     <p><b class="text-sky-300">全球玩家帳號：</b>已完成雲端同步的獨立玩家帳號數。同一人在不同裝置或瀏覽器另建帳號時，可能分別計入。</p>
                     <p><b class="text-emerald-300">今日活躍玩家：</b>台灣時間今日曾成功登入或正式開始對局的不重複玩家／匿名裝置數；同一玩家重複登入或遊玩多局，當日只計一次。</p>
@@ -8185,7 +8383,7 @@ function showPasswordHint() {
                     <p><b class="text-lime-300">全球累積消除行數：</b>所有正式遊戲中實際消除的總行數；一次消除四行就累計四行。</p>
                     <p><b class="text-lime-300">全球累積過關次數：</b>所有玩家成功完成關卡的累積次數，包含重複挑戰、主線關卡與無盡挑戰。</p>
                     <p><b class="text-yellow-300">突破第 10／20／30 關玩家：</b>曾完成指定關卡的不重複正式玩家帳號數；同一玩家重複突破同一里程碑不會重複增加。</p>
-                    <p><b class="text-amber-300">資料更新：</b>近期遊戲事件會快速補入畫面；GitHub Actions 約每 5 分鐘建立一次正式彙整。網路或第三方服務延遲時，數字可能稍後完成同步。</p>
+                    <p><b class="text-amber-300">資料更新：</b>消行與過關會先在本機累積，遊戲結束、回首頁、每 60 秒或下次開啟時集中送出；GitHub Actions 約每 5 分鐘建立一次正式彙整。網路或第三方服務延遲時，數字可能稍後完成同步。</p>
                     <p><b class="text-fuchsia-300">世界盃榮譽冠軍：</b>由各裝置送出的真實玩家最高紀錄進行比較，只展示榮譽，不提供獎金、獎品或財產價值。</p>
                 `;
             } else {
@@ -8236,16 +8434,17 @@ function showPasswordHint() {
                     <div class="rounded-xl border border-blue-500/40 bg-blue-950/20 p-3">
                         <p class="font-black text-blue-200 mb-2">最近更新</p>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.4.3</b>：將消行與過關統計改為單局摘要批次同步：遊戲期間先在本機累積，於 Game Over、完成遊戲、回首頁、每 60 秒或下次開啟時集中送出。每次批次只寫入私人與公開摘要各一筆，大幅降低 Firebase 寫入、讀取與儲存消耗。</li>
                             <li><b>V2.4.2</b>：全球公開數據擴充為九宮格，新增「全球累積消除行數」與「全球累積過關次數」。數字由玩家與訪客實際消除行、成功過關的雲端事件累加，F5、重複登入及預設角色不會增加數值。</li>
                             <li><b>V2.4.1</b>：公開數據精簡為全球玩家帳號、今日活躍玩家、累積／今日對局數與突破第 10／20／30 關玩家；網頁開啟與登入次數移至後台。預設挑戰者改為固定門檻、只緩慢向上追分且不因低分新玩家下降；真實玩家增加時，預設角色逐步退出前十名。版本歷程改為由新到舊排列，開發授權備忘移至 README。</li>
                             <li><b>V2.4.0</b>：修正舊版全域最高分可能錯配給新玩家的問題；真實榜單只採 playerId、玩家資料與玩家專屬存檔驗證，預設挑戰者不得改動真實玩家成績。</li>
                             <li><b>V2.3.9</b>：新增完整免責聲明、資料保存風險、娛樂用途與玩家命名規範；違規名稱可能喪失世界盃及其他公開排名資格。</li>
-                            <li><b>V2.3.8</b>：同一真實玩家只保留一筆最佳龍虎榜紀錄；過關畫面加入玩家姓名，第 10、20、30 關與其後每十關顯示專屬鼓勵。</li>
                         </ul>
                     </div>
                     <details class="info-details">
                         <summary>查看完整版本歷程（由新到舊）</summary>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.3.8</b>：同一真實玩家只保留一筆最佳龍虎榜紀錄；過關畫面加入玩家姓名，第 10、20、30 關與其後每十關顯示專屬鼓勵。</li>
                             <li><b>V2.3.7</b>：世界盃冠軍卡片改以 world_cup/current 為唯一正式來源，避免按下更新數據後被舊統計摘要覆蓋。</li>
                             <li><b>V2.3.6</b>：修正世界盃送件已存在但冠軍未回填的問題，允許使用玩家自己的送件紀錄安全更新世界盃冠軍。</li>
                             <li><b>V2.3.5</b>：建立單機龍虎榜冠軍送往 world_cup_submissions 的完整管線，並調整倒數提示避免遮住主要盤面資訊。</li>

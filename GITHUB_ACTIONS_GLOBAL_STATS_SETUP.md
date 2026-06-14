@@ -197,3 +197,22 @@ GitHub Actions 現在同時讀取：
 
 請同步發布本版 `firestore.rules`，再執行一次 GitHub Actions。
 舊版本尚未送出的歷史消除行數與過關次數不會憑空補算；本統計從成功部署 V2.4.2 後的新遊戲事件開始累積，以維持數據真實性。
+
+
+## V2.4.3 批次摘要部署
+
+新增 Firestore 集合：
+- `game_session_summaries`
+- `public_session_summaries`
+
+部署步驟：
+1. 上傳完整專案。
+2. 發布本版 `firestore.rules`。
+3. 執行一次 GitHub Actions。
+4. `public_stats/summary` 會從單局摘要彙整：
+   - `gameStarts`
+   - `totalClearedLines`
+   - `totalLevelClears`
+
+V2.4.2 建立的 `usage_events(eventType, amount)` 複合索引可以保留，
+但 V2.4.3 的累積成果統計不再依賴該索引。

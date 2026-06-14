@@ -1,8 +1,7 @@
 import {
   Firestore,
   FieldValue,
-  Timestamp,
-  AggregateField
+  Timestamp
 } from '@google-cloud/firestore';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
@@ -38,17 +37,6 @@ async function countQuery(query, label = 'collection') {
   }
 }
 
-async function sumQueryField(query, fieldName, label = 'collection') {
-  try {
-    const snapshot = await query
-      .aggregate({ total: AggregateField.sum(fieldName) })
-      .get();
-    return safeInteger(snapshot.data().total || 0);
-  } catch (error) {
-    console.error(`Firestore sum failed [${label}]:`, error?.message || error);
-    throw error;
-  }
-}
 
 async function countTodayUsageEvents(usageEvents, todayStart) {
   const snapshot = await usageEvents
@@ -83,6 +71,29 @@ async function countTodayUsageEvents(usageEvents, todayStart) {
     loginPlays,
     gameStarts,
     activePlayers: activePlayers.size,
+    scannedDocuments: snapshot.size
+  };
+}
+
+async function sumSessionSummaries(sessionSummaries) {
+  const snapshot = await sessionSummaries
+    .select('gameStarts', 'clearedLines', 'levelClears')
+    .get();
+
+  let gameStarts = 0;
+  let clearedLines = 0;
+  let levelClears = 0;
+
+  for (const document of snapshot.docs) {
+    gameStarts += safeInteger(document.get('gameStarts'));
+    clearedLines += safeInteger(document.get('clearedLines'));
+    levelClears += safeInteger(document.get('levelClears'));
+  }
+
+  return {
+    gameStarts,
+    clearedLines,
+    levelClears,
     scannedDocuments: snapshot.size
   };
 }
@@ -161,19 +172,18 @@ async function main() {
   const todayStart = Timestamp.fromDate(taipeiStartUtc);
 
   const usageEvents = db.collection('usage_events');
+  const sessionSummaries = db.collection('game_session_summaries');
 
   const worldCupCandidates = db.collection('world_cup_candidates');
   const worldCupSubmissions = db.collection('world_cup_submissions');
 
-  console.log('Starting Firestore aggregation without composite-index queries...');
+  console.log('Starting Firestore aggregation with batched game-session summaries...');
 
   const [
     registeredPlayers,
     totalPageLaunches,
     successfulLoginPlays,
-    gameStarts,
-    totalClearedLines,
-    totalLevelClears,
+    sessionSummaryTotals,
     level10Players,
     level20Players,
     level30Players,
@@ -185,17 +195,7 @@ async function main() {
     countQuery(db.collection('players'), 'players'),
     countQuery(usageEvents.where('eventType', '==', 'page_launch'), 'usage_events/page_launch'),
     countQuery(usageEvents.where('eventType', '==', 'player_login_play'), 'usage_events/player_login_play'),
-    countQuery(usageEvents.where('eventType', '==', 'game_start'), 'usage_events/game_start'),
-    sumQueryField(
-      usageEvents.where('eventType', '==', 'lines_cleared'),
-      'amount',
-      'usage_events/lines_cleared'
-    ),
-    sumQueryField(
-      usageEvents.where('eventType', '==', 'level_clear'),
-      'amount',
-      'usage_events/level_clear'
-    ),
+    sumSessionSummaries(sessionSummaries),
     countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
     countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
     countQuery(db.collection('milestones').where('milestone', '==', 30), 'milestones/level30'),
@@ -210,10 +210,27 @@ async function main() {
   const todayGameStarts = todayUsageCounts.gameStarts;
   const todayActivePlayers = todayUsageCounts.activePlayers;
 
+  const legacyGameStarts = await countQuery(
+    usageEvents.where('eventType', '==', 'game_start'),
+    'usage_events/game_start'
+  );
+  const gameStarts = Math.max(
+    legacyGameStarts,
+    safeInteger(sessionSummaryTotals.gameStarts)
+  );
+  const totalClearedLines = safeInteger(sessionSummaryTotals.clearedLines);
+  const totalLevelClears = safeInteger(sessionSummaryTotals.levelClears);
+
   console.log('Today usage scan completed:', {
     scannedDocuments: todayUsageCounts.scannedDocuments,
     todayPageLaunches,
     todaySuccessfulLoginPlays
+  });
+  console.log('Session summary aggregation completed:', {
+    scannedDocuments: sessionSummaryTotals.scannedDocuments,
+    gameStarts: sessionSummaryTotals.gameStarts,
+    clearedLines: totalClearedLines,
+    levelClears: totalLevelClears
   });
 
   // 候選文件與送件證據雙來源彙整；每個匿名裝置只保留最高紀錄。
@@ -300,8 +317,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 10,
-    gameVersion: 'V2.4.2'
+    schemaVersion: 11,
+    gameVersion: 'V2.4.3'
   };
 
   const worldCupPublic = {
@@ -312,7 +329,7 @@ async function main() {
     candidateDocuments: worldCupCandidateDocumentCount,
     submissionRecords: worldCupSubmissionSnapshot.size,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.4.2'
+    gameVersion: 'V2.4.3'
   };
 
   await Promise.all([
