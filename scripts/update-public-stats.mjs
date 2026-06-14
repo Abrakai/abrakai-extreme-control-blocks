@@ -247,8 +247,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 7,
-    gameVersion: 'V2.3.5'
+    schemaVersion: 8,
+    gameVersion: 'V2.3.6'
   };
 
   const worldCupPublic = {
@@ -259,7 +259,7 @@ async function main() {
     candidateDocuments: worldCupCandidateDocumentCount,
     submissionRecords: worldCupSubmissionSnapshot.size,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.3.5'
+    gameVersion: 'V2.3.6'
   };
 
   await Promise.all([

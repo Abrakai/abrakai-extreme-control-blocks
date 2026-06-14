@@ -168,3 +168,8 @@ GitHub Actions 現在同時讀取：
 - `public_stats/summary`
 
 請先發布 V2.3.5 的 `firestore.rules`，否則瀏覽器無法建立 `world_cup_submissions`。
+
+
+## V2.3.6 必做：重新發布 Firestore Rules
+本版調整 `world_cup/current` 的安全驗證邏輯，允許使用自己的 `world_cup_submissions`
+作為即時回填冠軍的安全證據。請務必發布本版 ZIP 內的 `firestore.rules`。

@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.3.5｜全球統計讀取啟動修正版
+# 極限操控方塊 V2.3.6｜全球統計讀取啟動修正版
 
 ## 修正重點
 - 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
@@ -160,3 +160,19 @@ allow read: if request.auth != null
 
 ### 部署必要步驟
 本版新增 Firestore 集合 `world_cup_submissions`，必須重新發布 ZIP 內的 `firestore.rules`。
+
+
+## V2.3.6 世界盃即時回填修正
+V2.3.5 已可寫入 `world_cup_submissions`，但 `world_cup/current` 仍可能維持 0。
+原因是瀏覽器端第二步會先 transaction.get 尚未存在的
+`world_cup_candidates/{anonymousUid}`。若該文件還不存在，Rules 可能拒絕讀取，
+導致候選文件沒有建立，進而無法用候選文件驗證並即時回填 current。
+
+V2.3.6 修正：
+- `world_cup_candidates` 改成直接 `setDoc(..., merge:true)`，不再先讀取不存在文件。
+- `world_cup_submissions` 寫入時加入 `submissionId` 欄位。
+- `world_cup/current` 的安全規則可接受兩種驗證來源：
+  1. 該匿名使用者自己的 `world_cup_candidates`。
+  2. 該匿名使用者自己的 `world_cup_submissions/{submissionId}`。
+- 若 candidates 寫入暫時失敗，仍可使用 submissions 證據即時回填冠軍。
+- GitHub Actions 仍會每 5 分鐘從 submissions + candidates 雙來源校正。

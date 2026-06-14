@@ -69,6 +69,8 @@ service cloud.firestore {
     match /world_cup_submissions/{submissionId} {
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.submissionId is string
+                    && request.resource.data.submissionId == submissionId
                     && request.resource.data.nickname is string
                     && request.resource.data.nickname.size() >= 1
                     && request.resource.data.nickname.size() <= 24
@@ -159,6 +161,32 @@ service cloud.firestore {
              && champion.lines == candidate.lines;
     }
 
+    function ownWorldCupSubmission() {
+      return get(/databases/$(database)/documents/world_cup_submissions/$(request.resource.data.submissionId)).data;
+    }
+
+    function championMatchesOwnSubmission() {
+      let submission = ownWorldCupSubmission();
+      let champion = request.resource.data.champion;
+      return request.resource.data.submissionId is string
+             && request.resource.data.submissionId.size() > 0
+             && exists(/databases/$(database)/documents/world_cup_submissions/$(request.resource.data.submissionId))
+             && submission.ownerUid == request.auth.uid
+             && champion.nickname == submission.nickname
+             && champion.avatar == submission.avatar
+             && champion.color == submission.color
+             && champion.bestScore == submission.bestScore
+             && champion.highestLevel == submission.highestLevel
+             && champion.lines == submission.lines;
+    }
+
+    function championHasTrustedProof() {
+      return (
+        exists(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid))
+        && championMatchesOwnCandidate()
+      ) || championMatchesOwnSubmission();
+    }
+
     function candidateOutranksCurrent() {
       let next = request.resource.data.champion;
       let current = resource.data.champion;
@@ -176,18 +204,16 @@ service cloud.firestore {
 
       allow create: if documentId == 'current'
                     && request.auth != null
-                    && exists(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid))
-                    && championMatchesOwnCandidate()
+                    && championHasTrustedProof()
                     && request.resource.data.updatedAt == request.time;
 
       allow update: if documentId == 'current'
                     && request.auth != null
-                    && exists(/databases/$(database)/documents/world_cup_candidates/$(request.auth.uid))
-                    && championMatchesOwnCandidate()
+                    && championHasTrustedProof()
                     && candidateOutranksCurrent()
                     && request.resource.data.updatedAt == request.time
                     && request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['title', 'champion', 'updatedAt', 'gameVersion']);
+                        .hasOnly(['title', 'champion', 'submissionId', 'updatedAt', 'gameVersion']);
 
       allow delete: if false;
     }
