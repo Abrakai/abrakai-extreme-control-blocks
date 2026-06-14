@@ -149,3 +149,10 @@ V2.2.1 的 package-lock 曾誤帶開發環境內部套件網址。V2.2.2 已改�
 3. 世界盃候選同步後，可直接更新 `world_cup/current` 的冠軍欄位；GitHub Actions 仍每 5 分鐘整理前十名及官方摘要。
 4. 上傳完成後手動執行一次 `Update public global stats`，建立 V2.3.0 官方基準。
 5. 既有三個 GitHub Secrets 不需修改。
+
+
+## V2.3.3 必做：重新發布 Firestore Rules
+V2.3.2 的 `world_cup_candidates` 規則禁止所有讀取，但前端同步流程必須先讀取自己的候選文件。
+請將本版 `firestore.rules` 完整貼到 Firebase Console → Firestore → 規則，然後按「發布」。
+
+發布後重新整理正式網站，或按首頁「更新數據」，即可重新觸發世界盃候選同步。

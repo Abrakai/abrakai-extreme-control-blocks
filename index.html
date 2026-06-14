@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.2 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.3.3 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2540,7 +2540,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.2</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.3</div>
                     </footer>
                 </main>
             </div>
@@ -2814,8 +2814,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.2";
-        const GAME_VERSION_NAME = "下一關兩秒準備保護版";
+        const GAME_VERSION = "V2.3.3";
+        const GAME_VERSION_NAME = "世界盃候選同步修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -3316,6 +3316,12 @@
                 return true;
             } catch (error) {
                 console.warn('World Cup candidate sync failed', reason, error?.code || error);
+                const syncStatus = document.getElementById('world-cup-sync-status');
+                if (syncStatus) {
+                    syncStatus.textContent = error?.code === 'permission-denied'
+                        ? '世界盃候選同步權限尚未更新，請發布最新版 Firestore Rules。'
+                        : '世界盃候選紀錄暫時無法同步，系統稍後會再次嘗試。';
+                }
                 return false;
             }
         }
@@ -7440,7 +7446,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.2｜下一關兩秒準備保護版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.3｜世界盃候選同步修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">

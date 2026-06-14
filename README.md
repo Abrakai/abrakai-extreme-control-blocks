@@ -1,4 +1,4 @@
-# 極限操控方塊 V2.3.2｜全球統計讀取啟動修正版
+# 極限操控方塊 V2.3.3｜全球統計讀取啟動修正版
 
 ## 修正重點
 - 修正 GitHub Actions 已成功、Firestore 已寫入，但首頁仍停留在「等待」與破折號的問題。
@@ -105,3 +105,26 @@
 除此之外，網頁開啟、玩家登入、正式開局、過關、Game Over 及手動更新全球數據時，
 也會重新檢查候選紀錄。訪客與系統預設挑戰者不會送入世界盃。
 同一瀏覽器／裝置只維持一筆候選文件，只有較佳紀錄才會更新。
+
+
+## V2.3.3 世界盃候選同步修正
+根本原因是舊版 Firestore Rules 對 `world_cup_candidates/{uid}` 設定：
+
+```text
+allow read, delete: if false;
+```
+
+但前端同步流程會先執行 `getDoc(candidateRef)`，讀取同一裝置既有候選紀錄，
+再判斷是否需要更新。由於讀取被規則拒絕，流程在寫入前即停止，因此即使本機龍虎榜
+已超過百萬分，世界盃仍顯示等待首位挑戰者。
+
+V2.3.3 改為只允許已登入的 Firebase 匿名使用者讀取自己的候選文件：
+
+```text
+allow read: if request.auth != null
+            && deviceUid == request.auth.uid
+            && resource.data.ownerUid == request.auth.uid;
+```
+
+其他裝置仍無法讀取該候選原始文件；公開畫面只讀取 `world_cup/current`。
+發布新版規則後重新整理正式網站，系統會在 page_launch 階段重新檢查並送出本機最高分。
