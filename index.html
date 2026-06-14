@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.4.3 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.4.4 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2198,6 +2198,10 @@
             text-align: center;
         }
 
+        .register-inline-error { color:#fecdd3; font-size:12px; line-height:1.45; font-weight:900; margin-top:6px; }
+        .register-field-error { border-color:rgba(244,63,94,.95)!important; box-shadow:0 0 0 3px rgba(244,63,94,.18),0 0 18px rgba(244,63,94,.25)!important; }
+        #register-error-summary { border:1px solid rgba(244,63,94,.65); background:rgba(127,29,29,.42); color:#ffe4e6; border-radius:16px; padding:12px 14px; font-size:13px; line-height:1.55; }
+        #register-disclaimer-block { scroll-margin-top:28px; }
         .global-stats-status {
             border-radius: 12px;
             border: 1px solid rgba(148,163,184,.35);
@@ -2565,7 +2569,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.3</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.4</div>
                     </footer>
                 </main>
             </div>
@@ -2630,6 +2634,7 @@
                 </div>
             </div>
             <div id="register-fields" class="grid gap-3">
+                <div id="register-error-summary" class="hidden" role="alert" aria-live="polite"></div>
                 <div>
                     <label class="text-xs text-emerald-200 font-black">玩家名稱 / 暱稱</label>
                     <input type="text" id="reg-name" maxlength="12" placeholder="玩家名稱或暱稱" class="mt-1 w-full rounded-lg px-3 py-2.5 text-center font-black focus:outline-none">
@@ -2672,12 +2677,12 @@
                     挑戰密碼只存在本機瀏覽器，請勿使用重要密碼。
                     玩家帳號、進度與本機榜單能否完整保留，取決於目前裝置與瀏覽器的儲存設定及狀態。
                 </div>
-                <div class="rounded-xl border border-rose-400/45 bg-rose-950/25 px-3 py-2 text-[11px] leading-relaxed text-rose-100">
+                <div class="rounded-xl border border-rose-400/45 bg-rose-950/25 px-3 py-2 text-[11px] leading-relaxed text-rose-100" id="register-disclaimer-block">
                     建立玩家帳號即表示您已閱讀並同意
                     <button id="btn-register-view-disclaimer" type="button" class="font-black text-cyan-300 underline underline-offset-2">
-                        《版權・免責聲明》
+                        《版權・免責聲明與玩家命名規範》
                     </button>
-                    與玩家命名規範。本遊戲僅供娛樂，不得用於賭博或其他非法用途。
+                    。本遊戲僅供娛樂，不得用於賭博或其他非法用途。
                 </div>
             </div>
             <div class="modal-footer-fixed grid grid-cols-2 gap-2">
@@ -2876,8 +2881,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.4.3";
-        const GAME_VERSION_NAME = "單局摘要批次同步・Firebase 節流版";
+        const GAME_VERSION = "V2.4.4";
+        const GAME_VERSION_NAME = "註冊缺漏引導・聲明視窗修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -5031,6 +5036,109 @@ function clearInputValidation() {
         }
 
         
+        function ensureElementVisibleInsideDialog(element) {
+            if (!element) return;
+            const container = element.closest('.modal-body-scroll, .modal-scroll, .overflow-y-auto, #register-panel') || document.getElementById('register-panel');
+            try {
+                if (container && container.scrollHeight > container.clientHeight) {
+                    const cr = container.getBoundingClientRect();
+                    const er = element.getBoundingClientRect();
+                    container.scrollTo({ top: Math.max(0, container.scrollTop + er.top - cr.top - 90), behavior: 'smooth' });
+                } else {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } catch (error) {
+                try { element.scrollIntoView(true); } catch (innerError) {}
+            }
+        }
+
+        function clearRegisterFieldErrors() {
+            document.querySelectorAll('.register-field-error').forEach(el => {
+                el.classList.remove('register-field-error');
+                el.removeAttribute('aria-invalid');
+            });
+            document.querySelectorAll('.register-inline-error').forEach(el => el.remove());
+            const summary = document.getElementById('register-error-summary');
+            if (summary) {
+                summary.classList.add('hidden');
+                summary.innerHTML = '';
+            }
+        }
+
+        function setRegisterFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            if (!field) return null;
+            field.classList.add('register-field-error');
+            field.setAttribute('aria-invalid', 'true');
+            const wrapper = field.closest('div') || field.parentElement || field;
+            let error = wrapper.querySelector(`[data-error-for="${fieldId}"]`);
+            if (!error) {
+                error = document.createElement('div');
+                error.className = 'register-inline-error';
+                error.dataset.errorFor = fieldId;
+                wrapper.appendChild(error);
+            }
+            error.textContent = message;
+            return field;
+        }
+
+        function showRegisterErrorSummary(messages, firstTarget) {
+            const summary = document.getElementById('register-error-summary');
+            if (summary) {
+                summary.classList.remove('hidden');
+                summary.innerHTML = `<div class="font-black text-rose-200">請先補齊以下資料：</div><ul class="mt-1 list-disc pl-5">${messages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+                if (!firstTarget) firstTarget = summary;
+            }
+            ensureElementVisibleInsideDialog(firstTarget);
+            setTimeout(() => {
+                try { firstTarget?.focus?.({ preventScroll: true }); } catch (error) { try { firstTarget?.focus?.(); } catch (innerError) {} }
+            }, 280);
+        }
+
+        function validateRegisterRequiredFields() {
+            clearRegisterFieldErrors();
+            const messages = [];
+            let firstTarget = null;
+            const name = String(document.getElementById('reg-name')?.value || '').trim();
+            const password = String(document.getElementById('reg-password')?.value || '');
+            const password2 = String(document.getElementById('reg-password2')?.value || '');
+            const hint = String(document.getElementById('reg-hint')?.value || '').trim();
+            const naming = document.getElementById('reg-name-policy-confirm');
+
+            if (name.length < 2) {
+                firstTarget = firstTarget || setRegisterFieldError('reg-name', '請輸入玩家帳號／暱稱，至少 2 個字元。');
+                messages.push('請輸入玩家帳號／暱稱，至少 2 個字元。');
+            }
+            if (!naming?.checked) {
+                const target = document.getElementById('register-disclaimer-block') || naming;
+                target?.classList?.add('register-field-error');
+                firstTarget = firstTarget || target;
+                messages.push('請先確認玩家名稱符合命名規範，避免喪失世界盃及公開排名資格。');
+            }
+            if (password.length < 4) {
+                firstTarget = firstTarget || setRegisterFieldError('reg-password', '請設定挑戰密碼，至少 4 個字元。');
+                messages.push('請設定挑戰密碼，至少 4 個字元。');
+            }
+            if (password2.length < 4) {
+                firstTarget = firstTarget || setRegisterFieldError('reg-password2', '請再次輸入挑戰密碼。');
+                messages.push('請再次輸入挑戰密碼。');
+            }
+            if (password && password2 && password !== password2) {
+                firstTarget = firstTarget || setRegisterFieldError('reg-password2', '兩次輸入的挑戰密碼不一致，請重新確認。');
+                messages.push('兩次輸入的挑戰密碼不一致。');
+            }
+            if (hint.length < 2) {
+                firstTarget = firstTarget || setRegisterFieldError('reg-hint', '請填寫密碼提示，避免日後忘記密碼無法自行找回。');
+                messages.push('請填寫密碼提示，避免日後忘記密碼無法自行找回。');
+            }
+            if (messages.length) {
+                showRegisterErrorSummary(messages, firstTarget);
+                setRegisterFeedback('err', '資料尚未填寫完整，請依上方提示補齊。');
+                return false;
+            }
+            return true;
+        }
+
         function setRegisterFeedback(type, msg) {
             const el = document.getElementById('register-feedback');
             if (!el) { showToast(msg); return; }
@@ -5128,6 +5236,7 @@ function clearInputValidation() {
         }
 
 function createRegisteredPlayer() {
+            if (!validateRegisterRequiredFields()) return;
             const name = validateString((document.getElementById('reg-name')?.value || '').trim(), '');
             const password = String(document.getElementById('reg-password')?.value || '');
             const password2 = String(document.getElementById('reg-password2')?.value || '');
@@ -5142,6 +5251,7 @@ function createRegisteredPlayer() {
             const duplicated = findAnyPlayerByName(name); if (duplicated) { showExistingRegisterAccount(duplicated); setRegisterFeedback('err', `「${name}」已存在，不能重複註冊。`); return; }
             if (!password) { setRegisterFeedback('err', '請設定挑戰密碼'); return; }
             if (password !== password2) { setRegisterFeedback('err', '兩次輸入的挑戰密碼不一致'); return; }
+            if (!hint) { setRegisterFeedback('err', '請填寫密碼提示'); ensureElementVisibleInsideDialog(document.getElementById('reg-hint')); return; }
             const player = {
                 id: createId('player'), name, passwordHash: simpleHash(password), hint, avatar, color,
                 createdAt: Date.now(), updatedAt: Date.now(), bestScore: 0, bestLevel: 1, clearCount: 0, archivedAt: null
@@ -8073,6 +8183,19 @@ function showPasswordHint() {
             }
         });
 
+        ['reg-name', 'reg-password', 'reg-password2', 'reg-hint'].forEach(id => {
+            const field = document.getElementById(id);
+            if (!field) return;
+            field.addEventListener('input', () => {
+                field.classList.remove('register-field-error');
+                field.removeAttribute('aria-invalid');
+                const wrapper = field.closest('div') || field.parentElement || field;
+                wrapper.querySelector(`[data-error-for="${id}"]`)?.remove();
+            });
+        });
+        document.getElementById('reg-name-policy-confirm')?.addEventListener('change', () => {
+            document.getElementById('register-disclaimer-block')?.classList.remove('register-field-error');
+        });
         installMobileZoomGuard();
         scheduleSessionSummaryFlush();
         setTimeout(() => {
@@ -8434,16 +8557,17 @@ function showPasswordHint() {
                     <div class="rounded-xl border border-blue-500/40 bg-blue-950/20 p-3">
                         <p class="font-black text-blue-200 mb-2">最近更新</p>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.4.4</b>：修正註冊表單缺漏資料時沒有明確引導的問題：建立帳號前會檢查玩家帳號、挑戰密碼、再次輸入密碼、密碼提示與命名規範確認，缺漏時自動捲動到第一個問題欄位並顯示提示。同步修正免責聲明視窗版本文字與玩家命名規範連結呈現。</li>
                             <li><b>V2.4.3</b>：將消行與過關統計改為單局摘要批次同步：遊戲期間先在本機累積，於 Game Over、完成遊戲、回首頁、每 60 秒或下次開啟時集中送出。每次批次只寫入私人與公開摘要各一筆，大幅降低 Firebase 寫入、讀取與儲存消耗。</li>
                             <li><b>V2.4.2</b>：全球公開數據擴充為九宮格，新增「全球累積消除行數」與「全球累積過關次數」。數字由玩家與訪客實際消除行、成功過關的雲端事件累加，F5、重複登入及預設角色不會增加數值。</li>
                             <li><b>V2.4.1</b>：公開數據精簡為全球玩家帳號、今日活躍玩家、累積／今日對局數與突破第 10／20／30 關玩家；網頁開啟與登入次數移至後台。預設挑戰者改為固定門檻、只緩慢向上追分且不因低分新玩家下降；真實玩家增加時，預設角色逐步退出前十名。版本歷程改為由新到舊排列，開發授權備忘移至 README。</li>
                             <li><b>V2.4.0</b>：修正舊版全域最高分可能錯配給新玩家的問題；真實榜單只採 playerId、玩家資料與玩家專屬存檔驗證，預設挑戰者不得改動真實玩家成績。</li>
-                            <li><b>V2.3.9</b>：新增完整免責聲明、資料保存風險、娛樂用途與玩家命名規範；違規名稱可能喪失世界盃及其他公開排名資格。</li>
                         </ul>
                     </div>
                     <details class="info-details">
                         <summary>查看完整版本歷程（由新到舊）</summary>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.3.9</b>：新增完整免責聲明、資料保存風險、娛樂用途與玩家命名規範；違規名稱可能喪失世界盃及其他公開排名資格。</li>
                             <li><b>V2.3.8</b>：同一真實玩家只保留一筆最佳龍虎榜紀錄；過關畫面加入玩家姓名，第 10、20、30 關與其後每十關顯示專屬鼓勵。</li>
                             <li><b>V2.3.7</b>：世界盃冠軍卡片改以 world_cup/current 為唯一正式來源，避免按下更新數據後被舊統計摘要覆蓋。</li>
                             <li><b>V2.3.6</b>：修正世界盃送件已存在但冠軍未回填的問題，允許使用玩家自己的送件紀錄安全更新世界盃冠軍。</li>
