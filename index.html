@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.3.3 - 阿布拉.凱 工作室</title>
+    <title>極限操控方塊 V2.3.4 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2039,16 +2039,17 @@
 
 
         #level-start-grace {
-            position: absolute;
+            position: fixed;
             inset: 0;
             z-index: 88;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 20px;
-            background: rgba(2, 6, 23, .72);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            padding:
+                max(78px, calc(env(safe-area-inset-top, 0px) + 64px))
+                14px
+                20px;
+            background: rgba(2, 6, 23, .08);
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
@@ -2060,45 +2061,71 @@
             pointer-events: auto;
         }
         .level-start-grace-panel {
-            width: min(86vw, 360px);
-            border: 1px solid rgba(56, 189, 248, .75);
-            border-radius: 24px;
-            padding: 22px 18px;
+            width: min(82vw, 310px);
+            border: 1px solid rgba(56, 189, 248, .82);
+            border-radius: 18px;
+            padding: 10px 14px 12px;
             text-align: center;
-            background:
-                radial-gradient(circle at 50% 0%, rgba(37, 99, 235, .34), transparent 48%),
-                linear-gradient(145deg, rgba(15, 23, 42, .98), rgba(15, 23, 42, .92));
+            background: rgba(3, 13, 31, .82);
             box-shadow:
-                0 0 0 1px rgba(125, 211, 252, .14) inset,
-                0 0 36px rgba(14, 165, 233, .28);
+                0 0 0 1px rgba(125, 211, 252, .16) inset,
+                0 8px 30px rgba(2, 6, 23, .48),
+                0 0 24px rgba(14, 165, 233, .22);
         }
         .level-start-grace-level {
             color: #bae6fd;
-            font-size: clamp(20px, 6vw, 30px);
+            font-size: clamp(15px, 4vw, 20px);
             font-weight: 1000;
             letter-spacing: .08em;
         }
         .level-start-grace-count {
-            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            min-height: 72px;
+            margin-top: 6px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 2px solid rgba(125, 211, 252, .9);
+            background: rgba(15, 23, 42, .78);
             color: #fff;
-            font-size: clamp(64px, 20vw, 108px);
-            line-height: .92;
+            font-size: clamp(45px, 12vw, 66px);
+            line-height: 1;
             font-weight: 1000;
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
-            text-shadow: 0 0 24px rgba(56, 189, 248, .9);
+            text-shadow: 0 0 22px rgba(56, 189, 248, .95);
         }
         .level-start-grace-message {
-            margin-top: 12px;
+            margin-top: 8px;
             color: #e0f2fe;
-            font-size: clamp(15px, 4vw, 19px);
+            font-size: clamp(13px, 3.5vw, 16px);
             font-weight: 900;
         }
         .level-start-grace-note {
-            margin-top: 7px;
-            color: #94a3b8;
-            font-size: 11px;
-            line-height: 1.5;
+            margin-top: 4px;
+            color: #cbd5e1;
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        @media (orientation: landscape) and (max-height: 620px) {
+            #level-start-grace {
+                padding-top: max(58px, calc(env(safe-area-inset-top, 0px) + 48px));
+            }
+            .level-start-grace-panel {
+                width: min(44vw, 300px);
+                padding: 8px 12px 10px;
+            }
+            .level-start-grace-count {
+                min-width: 58px;
+                min-height: 58px;
+                font-size: 42px;
+            }
+            .level-start-grace-note {
+                display: none;
+            }
         }
 
         .world-cup-champion-card {
@@ -2243,8 +2270,8 @@
         <div class="level-start-grace-panel" role="status">
             <div id="level-start-grace-level" class="level-start-grace-level">LEVEL 2</div>
             <div id="level-start-grace-count" class="level-start-grace-count">2</div>
-            <div id="level-start-grace-message" class="level-start-grace-message">請準備，方塊將在兩秒後落下</div>
-            <div class="level-start-grace-note">遊戲畫面已顯示；倒數期間方向鍵、旋轉、下降、暫存與技能操作均暫停，讓玩家先看清楚棋盤再繼續。</div>
+            <div id="level-start-grace-message" class="level-start-grace-message">請看清楚目前盤面</div>
+            <div id="level-start-grace-note" class="level-start-grace-note">底下顯示的就是即將繼續遊玩的真實棋盤；倒數結束後才恢復重力與操作。</div>
         </div>
     </div>
 
@@ -2540,7 +2567,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.3</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.3.4</div>
                     </footer>
                 </main>
             </div>
@@ -2814,8 +2841,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.3.3";
-        const GAME_VERSION_NAME = "世界盃候選同步修正版";
+        const GAME_VERSION = "V2.3.4";
+        const GAME_VERSION_NAME = "可視盤面兩秒倒數保護版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -6459,16 +6486,22 @@ function showPasswordHint() {
             hideLevelStartGrace();
         }
 
-        function beginLevelStartGrace(durationMs = LEVEL_START_GRACE_MS) {
+        function beginLevelStartGrace(
+            durationMs = LEVEL_START_GRACE_MS,
+            reason = 'next_level'
+        ) {
             cancelLevelStartGrace();
+
             const token = levelStartGraceToken;
             const grace = document.getElementById('level-start-grace');
             const levelText = document.getElementById('level-start-grace-level');
             const countText = document.getElementById('level-start-grace-count');
             const messageText = document.getElementById('level-start-grace-message');
+            const noteText = document.getElementById('level-start-grace-note');
 
             const totalMs = Math.max(2000, Number(durationMs || LEVEL_START_GRACE_MS));
             const startedAt = performance.now();
+            const isPauseResume = reason === 'pause_resume';
 
             levelStartGraceActive = true;
             isPaused = true;
@@ -6485,12 +6518,28 @@ function showPasswordHint() {
             lockDelayActive = false;
             lockDelayResets = 0;
 
+            // 倒數前再次繪製真實遊戲畫面，確保玩家看到的是即將接續的盤面。
+            updateUI();
+            resizeCanvas();
+            draw();
+
             if (levelText) {
                 const levelInfo = LEVELS[level - 1] || LEVELS[LEVELS.length - 1];
-                levelText.textContent = `${levelInfo?.endless ? '無盡挑戰' : 'LEVEL'} ${level}`;
+                levelText.textContent = isPauseResume
+                    ? `繼續遊戲｜LEVEL ${level}`
+                    : `${levelInfo?.endless ? '無盡挑戰' : 'LEVEL'} ${level}`;
             }
             if (countText) countText.textContent = '2';
-            if (messageText) messageText.textContent = '遊戲畫面已顯示，請先看清楚棋盤';
+            if (messageText) {
+                messageText.textContent = isPauseResume
+                    ? '暫停已解除，請先確認目前盤面'
+                    : '下一關畫面已就緒，請先思考下一步';
+            }
+            if (noteText) {
+                noteText.textContent = isPauseResume
+                    ? '底下就是暫停前的真實棋盤；倒數結束後才恢復方塊下降與操作。'
+                    : '底下就是即將開始的新關卡棋盤；倒數結束後才恢復方塊下降與操作。';
+            }
             if (grace) {
                 grace.classList.add('is-active');
                 grace.setAttribute('aria-hidden', 'false');
@@ -6505,9 +6554,13 @@ function showPasswordHint() {
 
                 if (countText) countText.textContent = String(remainingSeconds);
                 if (messageText) {
-                    messageText.textContent = remainingSeconds > 1
-                        ? '遊戲畫面已顯示，請先看清楚棋盤'
-                        : '準備繼續，方塊即將開始落下';
+                    if (remainingSeconds > 1) {
+                        messageText.textContent = isPauseResume
+                            ? '暫停已解除，請先確認目前盤面'
+                            : '下一關畫面已就緒，請先思考下一步';
+                    } else {
+                        messageText.textContent = '準備繼續，方塊即將開始落下';
+                    }
                 }
 
                 if (remainingMs > 0) {
@@ -6517,18 +6570,28 @@ function showPasswordHint() {
 
                 hideLevelStartGrace();
 
-                // 若玩家已離開遊戲或畫面狀態改變，舊計時器不可重新啟動遊戲。
+                // 玩家若已離開遊戲或狀態改變，不可由舊倒數重新啟動。
                 if (!gameStarted || isGameOver || overlayMode !== 'playing') return;
 
                 isPaused = false;
                 resetGravityTimer();
                 if (bgmEnabled) startBgm();
-                trackGameEvent('level_start', {
-                    level: Number(level),
-                    score: Number(score || 0),
-                    grace_ms: totalMs
-                });
-                showToast(`${LEVELS[level - 1]?.endless ? '無盡挑戰' : 'LEVEL'} ${level} 開始！`);
+
+                if (isPauseResume) {
+                    trackGameEvent('game_resume', {
+                        level: Number(level || 1),
+                        score: Number(score || 0),
+                        grace_ms: totalMs
+                    });
+                    showToast('繼續遊戲！');
+                } else {
+                    trackGameEvent('level_start', {
+                        level: Number(level),
+                        score: Number(score || 0),
+                        grace_ms: totalMs
+                    });
+                    showToast(`${LEVELS[level - 1]?.endless ? '無盡挑戰' : 'LEVEL'} ${level} 開始！`);
+                }
             };
 
             updateCountdown();
@@ -6562,7 +6625,7 @@ function showPasswordHint() {
             saveGameState();
             saveRetryCheckpoint(`level-${level}-start`);
 
-            beginLevelStartGrace(LEVEL_START_GRACE_MS);
+            beginLevelStartGrace(LEVEL_START_GRACE_MS, 'next_level');
         }
 
         function hardDrop() {
@@ -6935,42 +6998,97 @@ function showPasswordHint() {
 
         function togglePause() {
             setTimeout(syncHomeToolbarState, 0);
+
             if (levelStartGraceActive) {
-                showToast('下一關準備中，請稍候兩秒');
+                showToast('遊戲準備中，倒數結束後即可操作');
                 return;
             }
-            if (overlayMode === 'levelClear') { showToast('請按「前進下一關」或「結束回首頁」'); return; }
+            if (overlayMode === 'levelClear') {
+                showToast('請按「前進下一關」或「結束回首頁」');
+                return;
+            }
             if (overlayMode !== 'playing' && overlayMode !== 'pause') return;
             if (!gameStarted || isGameOver) return;
-            isPaused = !isPaused;
+
             const pauseBtn = document.getElementById('btn-pause');
-            if (isPaused) {
-                trackGameEvent('game_pause', { level: Number(level || 1), score: Number(score || 0) });
-                clearInterval(gravityTimer); stopBgm();
-                pauseBtn.innerText = "繼續"; pauseBtn.classList.replace('bg-blue-900/80', 'bg-green-700/80');
+
+            // 正在遊戲：進入暫停畫面。
+            if (!isPaused && overlayMode === 'playing') {
+                isPaused = true;
+                trackGameEvent('game_pause', {
+                    level: Number(level || 1),
+                    score: Number(score || 0)
+                });
+
+                if (gravityTimer) {
+                    clearInterval(gravityTimer);
+                    gravityTimer = null;
+                }
+                if (lockDelayTimeout) {
+                    clearTimeout(lockDelayTimeout);
+                    lockDelayTimeout = null;
+                }
+                stopBgm();
+
+                if (pauseBtn) {
+                    pauseBtn.innerText = '繼續';
+                    pauseBtn.classList.replace('bg-blue-900/80', 'bg-green-700/80');
+                }
+
                 overlayMode = 'pause';
                 document.getElementById('overlay')?.classList.add('pause-overlay');
-                document.getElementById('overlay-title').innerText = isGuestMode ? "訪客遊俠暫停中" : "遊戲暫停";
-                document.getElementById('overlay-subtitle').innerText = "阿布拉.凱 工作室 監製";
-                document.getElementById('overlay-desc').innerText = isGuestMode ? `訪客遊俠模式｜目前 Level ${level}｜累計分數 ${score}\n本模式不需要玩家帳號與挑戰密碼。` : `目前 Level ${level}｜累計分數 ${score}｜本關 ${score - stageStartScore}/${LEVELS[level-1].target}\n已登入玩家可繼續遊戲，或結束回首頁。`;
-                document.getElementById('level-brief').innerHTML = getNextLevelBrief(level, false);
-                document.getElementById('btn-start').innerText = "繼續遊戲";
+                document.getElementById('overlay-title').innerText =
+                    isGuestMode ? '訪客遊俠暫停中' : '遊戲暫停';
+                document.getElementById('overlay-subtitle').innerText =
+                    '阿布拉.凱 工作室 監製';
+                document.getElementById('overlay-desc').innerText =
+                    isGuestMode
+                        ? `訪客遊俠模式｜目前 Level ${level}｜累計分數 ${score}\n本模式不需要玩家帳號與挑戰密碼。`
+                        : `目前 Level ${level}｜累計分數 ${score}｜本關 ${score - stageStartScore}/${LEVELS[level - 1].target}\n按下「繼續遊戲」後，會先顯示真實棋盤並倒數兩秒，再恢復操作。`;
+
+                document.getElementById('level-brief').innerHTML =
+                    getNextLevelBrief(level, false);
+                document.getElementById('btn-start').innerText = '繼續遊戲';
+
                 const newBtn = document.getElementById('btn-new-game');
                 if (newBtn) {
                     newBtn.classList.remove('hidden');
                     newBtn.style.display = '';
                     newBtn.style.visibility = 'visible';
                     newBtn.style.pointerEvents = 'auto';
-                    newBtn.innerText = "結束回首頁";
+                    newBtn.innerText = '結束回首頁';
                 }
+
                 showOverlay();
-            } else {
-                trackGameEvent('game_resume', { level: Number(level || 1), score: Number(score || 0) });
-                pauseBtn.innerText = "暫停"; pauseBtn.classList.replace('bg-green-700/80', 'bg-blue-900/80');
-                overlayMode = 'playing';
+                return;
+            }
+
+            // 暫停中：先返回真實遊戲畫面，但維持暫停兩秒。
+            if (isPaused && overlayMode === 'pause') {
+                if (pauseBtn) {
+                    pauseBtn.innerText = '暫停';
+                    pauseBtn.classList.replace('bg-green-700/80', 'bg-blue-900/80');
+                }
+
                 document.getElementById('overlay')?.classList.remove('pause-overlay');
+                overlayMode = 'playing';
                 hideOverlay();
-                resetGravityTimer(); if (bgmEnabled) startBgm();
+
+                // 不在此處啟動重力；交由兩秒倒數完成後啟動。
+                isPaused = true;
+                isRapidDescending = false;
+                updateUI();
+                resizeCanvas();
+                draw();
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        beginLevelStartGrace(
+                            LEVEL_START_GRACE_MS,
+                            'pause_resume'
+                        );
+                    });
+                });
             }
         }
 
@@ -7414,7 +7532,7 @@ function showPasswordHint() {
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
                     <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
                     <p><b class="text-cyan-300">平板操作：</b>平板可直接使用畫面上的虛擬按鈕觸控遊玩；系統會依照直式、橫式與可視範圍動態調整棋盤與按鈕比例。</p>
-                    <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p><p><b class="text-cyan-300">下一關準備：</b>過關進入下一關時，棋盤會先顯示並自動暫停兩秒；倒數 2、1 結束後方塊才開始落下，讓玩家有時間重新確認畫面與手指位置。</p>
+                    <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p><p><b class="text-cyan-300">下一關準備：</b>過關進入下一關時，系統先顯示真正要遊玩的棋盤，再於該盤面上倒數 2、1；倒數結束後方塊才開始落下，玩家可先看清楚盤面並思考下一步。</p><p><b class="text-cyan-300">解除暫停：</b>按下「繼續遊戲」後，也會先回到暫停前的真實棋盤並停住兩秒，倒數結束後才恢復重力與操作。</p>
                     <p><b class="text-emerald-300">本機儲存：</b>註冊挑戰者後，帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
                     <p><b class="text-rose-300">重要提醒：</b>本遊戲目前為單機本機儲存。若更換不同瀏覽器、清除瀏覽器資料、使用無痕模式或換另一台裝置，原本玩家紀錄可能不會出現，需要重新註冊設定。未來可再加入匯出 / 匯入或 QR Code 備份功能。</p>
                     <p><b class="text-sky-300">手機資訊窗：</b>V1.7.5 已修正手機彈窗高度與捲動，若新手村或產品介紹內容較長，可直接在視窗內上下滑動，底部會保留關閉按鈕。</p>
@@ -7446,7 +7564,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.3｜世界盃候選同步修正版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.3.4｜可視盤面兩秒倒數保護版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
