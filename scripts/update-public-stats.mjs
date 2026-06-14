@@ -1,4 +1,9 @@
-import { Firestore, FieldValue, Timestamp } from '@google-cloud/firestore';
+import {
+  Firestore,
+  FieldValue,
+  Timestamp,
+  AggregateField
+} from '@google-cloud/firestore';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 function requiredEnv(name) {
@@ -29,6 +34,18 @@ async function countQuery(query, label = 'collection') {
     return Number(snapshot.data().count || 0);
   } catch (error) {
     console.error(`Firestore count failed [${label}]:`, error?.message || error);
+    throw error;
+  }
+}
+
+async function sumQueryField(query, fieldName, label = 'collection') {
+  try {
+    const snapshot = await query
+      .aggregate({ total: AggregateField.sum(fieldName) })
+      .get();
+    return safeInteger(snapshot.data().total || 0);
+  } catch (error) {
+    console.error(`Firestore sum failed [${label}]:`, error?.message || error);
     throw error;
   }
 }
@@ -155,6 +172,8 @@ async function main() {
     totalPageLaunches,
     successfulLoginPlays,
     gameStarts,
+    totalClearedLines,
+    totalLevelClears,
     level10Players,
     level20Players,
     level30Players,
@@ -167,6 +186,16 @@ async function main() {
     countQuery(usageEvents.where('eventType', '==', 'page_launch'), 'usage_events/page_launch'),
     countQuery(usageEvents.where('eventType', '==', 'player_login_play'), 'usage_events/player_login_play'),
     countQuery(usageEvents.where('eventType', '==', 'game_start'), 'usage_events/game_start'),
+    sumQueryField(
+      usageEvents.where('eventType', '==', 'lines_cleared'),
+      'amount',
+      'usage_events/lines_cleared'
+    ),
+    sumQueryField(
+      usageEvents.where('eventType', '==', 'level_clear'),
+      'amount',
+      'usage_events/level_clear'
+    ),
     countQuery(db.collection('milestones').where('milestone', '==', 10), 'milestones/level10'),
     countQuery(db.collection('milestones').where('milestone', '==', 20), 'milestones/level20'),
     countQuery(db.collection('milestones').where('milestone', '==', 30), 'milestones/level30'),
@@ -247,9 +276,10 @@ async function main() {
     todayActivePlayers,
     successfulLoginPlays,
     todaySuccessfulLoginPlays,
-    todayActivePlayers,
     gameStarts,
     todayGameStarts,
+    totalClearedLines,
+    totalLevelClears,
     totalPageViews,
     todayPageViews,
     level10Players,
@@ -270,8 +300,8 @@ async function main() {
     worldCupUpdatedAt: FieldValue.serverTimestamp(),
     gaStatus,
     source: 'github-actions-wif',
-    schemaVersion: 9,
-    gameVersion: 'V2.4.1'
+    schemaVersion: 10,
+    gameVersion: 'V2.4.2'
   };
 
   const worldCupPublic = {
@@ -282,7 +312,7 @@ async function main() {
     candidateDocuments: worldCupCandidateDocumentCount,
     submissionRecords: worldCupSubmissionSnapshot.size,
     updatedAt: FieldValue.serverTimestamp(),
-    gameVersion: 'V2.4.1'
+    gameVersion: 'V2.4.2'
   };
 
   await Promise.all([
@@ -298,6 +328,8 @@ async function main() {
     todaySuccessfulLoginPlays,
     gameStarts,
     todayGameStarts,
+    totalClearedLines,
+    totalLevelClears,
     totalPageViews,
     todayPageViews,
     level10Players,

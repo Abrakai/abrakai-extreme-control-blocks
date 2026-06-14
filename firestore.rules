@@ -21,7 +21,26 @@ service cloud.firestore {
     match /usage_events/{eventId} {
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
+                    && request.resource.data.eventType in [
+                      'page_launch',
+                      'player_login_play',
+                      'game_start',
+                      'lines_cleared',
+                      'level_clear'
+                    ]
+                    && (
+                      request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
+                      || (
+                        request.resource.data.eventType == 'lines_cleared'
+                        && request.resource.data.amount is int
+                        && request.resource.data.amount >= 1
+                        && request.resource.data.amount <= 4
+                      )
+                      || (
+                        request.resource.data.eventType == 'level_clear'
+                        && request.resource.data.amount == 1
+                      )
+                    )
                     && request.resource.data.gameVersion is string
                     && request.resource.data.occurredAt == request.time;
       allow read, update, delete: if false;
@@ -30,7 +49,26 @@ service cloud.firestore {
     match /public_activity_events/{eventId} {
       allow read: if true;
       allow create: if request.auth != null
-                    && request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
+                    && request.resource.data.eventType in [
+                      'page_launch',
+                      'player_login_play',
+                      'game_start',
+                      'lines_cleared',
+                      'level_clear'
+                    ]
+                    && (
+                      request.resource.data.eventType in ['page_launch', 'player_login_play', 'game_start']
+                      || (
+                        request.resource.data.eventType == 'lines_cleared'
+                        && request.resource.data.amount is int
+                        && request.resource.data.amount >= 1
+                        && request.resource.data.amount <= 4
+                      )
+                      || (
+                        request.resource.data.eventType == 'level_clear'
+                        && request.resource.data.amount == 1
+                      )
+                    )
                     && request.resource.data.bucket is string
                     && request.resource.data.bucket.size() <= 48
                     && (

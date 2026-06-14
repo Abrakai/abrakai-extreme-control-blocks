@@ -187,3 +187,13 @@ GitHub Actions 現在同時讀取：
 2. 將本版 `firestore.rules` 貼到 Firebase Firestore「規則」頁並發布。
 3. GitHub Actions 成功執行後，約 5 分鐘內會建立正式備份統計。
 4. 舊玩家達到 Level 30 者，開啟新版並完成匿名連線後會自動補送 Level 30 里程碑。
+
+
+## V2.4.2 新增累積成果統計
+
+`public_stats/summary` 新增：
+- `totalClearedLines`
+- `totalLevelClears`
+
+請同步發布本版 `firestore.rules`，再執行一次 GitHub Actions。
+舊版本尚未送出的歷史消除行數與過關次數不會憑空補算；本統計從成功部署 V2.4.2 後的新遊戲事件開始累積，以維持數據真實性。
