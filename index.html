@@ -2508,7 +2508,7 @@
                             <div class="home-guest-card rounded-2xl p-3 text-center"><div class="text-[12px] font-black mb-2">無註冊遊俠</div><button id="btn-guest-start" class="home-mini-button w-full px-3 py-2 bg-orange-600 hover:bg-orange-500 text-white text-xs font-black rounded-lg">訪客</button></div>
                         </div>
                         <div class="mt-3 text-[12px] home-small-muted leading-relaxed text-center">訪客可立即開打，但不儲存進度，也不寫入本機龍虎榜。</div>
-                        <button id="btn-new-game" class="hidden mt-3 w-full px-8 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">結束回首頁 / 重新開始新局</button>
+                        <button id="btn-new-game" class="hidden mt-3 w-full px-8 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-all duration-200 transform active:scale-95 text-xs uppercase tracking-widest">休息回首頁</button>
                     </section>
 
                     <section id="global-public-stats" class="global-stats-card mx-auto mt-4 max-w-xl rounded-3xl p-4 md:p-5 text-left" aria-live="polite">
@@ -6627,7 +6627,7 @@ function showPasswordHint() {
 
         function retryCurrentLevelWithScorePenalty() {
             const cp = getRetryBaseCheckpoint(level);
-            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
+            if (!cp) { showToast('找不到本關起點暫存；不會自動從 LEVEL 1 開始，請休息回首頁檢查存檔。'); return; }
             const adjustedScore = Number(cp.score || 0) - 1000;
             const floor = getEntryScoreFloor(cp.level);
             if (adjustedScore < floor) {
@@ -6652,9 +6652,9 @@ function showPasswordHint() {
 
         function retryCurrentLevelWithSkillPenalty() {
             const cp = getRetryBaseCheckpoint(level);
-            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
+            if (!cp) { showToast('找不到本關起點暫存；不會自動從 LEVEL 1 開始，請休息回首頁檢查存檔。'); return; }
             const key = getBestAvailableSkill(cp.skillCharges || {});
-            if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分或重新開始'); return; }
+            if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分重玩本關，或休息回首頁。'); return; }
             cp.skillCharges[key] = Math.max(0, Number(cp.skillCharges[key] || 0) - 1);
             applySnapshotToGame(cp);
             showToast(`已扣除 ${skillName(key)} 技能×1，回到 LEVEL ${level} 起點重玩`);
@@ -6663,7 +6663,7 @@ function showPasswordHint() {
         function buildRetryPanelHTML(rankInfo = {}) {
             const cp = getRetryBaseCheckpoint(level);
             if (!cp) {
-                return `<div class="retry-panel"><b>本關重挑：</b><br>目前找不到本關起點暫存，請重新開始挑戰。</div>`;
+                return `<div class="retry-panel"><b>本關重挑：</b><br>目前找不到本關起點暫存。請先休息回首頁，確認是否仍有可用正式存檔；系統不會自動從 LEVEL 1 開始。</div>`;
             }
             const skillKey = getBestAvailableSkill(cp.skillCharges || {});
             const adjustedScore = Number(cp.score || 0) - 1000;
@@ -6679,7 +6679,7 @@ function showPasswordHint() {
                     <button type="button" class="retry-primary" data-retry-action="score">扣 1000 分，重玩本關</button>
                     <button type="button" class="retry-skill ${skillKey ? '' : 'retry-disabled'}" data-retry-action="skill" ${skillKey ? '' : 'disabled'}>扣 1 技能，重玩本關</button>
                 </div>
-                <button type="button" class="retry-back mt-2 w-full" data-retry-action="new">放棄重挑，重新開始</button>
+                <button type="button" class="retry-back mt-2 w-full" data-retry-action="home">休息回首頁，下次再挑戰</button>
             </div>`;
         }
 
@@ -6702,6 +6702,17 @@ function showPasswordHint() {
             localStorage.removeItem(getPlayerStateKey());
             savedStateCache = null;
             updateSaveStatus();
+        }
+
+        function preserveRetryCheckpointAsOfficialSave(targetLevel = level) {
+            if (isGuestMode) return false;
+            const cp = getRetryBaseCheckpoint(targetLevel);
+            if (!cp || !isRestorableState(cp)) return false;
+            return persistGameStateSnapshot({
+                ...cloneForStorage(cp),
+                saveReason: 'game-over-retry-checkpoint',
+                savedAt: Date.now()
+            });
         }
 
         function persistGameStateSnapshot(snapshot) {
@@ -7810,7 +7821,7 @@ function showPasswordHint() {
             const rankMsg = rankInfo.isRanked ? `\n🏆 成功登入本機龍虎榜第 ${rankInfo.rank} 名！` : `\n本次未進入本機前十名，再挑戰一次！`;
             document.getElementById('overlay-desc').innerText = `🎉 恭喜破關！達成最終關卡！\n玩家：${nickname}\n消行數：${lines}\n傲人分數：${score}${rankMsg}`;
             document.getElementById('level-brief').innerHTML = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 龍虎榜更新成功</div><div>${nickname} 以 ${score} 分登上第 ${rankInfo.rank} 名。</div><div>${rankInfo.isBest ? '同時刷新你的本機最高分！' : '排行榜已儲存在本機瀏覽器。'}</div>` : `<div class="text-slate-300 font-bold text-center mb-1">本機龍虎榜</div><div>目前前十名門檻仍未突破，歡迎再戰！</div>`;
-            document.getElementById('btn-start').innerText = "重啟傳奇挑戰";
+            document.getElementById('btn-start').innerText = "完成挑戰，返回首頁";
             overlayMode = 'gameOver';
             document.getElementById('overlay')?.classList.add('gameover-overlay');
             showOverlay();
@@ -7835,14 +7846,14 @@ function showPasswordHint() {
             document.getElementById('overlay-subtitle').innerText = '挑戰結算中｜阿布拉.凱 工作室 監製';
             document.getElementById('overlay-desc').innerText = `GAME OVER / 挑戰失敗\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines}\n失敗關卡：LEVEL ${level}\n正在保存本局成績…`;
             document.getElementById('level-brief').innerHTML = '<div class="text-cyan-200 font-bold text-center">正在整理本機龍虎榜與重挑選項…</div>';
-            document.getElementById('btn-start').innerText = '開始全新挑戰';
-            document.getElementById('btn-new-game')?.classList.remove('hidden');
-            document.getElementById('btn-new-game').innerText = '返回首頁';
+            document.getElementById('btn-start').innerText = '休息回首頁，下次再挑戰';
+            document.getElementById('btn-new-game')?.classList.add('hidden');
+            if (document.getElementById('btn-new-game')) document.getElementById('btn-new-game').style.display = 'none';
             showOverlay();
 
             const fallbackRankInfo = { cleanName: validateString(nickname, '玩家'), cleanScore: Number(score || 0), rank: null, isRanked: false, isBest: false, improved: false, guest: isGuestMode };
             const rankInfo = safeRun('submitScoreToCloud', () => submitScoreToCloud(nickname, score), fallbackRankInfo) || fallbackRankInfo;
-            safeRun('clearSavedState after game over', () => clearSavedState());
+            safeRun('preserve retry checkpoint after game over', () => preserveRetryCheckpointAsOfficialSave(level));
             safeRun('track game over', () => trackGameEvent('game_over', {
                 level: Number(level || 1),
                 score: Number(score || 0),
@@ -7866,7 +7877,7 @@ function showPasswordHint() {
             document.getElementById('overlay-desc').innerText = `${rankInfo.isRanked ? '龍虎榜結算' : 'GAME OVER / 挑戰失敗'}\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines}\n失敗關卡：LEVEL ${level}${failedLevelName ? '｜' + failedLevelName : ''}\n${rankMsg}${bestMsg}`;
             const resultHtml = rankInfo.isRanked
                 ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 本機龍虎榜更新</div><div>${nickname}｜${score} 分｜第 ${rankInfo.rank} 名</div><div>排行榜已儲存在這台裝置的瀏覽器中，下次開啟仍會保留。</div>`
-                : `<div class="text-red-200 font-bold text-center mb-1">挑戰失敗，但可以接續重挑</div><div>目前分數：${score} 分｜失敗關卡：LEVEL ${level}</div><div>你可以付出代價重玩本關，或開始全新挑戰。</div>`;
+                : `<div class="text-red-200 font-bold text-center mb-1">挑戰失敗，但可以接續重挑</div><div>目前分數：${score} 分｜失敗關卡：LEVEL ${level}</div><div>你可以付出代價從本關起點重玩，或休息回首頁並保留最近可用存檔。</div>`;
             document.getElementById('level-brief').innerHTML = resultHtml + buildRetryPanelHTML(rankInfo);
             showOverlay();
         }
@@ -8472,7 +8483,7 @@ function showPasswordHint() {
                 newGameBtn.style.display = 'none';
                 newGameBtn.style.visibility = 'hidden';
                 newGameBtn.style.pointerEvents = 'none';
-                newGameBtn.innerText = '結束回首頁 / 重新開始新局';
+                newGameBtn.innerText = '休息回首頁';
             }
             const startBtn = document.getElementById('btn-start');
             if (startBtn) {
@@ -8520,6 +8531,7 @@ function showPasswordHint() {
 
         async function confirmReturnHomeFromCurrentOverlay() {
             const context = overlayMode;
+            if (context === 'gameOver') return confirmReturnHomeAfterGameOver();
             const isPauseContext = context === 'pause';
             const isLevelClearContext = context === 'levelClear';
             const ok = await requestGameActionConfirmation({
@@ -8528,7 +8540,7 @@ function showPasswordHint() {
                     ? '系統會先保存目前棋盤、分數、關卡與累積消行，再停止本次即時遊玩並返回首頁。'
                     : isLevelClearContext
                         ? '系統會保留下一關起點暫存並返回首頁；稍後可由「繼續挑戰」接續。'
-                        : '本局已結算。返回首頁不會刪除已保存的最高紀錄。',
+                        : `本局已結算。系統會保留最近可用存檔與關卡節點；下次從 LEVEL ${Number(getRetryBaseCheckpoint(level)?.level || getSavedState()?.level || Math.max(1, level - 1))} 附近接續，不會從 LEVEL 1 開始。`,
                 benefits: [
                     isPauseContext ? '目前進度會先保存，可稍後接續。' : '已保存的最高分、龍虎榜與世界盃候選紀錄會保留。',
                     isLevelClearContext ? '下一關起點與累積分數、消行數會保留。' : '可回首頁查看排行榜、世界盃與玩家資料。'
@@ -8542,31 +8554,29 @@ function showPasswordHint() {
             if (ok) showHomeFromPausedGame();
         }
 
-        async function confirmStartNewRunFromGameOver() {
+        async function confirmReturnHomeAfterGameOver() {
+            const cp = getRetryBaseCheckpoint(level);
+            const saved = getSavedState();
+            const resumeLevel = Number(cp?.level || saved?.level || Math.max(1, level - 1));
             const ok = await requestGameActionConfirmation({
-                title: '確定開始全新挑戰嗎？',
-                summary: '全新挑戰會從 LEVEL 1、0 分、0 消行開始。歷史最高紀錄仍會保留。',
+                title: '確定休息回首頁嗎？',
+                summary: `系統會保留目前可用的正式存檔與最近關卡節點。下次登入後，會從 LEVEL ${resumeLevel} 附近的有效存檔接續，不會從 LEVEL 1 重新開始。`,
                 benefits: [
-                    '保留玩家帳號、歷史最高分、龍虎榜與世界盃榮譽紀錄。',
-                    '以乾淨棋盤重新挑戰完整關卡。'
+                    '玩家帳號、歷史最高分、龍虎榜與世界盃榮譽紀錄都會保留。',
+                    `最近可用的關卡起點會保留；下次可由 LEVEL ${resumeLevel} 附近繼續挑戰。`
                 ],
                 losses: [
-                    '本次的本關重挑暫存與最近關卡節點會清除。',
-                    '新局不會沿用目前累積分數、關卡、消行數或技能。'
+                    '目前 Game Over 前的死亡盤面不會恢復。',
+                    '返回首頁後需再次登入或按「繼續挑戰」才能接續。'
                 ],
-                confirmText: '確認從 LEVEL 1 重來'
+                confirmText: '確認休息回首頁'
             });
-            if (!ok) return;
-            void flushPendingSessionSummary('restart_after_game_over');
-            clearAllRetryCheckpoints();
-            clearSavedState();
-            document.getElementById('overlay')?.classList.remove('gameover-overlay');
-            initGame(true);
+            if (ok) showHomeFromPausedGame();
         }
 
         async function confirmRetryWithScorePenalty() {
             const cp = getRetryBaseCheckpoint(level);
-            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
+            if (!cp) { showToast('找不到本關起點暫存；不會自動從 LEVEL 1 開始，請休息回首頁檢查存檔。'); return; }
             const adjustedScore = Math.max(0, Number(cp.score || 0) - 1000);
             const floor = getEntryScoreFloor(cp.level);
             const prevLevel = Math.max(1, Number(cp.level || level || 1) - 1);
@@ -8585,8 +8595,8 @@ function showPasswordHint() {
         async function confirmRetryWithSkillPenalty() {
             const cp = getRetryBaseCheckpoint(level);
             const key = cp ? getBestAvailableSkill(cp.skillCharges || {}) : null;
-            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
-            if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分或重新開始'); return; }
+            if (!cp) { showToast('找不到本關起點暫存；不會自動從 LEVEL 1 開始，請休息回首頁檢查存檔。'); return; }
+            if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分重玩本關，或休息回首頁。'); return; }
             const ok = await requestGameActionConfirmation({
                 title: `確定扣除「${skillName(key)}」重玩嗎？`,
                 summary: `確認後會扣除 ${skillName(key)} ×1，並回到 LEVEL ${cp.level} 的關卡起點。`,
@@ -8606,18 +8616,25 @@ function showPasswordHint() {
                 if (lockDelayTimeout) { clearTimeout(lockDelayTimeout); lockDelayTimeout = null; }
                 stopBgm();
             }
+            const cp = getRetryBaseCheckpoint(level);
+            if (!cp) {
+                showToast('目前沒有可用的本關起點存檔；不會從 LEVEL 1 重開。');
+                if (wasPlaying) {
+                    overlayMode = 'playing';
+                    beginLevelStartGrace(LEVEL_START_GRACE_MS, 'pause_resume');
+                }
+                return;
+            }
             const ok = await requestGameActionConfirmation({
-                title: '確定放棄目前這局並重新開始嗎？',
-                summary: '快捷鍵 R 不會再直接清除進度。確認後才會從 LEVEL 1 建立全新挑戰。',
-                benefits: ['保留玩家帳號與歷史最高紀錄。', '重新建立乾淨棋盤。'],
-                losses: ['目前尚未結算的分數、消行、關卡、技能與盤面會放棄。', '本關重挑節點會清除。'],
-                confirmText: '確認放棄本局並重來'
+                title: `確定回到 LEVEL ${cp.level} 起點嗎？`,
+                summary: '快捷鍵 R 不會建立 LEVEL 1 新局，只會回到最近有效的本關起點存檔。',
+                benefits: ['保留玩家帳號、歷史最高紀錄與累積挑戰資格。', `回到 LEVEL ${cp.level} 的安全起點。`],
+                losses: ['目前本關尚未結算的盤面進度會放棄。', '本次重玩不會額外增加已完成關卡的重複分數。'],
+                confirmText: '確認回到本關起點'
             });
             if (ok) {
-                void flushPendingSessionSummary('restart_keyboard');
-                clearAllRetryCheckpoints();
-                clearSavedState();
-                initGame(true);
+                applySnapshotToGame(cp);
+                showToast(`已回到 LEVEL ${level} 起點重新挑戰`);
             } else if (wasPlaying) {
                 overlayMode = 'playing';
                 beginLevelStartGrace(LEVEL_START_GRACE_MS, 'pause_resume');
@@ -8638,7 +8655,7 @@ function showPasswordHint() {
             if (overlayMode === 'levelClear') return resumeNextLevel();
             if (overlayMode === 'pause') return togglePause();
             if (overlayMode === 'gameOver') {
-                void confirmStartNewRunFromGameOver();
+                void confirmReturnHomeFromCurrentOverlay();
                 return;
             }
             const oldText = btn?.innerText || '繼續挑戰';
@@ -8666,8 +8683,8 @@ function showPasswordHint() {
             const action = btn.dataset.retryAction;
             if (action === 'score') { void confirmRetryWithScorePenalty(); return; }
             if (action === 'skill') { void confirmRetryWithSkillPenalty(); return; }
-            if (action === 'new') {
-                void confirmStartNewRunFromGameOver();
+            if (action === 'home') {
+                void confirmReturnHomeFromCurrentOverlay();
                 return;
             }
         });
@@ -8776,7 +8793,7 @@ function showPasswordHint() {
                     <p><b class="text-yellow-300">首頁精簡：</b>V2.0.9 移除首頁內嵌的龍虎榜區塊，避免與下方「龍虎榜揭榜」功能重複，也避免排行榜佔用登入畫面。</p><p><b class="text-cyan-300">排行榜入口：</b>現在查看排行榜請使用首頁底部「龍虎榜揭榜」按鈕，會開啟完整獨立排行榜視窗。</p><p><b class="text-emerald-300">保留資料：</b>這次只移除首頁顯示區塊，不刪任何玩家帳號、挑戰密碼、最高紀錄或龍虎榜資料。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
-                    <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 開啟重新開始二次確認。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
+                    <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 開啟「回到本關起點」二次確認，不會從 LEVEL 1 重開。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
                     <p><b class="text-cyan-300">平板操作：</b>平板可直接使用畫面上的虛擬按鈕觸控遊玩；系統會依照直式、橫式與可視範圍動態調整棋盤與按鈕比例。</p>
                     <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p><p><b class="text-cyan-300">下一關準備：</b>過關進入下一關時，系統先顯示真正要遊玩的棋盤，再於該盤面上倒數 2、1；倒數結束後方塊才開始落下，玩家可先看清楚盤面並思考下一步。</p><p><b class="text-cyan-300">解除暫停：</b>按下「繼續遊戲」後，也會先回到暫停前的真實棋盤並停住兩秒，倒數結束後才恢復重力與操作。</p>
                     <p><b class="text-emerald-300">本機儲存：</b>註冊挑戰者後，帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
@@ -8855,7 +8872,7 @@ function showPasswordHint() {
                     <div class="rounded-xl border border-blue-500/40 bg-blue-950/20 p-3">
                         <p class="font-black text-blue-200 mb-2">最近更新</p>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
-                            <li><b>V2.4.5</b>：修正高等級玩家無存檔時被固定退回 LEVEL 21、累積消行歸零，以及排行榜／世界盃將不同來源的分數、關卡與消行拼接成同一筆紀錄；Game Over 先顯示可操作結算畫面，避免高等級結算黑屏；暫停、返回首頁、重新開始與本關重挑新增得失說明及二次確認；同步更新 LINE 分享 Meta 與全站版本。</li>
+                            <li><b>V2.4.5</b>：修正高等級玩家無存檔時被固定退回 LEVEL 21、累積消行歸零，以及排行榜／世界盃將不同來源的分數、關卡與消行拼接成同一筆紀錄；Game Over 先顯示可操作結算畫面，避免高等級結算黑屏；暫停、返回首頁與本關重挑新增得失說明及二次確認，並移除高等級玩家從 LEVEL 1 全新開始的選項；同步更新 LINE 分享 Meta 與全站版本。</li>
                             <li><b>V2.4.4</b>：修正註冊表單缺漏資料時沒有明確引導的問題：建立帳號前會檢查玩家帳號、挑戰密碼、再次輸入密碼、密碼提示與命名規範確認，缺漏時自動捲動到第一個問題欄位並顯示提示。同步修正免責聲明視窗版本文字與玩家命名規範連結呈現。</li>
                             <li><b>V2.4.3</b>：將消行與過關統計改為單局摘要批次同步：遊戲期間先在本機累積，於 Game Over、完成遊戲、回首頁、每 60 秒或下次開啟時集中送出。每次批次只寫入私人與公開摘要各一筆，大幅降低 Firebase 寫入、讀取與儲存消耗。</li>
                             <li><b>V2.4.2</b>：全球公開數據擴充為九宮格，新增「全球累積消除行數」與「全球累積過關次數」。數字由玩家與訪客實際消除行、成功過關的雲端事件累加，F5、重複登入及預設角色不會增加數值。</li>

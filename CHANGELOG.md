@@ -21,3 +21,11 @@
 ### Compatibility
 - 保留既有 localStorage key、Firestore collection、Firestore Rules 與 GitHub Actions workflow。
 - 未修改任何線上資料或部署設定。
+
+### V2.4.5 修訂：高等級續戰入口
+- Game Over 頁面移除「從 LEVEL 1 開始全新挑戰」。
+- 保留「扣 1000 分重玩本關」及「扣 1 技能重玩本關」。
+- 新增「休息回首頁，下次再挑戰」，並說明下次會從最近有效存檔／關卡節點接續。
+- Game Over 後將最近本關起點 checkpoint 保存為正式可恢復存檔，不再清除後只剩歷史最高分。
+- 鍵盤 R 改為回到最近有效的本關起點，不再建立 LEVEL 1 新局。
+- 找不到 checkpoint 時停止操作並提示，不會默默從 LEVEL 1 開始。

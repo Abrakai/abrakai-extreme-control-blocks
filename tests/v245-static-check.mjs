@@ -94,7 +94,7 @@ assertIncludes(endGame, "safeRun('submitScoreToCloud'", 'Game Over 排行榜流�
 assertIncludes(index, 'id="game-action-confirm-modal" class="hidden fixed inset-0', '二次確認視窗必須固定覆蓋畫面');
 assertIncludes(index, 'max-h-[92dvh]', '二次確認視窗缺少手機高度限制');
 assertIncludes(index, 'async function confirmReturnHomeFromCurrentOverlay()', '返回首頁缺少二次確認');
-assertIncludes(index, 'async function confirmStartNewRunFromGameOver()', 'Game Over 重開缺少二次確認');
+assertIncludes(index, 'async function confirmReturnHomeAfterGameOver()', 'Game Over 休息回首頁缺少二次確認');
 assertIncludes(index, 'async function confirmRestartCurrentGameplay()', '鍵盤 R 缺少二次確認');
 const retryScore = extractFunction(index, 'retryCurrentLevelWithScorePenalty');
 assert.ok(!/\bconfirm\s*\(/.test(retryScore), '扣分重挑仍會出現第三次原生 confirm');
@@ -127,4 +127,11 @@ const syntax = spawnSync(process.execPath, ['--check', tempModule], { encoding: 
 fs.rmSync(tempModule, { force: true });
 assert.equal(syntax.status, 0, `index.html ES module 語法錯誤：\n${syntax.stderr}`);
 
+
+assert(!index.includes('開始全新挑戰'), 'Game Over 不應再提供從 LEVEL 1 開始的全新挑戰');
+assert(index.includes('休息回首頁，下次再挑戰'), 'Game Over 應提供休息回首頁選項');
+assert(index.includes('data-retry-action="home"'), '重挑面板應提供回首頁動作');
+assert(index.includes('preserveRetryCheckpointAsOfficialSave'), 'Game Over 應將最近 checkpoint 保存為正式存檔');
+assert(index.includes("preserve retry checkpoint after game over"), 'Game Over 不應直接清除正式存檔');
+assert(index.includes('快捷鍵 R 不會建立 LEVEL 1 新局'), '鍵盤 R 不得建立 LEVEL 1 新局');
 console.log('V2.4.5 靜態驗證通過：版本、完整快照、續玩、Game Over、二次確認與 JS 語法。');
