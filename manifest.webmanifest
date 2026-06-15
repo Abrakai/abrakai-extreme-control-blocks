@@ -4,5 +4,6 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#020617",
-  "theme_color": "#020617"
+  "theme_color": "#020617",
+  "description": "極限操控方塊 V2.4.5｜進度一致性、安全確認與結算黑屏修正版"
 }

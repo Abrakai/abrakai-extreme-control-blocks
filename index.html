@@ -11,7 +11,18 @@
     <meta name="apple-mobile-web-app-title" content="極限操控方塊">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>極限操控方塊 V2.4.4 - 阿布拉.凱 工作室</title>
+    <meta name="description" content="極限操控方塊 V2.4.5｜手機、平板與電腦皆可遊玩的高難度方塊闖關遊戲。">
+    <meta name="application-version" content="V2.4.5">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_TW">
+    <meta property="og:url" content="https://abrakai.github.io/">
+    <meta property="og:site_name" content="阿布拉.凱 工作室">
+    <meta property="og:title" content="極限操控方塊 V2.4.5｜全球玩家挑戰賽">
+    <meta property="og:description" content="挑戰極限操控、龍虎榜與世界盃榮譽冠軍。正式版本 V2.4.5。">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="極限操控方塊 V2.4.5｜全球玩家挑戰賽">
+    <meta name="twitter:description" content="挑戰極限操控、龍虎榜與世界盃榮譽冠軍。正式版本 V2.4.5。">
+    <title>極限操控方塊 V2.4.5 - 阿布拉.凱 工作室</title>
     <script src="https://cdn.tailwindcss.com">
         document.getElementById('btn-close-celebration')?.addEventListener('click', () => document.getElementById('celebration-modal')?.classList.add('hidden'));
         document.getElementById('celebration-modal')?.addEventListener('click', (e) => { if (e.target.id === 'celebration-modal') e.currentTarget.classList.add('hidden'); });
@@ -2569,7 +2580,7 @@
                     </section>
 <footer class="mt-4">
                         <div class="home-footer-actions"><button id="btn-guide" class="btn-guide-bright">新手村</button><button id="btn-copyright" class="btn-disclaimer-bright">版權、免責聲明</button><button id="btn-ranking-open" class="btn-rank-bright" type="button">龍虎榜揭榜</button><button id="btn-local-data-manager" class="btn-guide-bright" type="button">本機資料管理</button></div>
-                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.4</div>
+                        <div class="mt-3 text-[10px] text-slate-400 font-mono tracking-widest uppercase">© 2026 阿布拉.凱 工作室 監製｜目前版本 V2.4.5</div>
                     </footer>
                 </main>
             </div>
@@ -2596,6 +2607,35 @@
 
 
     <!-- ================= 本機玩家帳號清單 V2.0.1 ================= -->
+    <!-- V2.4.5：破壞性操作二次確認。說明確認後的保留項目與放棄項目。 -->
+    <div id="game-action-confirm-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-[120] flex items-center justify-center overflow-y-auto p-4" role="dialog" aria-modal="true" aria-labelledby="game-action-confirm-title">
+        <div class="my-auto max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-amber-400/75 bg-slate-950 text-slate-100 p-5 shadow-[0_0_45px_rgba(251,191,36,.28)]">
+            <div class="flex items-start justify-between gap-3 mb-3">
+                <div>
+                    <div class="text-[10px] tracking-[0.22em] text-amber-300 font-black uppercase">再次確認</div>
+                    <h3 id="game-action-confirm-title" class="mt-1 text-xl font-black text-amber-200">確定執行嗎？</h3>
+                </div>
+                <button id="btn-close-game-action-confirm" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold">取消</button>
+            </div>
+            <p id="game-action-confirm-summary" class="rounded-xl border border-slate-700 bg-slate-900/80 p-3 text-sm leading-relaxed text-slate-200"></p>
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="rounded-xl border border-emerald-500/45 bg-emerald-950/25 p-3">
+                    <div class="font-black text-emerald-300 mb-1">✓ 會保留／獲得</div>
+                    <ul id="game-action-confirm-benefits" class="list-disc pl-5 text-[12px] leading-relaxed text-emerald-100"></ul>
+                </div>
+                <div class="rounded-xl border border-rose-500/45 bg-rose-950/25 p-3">
+                    <div class="font-black text-rose-300 mb-1">！會放棄／付出</div>
+                    <ul id="game-action-confirm-losses" class="list-disc pl-5 text-[12px] leading-relaxed text-rose-100"></ul>
+                </div>
+            </div>
+            <div id="game-action-confirm-note" class="mt-3 text-[11px] leading-relaxed text-slate-400"></div>
+            <div class="mt-4 grid grid-cols-2 gap-3">
+                <button id="btn-cancel-game-action-confirm" type="button" class="rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-sm font-black text-white hover:bg-slate-700">取消，維持目前狀態</button>
+                <button id="btn-confirm-game-action" type="button" class="rounded-xl border border-rose-300/70 bg-rose-700 px-4 py-3 text-sm font-black text-white hover:bg-rose-600">確認執行</button>
+            </div>
+        </div>
+    </div>
+
     <div id="account-list-modal" class="hidden absolute inset-0 bg-black/78 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="account-list-card w-full max-w-md rounded-2xl border border-cyan-400/70 bg-slate-950 text-slate-100 p-5 shadow-[0_0_40px_rgba(34,211,238,.22)]">
             <div class="flex items-center justify-between gap-3 mb-3">
@@ -2881,8 +2921,8 @@
         import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot, collection, query, where, getDocs, getCountFromServer, runTransaction, Timestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
-        const GAME_VERSION = "V2.4.4";
-        const GAME_VERSION_NAME = "註冊缺漏引導・聲明視窗修正版";
+        const GAME_VERSION = "V2.4.5";
+        const GAME_VERSION_NAME = "進度一致性・安全確認・結算黑屏修正版";
         function validateString(val, fallback = "") {
             if (val === undefined || val === null) return fallback;
             return String(val).trim().replace(/[\<\>\'\"\/\\]/g, "").slice(0, 12); 
@@ -3480,92 +3520,39 @@
                 const linkedPlayer = boardEntry.playerId
                     ? playerById.get(String(boardEntry.playerId))
                     : playerByName.get(validateString(boardEntry.name, '').toLowerCase());
-                const state = linkedPlayer?.id
-                    ? readPlayerSavedStateById(linkedPlayer.id)
-                    : null;
+                const record = normalizePerformanceSnapshot(boardEntry, { source: 'local-leaderboard' });
+                if (!record) continue;
 
                 candidates.push({
                     localPlayerId: String(
-                        linkedPlayer?.id ||
-                        boardEntry.playerId ||
-                        `legacy_${validateString(boardEntry.name, 'player')}`
+                        linkedPlayer?.id || boardEntry.playerId || `legacy_${validateString(boardEntry.name, 'player')}`
                     ).slice(0, 80),
-                    nickname: validateString(
-                        linkedPlayer?.name || boardEntry.name || '玩家',
-                        '玩家'
-                    ),
-                    avatar: String(
-                        linkedPlayer?.avatar || boardEntry.avatar || '🎮'
-                    ).slice(0, 8),
-                    color: String(
-                        linkedPlayer?.color || boardEntry.color || 'cyan'
-                    ).slice(0, 24),
-                    bestScore: normalizeWorldCupInteger(Math.max(
-                        Number(boardEntry.score || 0),
-                        Number(linkedPlayer?.bestScore || 0),
-                        Number(state?.score || 0),
-                        Number(state?.bestScore || 0)
-                    )),
-                    highestLevel: normalizeWorldCupInteger(Math.max(
-                        1,
-                        Number(boardEntry.level || boardEntry.bestLevel || 1),
-                        Number(linkedPlayer?.bestLevel || 1),
-                        Number(state?.level || 1),
-                        Number(state?.bestLevel || 1)
-                    ), 1, 9999),
-                    lines: normalizeWorldCupInteger(Math.max(
-                        Number(boardEntry.lines || 0),
-                        Number(linkedPlayer?.clearCount || 0),
-                        Number(linkedPlayer?.lines || 0),
-                        Number(state?.lines || 0)
-                    ), 0, 999999),
-                    achievedAtLocal: normalizeWorldCupInteger(
-                        boardEntry.at ||
-                        linkedPlayer?.updatedAt ||
-                        state?.savedAt ||
-                        linkedPlayer?.createdAt ||
-                        Date.now(),
-                        0,
-                        Number.MAX_SAFE_INTEGER
-                    ),
-                    sourceType: 'local-leaderboard'
+                    nickname: validateString(linkedPlayer?.name || boardEntry.name || '玩家', '玩家'),
+                    avatar: String(linkedPlayer?.avatar || boardEntry.avatar || '🎮').slice(0, 8),
+                    color: String(linkedPlayer?.color || boardEntry.color || 'cyan').slice(0, 24),
+                    bestScore: normalizeWorldCupInteger(record.score),
+                    highestLevel: normalizeWorldCupInteger(record.level, 1, 9999),
+                    lines: normalizeWorldCupInteger(record.lines, 0, 999999),
+                    achievedAtLocal: normalizeWorldCupInteger(record.at, 0, Number.MAX_SAFE_INTEGER),
+                    sourceType: 'local-leaderboard-snapshot'
                 });
             }
 
             // 第二來源：即使玩家尚未寫入榜單，仍從玩家資料與存檔補抓最高分。
             for (const player of (Array.isArray(players) ? players : [])) {
                 if (!player?.id || player.archivedAt) continue;
-                const state = readPlayerSavedStateById(player.id);
+                const verified = getVerifiedPlayerPerformance(player.id);
+                if (!verified) continue;
                 candidates.push({
                     localPlayerId: String(player.id).slice(0, 80),
                     nickname: validateString(player.name || '玩家', '玩家'),
                     avatar: String(player.avatar || '🎮').slice(0, 8),
                     color: String(player.color || 'cyan').slice(0, 24),
-                    bestScore: normalizeWorldCupInteger(Math.max(
-                        Number(player.bestScore || 0),
-                        Number(state?.score || 0),
-                        Number(state?.bestScore || 0)
-                    )),
-                    highestLevel: normalizeWorldCupInteger(Math.max(
-                        1,
-                        Number(player.bestLevel || 1),
-                        Number(state?.level || 1),
-                        Number(state?.bestLevel || 1)
-                    ), 1, 9999),
-                    lines: normalizeWorldCupInteger(Math.max(
-                        Number(player.clearCount || 0),
-                        Number(player.lines || 0),
-                        Number(state?.lines || 0)
-                    ), 0, 999999),
-                    achievedAtLocal: normalizeWorldCupInteger(
-                        player.updatedAt ||
-                        state?.savedAt ||
-                        player.createdAt ||
-                        Date.now(),
-                        0,
-                        Number.MAX_SAFE_INTEGER
-                    ),
-                    sourceType: 'player-profile'
+                    bestScore: normalizeWorldCupInteger(verified.score),
+                    highestLevel: normalizeWorldCupInteger(verified.level, 1, 9999),
+                    lines: normalizeWorldCupInteger(verified.lines, 0, 999999),
+                    achievedAtLocal: normalizeWorldCupInteger(verified.at, 0, Number.MAX_SAFE_INTEGER),
+                    sourceType: 'player-performance-snapshot'
                 });
             }
 
@@ -4676,6 +4663,50 @@
             return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
         }
 
+        // V2.4.5：分數、關卡與消行數必須屬於同一筆完整快照，禁止分欄取最大值後拼接。
+        function normalizePerformanceSnapshot(source, metadata = {}) {
+            if (!source || typeof source !== 'object') return null;
+            const scoreValue = source.score ?? source.bestScore;
+            const levelValue = source.level ?? source.bestLevel ?? source.highestLevel;
+            const linesValue = source.lines ?? source.clearCount;
+            const scoreNumber = Math.max(0, Math.floor(Number(scoreValue || 0)));
+            const levelNumber = Math.max(1, Math.min(100, Math.floor(Number(levelValue || 1))));
+            const linesNumber = Math.max(0, Math.floor(Number(linesValue || 0)));
+            if (!Number.isFinite(scoreNumber) || !Number.isFinite(levelNumber) || !Number.isFinite(linesNumber)) return null;
+            if (scoreNumber <= 0 && levelNumber <= 1 && linesNumber <= 0) return null;
+            return {
+                schemaVersion: 2,
+                score: scoreNumber,
+                level: levelNumber,
+                lines: linesNumber,
+                at: Math.max(0, Math.floor(Number(
+                    source.at ?? source.achievedAtLocal ?? source.savedAt ?? source.updatedAt ?? metadata.at ?? Date.now()
+                ) || Date.now())),
+                source: String(metadata.source || source.source || source.mode || 'performance-snapshot').slice(0, 48)
+            };
+        }
+
+        function comparePerformanceSnapshots(a, b) {
+            const left = normalizePerformanceSnapshot(a);
+            const right = normalizePerformanceSnapshot(b);
+            if (!left && !right) return 0;
+            if (!left) return 1;
+            if (!right) return -1;
+            return (
+                right.score - left.score ||
+                right.level - left.level ||
+                right.lines - left.lines ||
+                right.at - left.at
+            );
+        }
+
+        function selectBestPerformanceSnapshot(candidates = []) {
+            return (Array.isArray(candidates) ? candidates : [])
+                .map(item => normalizePerformanceSnapshot(item))
+                .filter(Boolean)
+                .sort(comparePerformanceSnapshots)[0] || null;
+        }
+
         function loadPlayers() {
             try {
                 const list = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAYERS) || '[]');
@@ -4691,6 +4722,7 @@
                     bestScore: Number(p.bestScore || 0),
                     bestLevel: Number(p.bestLevel || 1),
                     clearCount: Number(p.clearCount || 0),
+                    bestRecord: normalizePerformanceSnapshot(p.bestRecord, { source: 'player-best-record' }),
                     archivedAt: p.archivedAt || null
                 })) : [];
             } catch (e) { return []; }
@@ -5632,38 +5664,41 @@ function showPasswordHint() {
                 item => item && String(item.id) === String(playerId) && !item.archivedAt
             );
             if (!player) return null;
-            const state = readPlayerSavedStateById(player.id);
+            const record = selectBestPerformanceSnapshot(collectPlayerPerformanceCandidates(player));
+            if (!record) return null;
             return {
                 player,
-                score: Math.max(0, Number(player.bestScore || 0), Number(state?.score || 0), Number(state?.bestScore || 0)),
-                level: Math.max(1, Number(player.bestLevel || 1), Number(state?.level || 1), Number(state?.bestLevel || 1)),
-                lines: Math.max(0, Number(player.clearCount || 0), Number(player.lines || 0), Number(state?.lines || 0)),
-                at: Math.max(0, Number(player.updatedAt || 0), Number(state?.savedAt || 0), Number(player.createdAt || 0))
+                record,
+                score: record.score,
+                level: record.level,
+                lines: record.lines,
+                at: record.at
             };
         }
 
         function sanitizeRealLeaderboardRecord(rawItem) {
             if (!rawItem || isDefaultLeaderboardBot(rawItem)) return null;
             const playerId = String(rawItem.playerId || '').trim();
-
-            // 無 playerId 的舊紀錄不再自動歸戶給同名新玩家。
+            // 無 playerId 的舊紀錄不自動歸戶，避免同名玩家誤配。
             if (!playerId) return null;
-
-            const verified = getVerifiedPlayerPerformance(playerId);
-            if (!verified) return null;
-
+            const player = (Array.isArray(players) ? players : []).find(
+                item => item && String(item.id) === playerId && !item.archivedAt
+            );
+            if (!player) return null;
+            const record = normalizePerformanceSnapshot(rawItem, { source: rawItem.mode || 'leaderboard-record' });
+            if (!record) return null;
             return {
                 ...rawItem,
-                playerId: verified.player.id,
-                name: validateString(verified.player.name, '玩家'),
-                avatar: verified.player.avatar || rawItem.avatar || '🎮',
-                color: verified.player.color || rawItem.color || 'cyan',
-                score: Math.floor(verified.score),
-                level: Math.floor(verified.level),
-                bestLevel: Math.floor(verified.level),
-                lines: Math.floor(verified.lines),
-                at: Math.floor(verified.at || rawItem.at || Date.now()),
-                mode: 'verified-player-record',
+                playerId: player.id,
+                name: validateString(player.name, '玩家'),
+                avatar: player.avatar || rawItem.avatar || '🎮',
+                color: player.color || rawItem.color || 'cyan',
+                score: record.score,
+                level: record.level,
+                bestLevel: record.level,
+                lines: record.lines,
+                at: record.at,
+                mode: rawItem.mode || 'verified-player-record',
                 verified: true
             };
         }
@@ -5912,42 +5947,83 @@ function showPasswordHint() {
             return readJSONSafe(`${STORAGE_KEY_STATE}_${playerId}`, null);
         }
 
+        function readLeaderboardBackupRecords() {
+            try {
+                const pack = readJSONSafe(STORAGE_KEY_BOARD_BACKUP, null);
+                if (!pack?.raw) return [];
+                const list = JSON.parse(pack.raw);
+                return Array.isArray(list) ? list : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function collectPlayerPerformanceCandidates(player) {
+            if (!player?.id) return [];
+            const id = String(player.id);
+            const candidates = [];
+            const push = (value, source) => {
+                const record = normalizePerformanceSnapshot(value, { source });
+                if (record) candidates.push(record);
+            };
+
+            push(player.bestRecord, 'player-best-record');
+            push(readPlayerSavedStateById(id), 'saved-game-state');
+
+            const currentBoard = readJSONSafe(STORAGE_KEY_BOARD, []);
+            for (const item of (Array.isArray(currentBoard) ? currentBoard : [])) {
+                if (String(item?.playerId || '') === id && !isDefaultLeaderboardBot(item)) {
+                    push(item, 'local-leaderboard');
+                }
+            }
+
+            for (const item of readLeaderboardBackupRecords()) {
+                if (String(item?.playerId || '') === id && !isDefaultLeaderboardBot(item)) {
+                    push(item, 'leaderboard-backup');
+                }
+            }
+
+            const retryCurrent = readJSONSafe(`${STORAGE_KEY_RETRY}_${id}`, null);
+            push(retryCurrent, 'retry-checkpoint');
+            const retryHistory = readJSONSafe(`${STORAGE_KEY_RETRY_HISTORY}_${id}`, []);
+            for (const item of (Array.isArray(retryHistory) ? retryHistory : [])) {
+                push(item, 'retry-history');
+            }
+
+            // 僅在沒有任何完整快照時，才以舊玩家欄位建立相容候選。
+            if (!candidates.length) {
+                push({
+                    score: player.bestScore,
+                    level: player.bestLevel,
+                    lines: player.clearCount,
+                    at: player.updatedAt
+                }, 'legacy-player-profile-fallback');
+            }
+            return candidates;
+        }
+
         function rebuildLeaderboardFromPlayers() {
             const rebuilt = [];
-            (Array.isArray(players) ? players : []).forEach(p => {
-                if (!p || p.archivedAt) return;
-                const state = readPlayerSavedStateById(p.id);
-                const bestScore = Math.max(
-                    0,
-                    Number(p.bestScore || 0),
-                    Number(state?.score || 0),
-                    Number(state?.bestScore || 0)
-                );
-                const bestLevel = Math.max(
-                    1,
-                    Number(p.bestLevel || 1),
-                    Number(state?.level || 1),
-                    Number(state?.bestLevel || 1)
-                );
-                const bestLines = Math.max(0, Number(state?.lines || 0), Number(p.lines || 0));
-                if (bestScore <= 0 && bestLevel <= 1 && bestLines <= 0) return;
+            (Array.isArray(players) ? players : []).forEach(player => {
+                if (!player?.id || player.archivedAt) return;
+                const verified = getVerifiedPlayerPerformance(player.id);
+                if (!verified) return;
                 rebuilt.push({
-                    playerId: p.id,
-                    name: validateString(p.name, '玩家'),
-                    avatar: p.avatar || '🎮',
-                    color: p.color || 'cyan',
-                    score: Math.floor(bestScore),
-                    level: bestLevel,
-                    bestLevel,
-                    lines: bestLines,
-                    at: Number(p.updatedAt || state?.savedAt || Date.now()),
-                    mode: bestLevel >= 20 ? 'main-line-or-endless' : 'recovered-from-player-state',
+                    playerId: player.id,
+                    name: validateString(player.name, '玩家'),
+                    avatar: player.avatar || '🎮',
+                    color: player.color || 'cyan',
+                    score: verified.score,
+                    level: verified.level,
+                    bestLevel: verified.level,
+                    lines: verified.lines,
+                    at: verified.at,
+                    mode: verified.level >= 20 ? 'main-line-or-endless' : 'recovered-from-player-snapshot',
                     recovered: true
                 });
             });
 
-            // V2.4.0：不再把沒有 playerId 的全域最高分依最後暱稱自動配給玩家。
-            // 該值無法證明屬於哪位玩家，曾造成其他玩家高分錯配給新註冊帳號。
+            // 無 playerId 的舊紀錄不依名稱自動配給玩家。
             return rebuilt;
         }
 
@@ -6188,23 +6264,35 @@ function showPasswordHint() {
             if (isGuestMode) {
                 return { cleanName: 'Guest 路人', cleanScore: Math.max(0, Math.floor(finalScore)), rank: null, isRanked: false, isBest: false, improved: false, guest: true };
             }
-            // V1.7：每次結算都以 playerId 送入本機龍虎榜，名稱、代表色、代表圖案會同步更新。
             const player = currentPlayerId ? findPlayerById(currentPlayerId) : null;
-            const cleanName = validateString(player?.name || nickname, "玩家");
-            const cleanScore = Math.max(0, Math.floor(finalScore));
-            const previousBest = bestScore;
-            const beforeBoard = [...localLeaderboard];
-
-            if (cleanScore > bestScore) {
-                bestScore = cleanScore;
-                localStorage.setItem(STORAGE_KEY_BEST, String(bestScore));
+            const cleanName = validateString(player?.name || nickname, '玩家');
+            const finalRecord = normalizePerformanceSnapshot({
+                score: finalScore,
+                level,
+                lines,
+                at: Date.now()
+            }, { source: 'game-over-result' });
+            if (!finalRecord) {
+                return { cleanName, cleanScore: 0, rank: null, isRanked: false, isBest: false, improved: false };
             }
 
+            const beforeBoard = [...localLeaderboard];
+            const previousVerified = player ? getVerifiedPlayerPerformance(player.id) : null;
+            const previousRecord = previousVerified?.record || null;
+            const selectedBest = selectBestPerformanceSnapshot([previousRecord, finalRecord]) || finalRecord;
+            const isBest = !previousRecord || comparePerformanceSnapshots(finalRecord, previousRecord) < 0;
+
+            bestScore = Math.max(bestScore, finalRecord.score, selectedBest.score);
+            localStorage.setItem(STORAGE_KEY_BEST, String(bestScore));
+
             if (player) {
-                player.bestScore = Math.max(Number(player.bestScore || 0), cleanScore);
-                player.bestLevel = Math.max(Number(player.bestLevel || 1), Number(level || 1));
+                player.bestRecord = selectedBest;
+                player.bestScore = selectedBest.score;
+                player.bestLevel = selectedBest.level;
+                player.clearCount = selectedBest.lines;
                 player.updatedAt = Date.now();
-                players = players.map(p => p.id === player.id ? player : p);
+                players = players.map(item => item.id === player.id ? player : item);
+                currentPlayer = player;
                 savePlayers();
             }
 
@@ -6213,11 +6301,13 @@ function showPasswordHint() {
                 name: cleanName,
                 avatar: player?.avatar || '🎮',
                 color: player?.color || 'cyan',
-                score: cleanScore,
-                level: level,
-                lines: lines,
-                at: Date.now(),
-                mode: level >= 10 ? 'ten-level-clear' : 'ten-level'
+                score: finalRecord.score,
+                level: finalRecord.level,
+                bestLevel: finalRecord.level,
+                lines: finalRecord.lines,
+                at: finalRecord.at,
+                mode: finalRecord.level >= 20 ? 'main-line-or-endless' : 'main-line',
+                recordSchemaVersion: 2
             });
             const realAfterSubmit = dedupeRealLeaderboardByPlayer(realLeaderboardEntries(localLeaderboard));
             localLeaderboard = normalizeLeaderboard([...realAfterSubmit, ...buildAdaptiveDefaultBots(realAfterSubmit)]);
@@ -6229,10 +6319,10 @@ function showPasswordHint() {
 
             const rank = localLeaderboard.findIndex(item => ((player && item.playerId === player.id) || (!player && item.name === cleanName && !item.isDefault))) + 1;
             const isRanked = rank > 0 && rank <= 10;
-            const previousRank = beforeBoard.findIndex(item => ((player && item.playerId === player.id) || item.name === cleanName) && item.score >= cleanScore) + 1;
-            const improved = !previousRank || (isRanked && rank < previousRank) || cleanScore > previousBest;
-            if (isRanked) showRankCelebration(rank, cleanName, cleanScore, player?.avatar || '🎮');
-            return { cleanName, cleanScore, rank: isRanked ? rank : null, isRanked, isBest: cleanScore > previousBest, improved };
+            const previousRank = beforeBoard.findIndex(item => ((player && item.playerId === player.id) || item.name === cleanName) && item.score >= finalRecord.score) + 1;
+            const improved = isBest || !previousRank || (isRanked && rank < previousRank);
+            if (isRanked) showRankCelebration(rank, cleanName, finalRecord.score, player?.avatar || '🎮');
+            return { cleanName, cleanScore: finalRecord.score, rank: isRanked ? rank : null, isRanked, isBest, improved };
         }
 
         function showRankCelebration(rank, name, score, avatar = '🎮') {
@@ -6542,8 +6632,7 @@ function showPasswordHint() {
             const floor = getEntryScoreFloor(cp.level);
             if (adjustedScore < floor) {
                 const prevLevel = Math.max(1, Number(cp.level || level || 1) - 1);
-                const ok = confirm(`重玩本關需扣 1000 分，但扣分後分數不足以達到進入 LEVEL ${cp.level} 的最低門檻。\n\n是否退回 LEVEL ${prevLevel}，使用上一關起點暫存重新累積分數後再挑戰？`);
-                if (!ok) return;
+                // 已由自訂二次確認視窗清楚說明會退回上一關；此處不再跳出第三次原生 confirm。
                 const prevCp = getRetryBaseCheckpoint(prevLevel);
                 if (prevCp) {
                     prevCp.score = Math.max(0, adjustedScore);
@@ -6581,7 +6670,7 @@ function showPasswordHint() {
             const floor = getEntryScoreFloor(cp.level);
             const scoreHint = adjustedScore >= floor
                 ? `扣 1000 分後可回到 LEVEL ${cp.level} 起點重新挑戰。`
-                : `扣 1000 分後不足以留在 LEVEL ${cp.level}，系統會詢問是否使用上一關暫存點回退挑戰。`;
+                : `扣 1000 分後不足以留在 LEVEL ${cp.level}，確認後會使用上一關暫存點回退挑戰。`;
             return `<div class="retry-panel">
                 <div class="font-black text-yellow-200 mb-1">是否重玩本關？</div>
                 <div class="text-[12px] mb-2">系統已在每次過關後建立「下一關起點暫存」，並保留最近數關節點，不會覆蓋正式存檔。重玩或回退需付出代價：</div>
@@ -6615,12 +6704,32 @@ function showPasswordHint() {
             updateSaveStatus();
         }
 
+        function persistGameStateSnapshot(snapshot) {
+            if (isGuestMode || !snapshot || !isRestorableState(snapshot)) return false;
+            const state = {
+                ...cloneForStorage(snapshot),
+                version: '2.4.5',
+                savedAt: Date.now(),
+                playerId: currentPlayerId,
+                nickname: validateString(currentPlayer?.name || snapshot.nickname || nickname || '玩家', '玩家')
+            };
+            try {
+                localStorage.setItem(getPlayerStateKey(), JSON.stringify(state));
+                savedStateCache = state;
+                updateSaveStatus();
+                return true;
+            } catch (error) {
+                console.warn('Persist game snapshot failed', error);
+                return false;
+            }
+        }
+
         function saveGameState(force = false) {
             if (isGuestMode) return;
             if (!force && (!gameStarted || isGameOver || pendingLevelClear || !activePiece || !nextPiece)) return;
             if (!activePiece || !nextPiece) return;
             const state = {
-                version: '1.7',
+                version: '2.4.5',
                 savedAt: Date.now(),
                 playerId: currentPlayerId, avatar: currentPlayer?.avatar || '🎮', color: currentPlayer?.color || 'cyan',
                 nickname, score, lines, level, stageStartScore, stageStartLines,
@@ -6740,18 +6849,18 @@ function showPasswordHint() {
                 Number(player?.bestLevel || 0),
                 Number(getPlayerBestLevel?.(player?.id || currentPlayerId) || 0)
             );
-            if (best >= 20) return 21;
-            if (best >= 10) return 11;
+            if (best > 1) return Math.max(1, Math.min(LEVELS.length, best));
             return null;
         }
 
         function buildFreshBoardForLevel(targetLevel) {
             grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
             level = Math.max(1, Math.min(LEVELS.length, Number(targetLevel || 1)));
-            score = Math.max(Number(currentPlayer?.bestScore || 0), 0);
-            lines = 0;
+            const continuation = getVerifiedPlayerPerformance(currentPlayer?.id || currentPlayerId)?.record || null;
+            score = Math.max(Number(continuation?.score || currentPlayer?.bestScore || 0), 0);
+            lines = Math.max(Number(continuation?.lines || currentPlayer?.clearCount || 0), 0);
             stageStartScore = score;
-            stageStartLines = 0;
+            stageStartLines = lines;
             stageResults = [];
             skillCharges = { row: 1, col: level >= 11 ? 1 : 0, cross: level >= 20 ? 1 : 0 };
             activePiece = generatePiece();
@@ -7296,9 +7405,9 @@ function showPasswordHint() {
                 void syncCloudPlayer(currentPlayer, 'level_clear', { level, score });
                 if (level === 10 || level === 20) void createCloudMilestone(currentPlayer, level, score);
             }
-            clearSavedState();
             if (level + 1 <= LEVELS.length) {
-                saveLevelEntryCheckpoint(level + 1, `after-level-${level}-clear`);
+                const nextLevelSnapshot = saveLevelEntryCheckpoint(level + 1, `after-level-${level}-clear`);
+                persistGameStateSnapshot(nextLevelSnapshot);
             }
             if (level >= LEVELS.length) {
                 winGame();
@@ -7628,6 +7737,48 @@ function showPasswordHint() {
             showToast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 1300);
         }
 
+        let pendingGameActionConfirmation = null;
+
+        function renderConfirmationItems(elementId, items, fallback) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            const values = (Array.isArray(items) ? items : []).filter(Boolean);
+            element.replaceChildren();
+            for (const value of (values.length ? values : [fallback])) {
+                const item = document.createElement('li');
+                item.textContent = String(value);
+                element.appendChild(item);
+            }
+        }
+
+        function closeGameActionConfirmation(confirmed = false) {
+            const modal = document.getElementById('game-action-confirm-modal');
+            modal?.classList.add('hidden');
+            const pending = pendingGameActionConfirmation;
+            pendingGameActionConfirmation = null;
+            if (pending?.resolve) pending.resolve(Boolean(confirmed));
+        }
+
+        function requestGameActionConfirmation(options = {}) {
+            if (pendingGameActionConfirmation) return Promise.resolve(false);
+            const modal = document.getElementById('game-action-confirm-modal');
+            if (!modal) return Promise.resolve(window.confirm(String(options.summary || options.title || '確定執行此操作嗎？')));
+            document.getElementById('game-action-confirm-title').innerText = options.title || '確定執行嗎？';
+            document.getElementById('game-action-confirm-summary').innerText = options.summary || '';
+            document.getElementById('game-action-confirm-note').innerText = options.note || '請確認上述影響後再決定；取消不會改變目前狀態。';
+            renderConfirmationItems('game-action-confirm-benefits', options.benefits, '已保存的歷史最高紀錄會保留。');
+            renderConfirmationItems('game-action-confirm-losses', options.losses, '不會額外刪除已保存的歷史資料。');
+            const confirmButton = document.getElementById('btn-confirm-game-action');
+            if (confirmButton) {
+                confirmButton.innerText = options.confirmText || '確認執行';
+                confirmButton.disabled = false;
+            }
+            modal.classList.remove('hidden');
+            return new Promise(resolve => {
+                pendingGameActionConfirmation = { resolve };
+            });
+        }
+
         function showOverlay() {
             document.body.classList.remove('force-playing');
             if (overlayMode === 'start') { document.body.classList.add('home-mode'); resetHomeActionButtons?.(); } else { document.body.classList.remove('home-mode'); }
@@ -7660,33 +7811,64 @@ function showPasswordHint() {
             document.getElementById('overlay-desc').innerText = `🎉 恭喜破關！達成最終關卡！\n玩家：${nickname}\n消行數：${lines}\n傲人分數：${score}${rankMsg}`;
             document.getElementById('level-brief').innerHTML = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 龍虎榜更新成功</div><div>${nickname} 以 ${score} 分登上第 ${rankInfo.rank} 名。</div><div>${rankInfo.isBest ? '同時刷新你的本機最高分！' : '排行榜已儲存在本機瀏覽器。'}</div>` : `<div class="text-slate-300 font-bold text-center mb-1">本機龍虎榜</div><div>目前前十名門檻仍未突破，歡迎再戰！</div>`;
             document.getElementById('btn-start').innerText = "重啟傳奇挑戰";
-            document.body.classList.add('overlay-active'); document.getElementById('overlay').classList.remove("home-state-hidden"); document.getElementById('overlay').classList.add("home-state-visible"); document.getElementById('overlay').style.opacity = "1"; document.getElementById('overlay').classList.remove('pointer-events-none');
+            overlayMode = 'gameOver';
+            document.getElementById('overlay')?.classList.add('gameover-overlay');
+            showOverlay();
         }
 
         function endGame() {
             void flushPendingSessionSummary('game_over');
-            isGameOver = true; gameStarted = false; stopBgm();
-            if (gravityTimer) clearInterval(gravityTimer); if (lockDelayTimeout) clearTimeout(lockDelayTimeout);
-            playGameOverSound(); clearSavedState();
-            const rankInfo = submitScoreToCloud(nickname, score);
-            trackGameEvent('game_over', { level: Number(level || 1), score: Number(score || 0), lines: Number(lines || 0), local_ranked: rankInfo.isRanked ? 'yes' : 'no' });
-            if (!isGuestMode && currentPlayer) void syncCloudPlayer(currentPlayer, 'game_over', { level, score });
+            isGameOver = true;
+            gameStarted = false;
+            isPaused = true;
+            stopBgm();
+            if (gravityTimer) { clearInterval(gravityTimer); gravityTimer = null; }
+            if (lockDelayTimeout) { clearTimeout(lockDelayTimeout); lockDelayTimeout = null; }
+            playGameOverSound();
+
+            // 先顯示可操作的結算罩幕；排行榜或雲端流程失敗也不能只剩黑屏。
             overlayMode = 'gameOver';
-            document.getElementById('overlay')?.classList.remove('pause-overlay');
-            document.getElementById('overlay')?.classList.remove('levelclear-overlay');
-            document.getElementById('overlay')?.classList.add('gameover-overlay');
-            document.getElementById('overlay-title').innerHTML = "極限操控方塊";
-            document.getElementById('overlay-subtitle').innerText = rankInfo.isRanked ? '挑戰結算｜擠進龍虎榜｜阿布拉.凱 工作室 監製' : '挑戰失敗｜阿布拉.凱 工作室 監製';
-            const rankMsg = rankInfo.guest ? `Guest 路人模式：本次分數僅供當場參考，不會寫入本機龍虎榜。` : (rankInfo.isRanked ? `🏆 恭喜登入本機龍虎榜第 ${rankInfo.rank} 名！` : `本次未進入本機前十名，差一點就能留名！`);
-            const bestMsg = rankInfo.isBest ? `\n🎉 同時刷新你的本機最高分！` : ``;
-            const failedLevelName = LEVELS[level - 1]?.name || '';
-            document.getElementById('overlay-desc').innerText = `${rankInfo.isRanked ? '龍虎榜結算' : 'GAME OVER / 挑戰失敗'}\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines}\n失敗關卡：LEVEL ${level}${failedLevelName ? '｜' + failedLevelName : ''}\n${rankMsg}${bestMsg}`;
-            const resultHtml = rankInfo.isRanked ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 本機龍虎榜更新</div><div>${nickname}｜${score} 分｜第 ${rankInfo.rank} 名</div><div>排行榜已儲存在這台裝置的瀏覽器中，下次開啟仍會保留。</div>` : `<div class="text-red-200 font-bold text-center mb-1">挑戰失敗，但可以接續重挑</div><div>目前分數：${score} 分｜失敗關卡：LEVEL ${level}</div><div>你可以付出代價重玩本關，保留接續感。</div>`;
-            document.getElementById('level-brief').innerHTML = resultHtml + buildRetryPanelHTML(rankInfo);
-            document.getElementById('btn-start').innerText = "重新開始一局";
+            const overlay = document.getElementById('overlay');
+            overlay?.classList.remove('pause-overlay', 'levelclear-overlay');
+            overlay?.classList.add('gameover-overlay');
+            document.getElementById('overlay-title').innerHTML = '極限操控方塊';
+            document.getElementById('overlay-subtitle').innerText = '挑戰結算中｜阿布拉.凱 工作室 監製';
+            document.getElementById('overlay-desc').innerText = `GAME OVER / 挑戰失敗\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines}\n失敗關卡：LEVEL ${level}\n正在保存本局成績…`;
+            document.getElementById('level-brief').innerHTML = '<div class="text-cyan-200 font-bold text-center">正在整理本機龍虎榜與重挑選項…</div>';
+            document.getElementById('btn-start').innerText = '開始全新挑戰';
             document.getElementById('btn-new-game')?.classList.remove('hidden');
-            document.getElementById('btn-new-game').innerText = "結束回首頁";
-            document.body.classList.add('overlay-active'); document.getElementById('overlay').classList.remove("home-state-hidden"); document.getElementById('overlay').classList.add("home-state-visible"); document.getElementById('overlay').style.opacity = "1"; document.getElementById('overlay').classList.remove('pointer-events-none');
+            document.getElementById('btn-new-game').innerText = '返回首頁';
+            showOverlay();
+
+            const fallbackRankInfo = { cleanName: validateString(nickname, '玩家'), cleanScore: Number(score || 0), rank: null, isRanked: false, isBest: false, improved: false, guest: isGuestMode };
+            const rankInfo = safeRun('submitScoreToCloud', () => submitScoreToCloud(nickname, score), fallbackRankInfo) || fallbackRankInfo;
+            safeRun('clearSavedState after game over', () => clearSavedState());
+            safeRun('track game over', () => trackGameEvent('game_over', {
+                level: Number(level || 1),
+                score: Number(score || 0),
+                lines: Number(lines || 0),
+                local_ranked: rankInfo.isRanked ? 'yes' : 'no'
+            }));
+            if (!isGuestMode && currentPlayer) {
+                safeRun('sync cloud player game over', () => void syncCloudPlayer(currentPlayer, 'game_over', { level, score }));
+            }
+
+            const rankMsg = rankInfo.guest
+                ? 'Guest 路人模式：本次分數僅供當場參考，不會寫入本機龍虎榜。'
+                : rankInfo.isRanked
+                    ? `🏆 恭喜登入本機龍虎榜第 ${rankInfo.rank} 名！`
+                    : '本次未進入本機前十名，差一點就能留名！';
+            const bestMsg = rankInfo.isBest ? '\n🎉 同時刷新你的本機最高分！' : '';
+            const failedLevelName = LEVELS[level - 1]?.name || '';
+            document.getElementById('overlay-subtitle').innerText = rankInfo.isRanked
+                ? '挑戰結算｜擠進龍虎榜｜阿布拉.凱 工作室 監製'
+                : '挑戰失敗｜阿布拉.凱 工作室 監製';
+            document.getElementById('overlay-desc').innerText = `${rankInfo.isRanked ? '龍虎榜結算' : 'GAME OVER / 挑戰失敗'}\n玩家：${nickname}\n最終分數：${score}\n消行數：${lines}\n失敗關卡：LEVEL ${level}${failedLevelName ? '｜' + failedLevelName : ''}\n${rankMsg}${bestMsg}`;
+            const resultHtml = rankInfo.isRanked
+                ? `<div class="text-yellow-300 font-black text-center mb-1">🏆 本機龍虎榜更新</div><div>${nickname}｜${score} 分｜第 ${rankInfo.rank} 名</div><div>排行榜已儲存在這台裝置的瀏覽器中，下次開啟仍會保留。</div>`
+                : `<div class="text-red-200 font-bold text-center mb-1">挑戰失敗，但可以接續重挑</div><div>目前分數：${score} 分｜失敗關卡：LEVEL ${level}</div><div>你可以付出代價重玩本關，或開始全新挑戰。</div>`;
+            document.getElementById('level-brief').innerHTML = resultHtml + buildRetryPanelHTML(rankInfo);
+            showOverlay();
         }
 
         
@@ -7817,11 +7999,10 @@ function showPasswordHint() {
         }
 
         function hardComputeStartLevel() {
+            const verified = getVerifiedPlayerPerformance(currentPlayer?.id || currentPlayerId);
             const bestByPlayer = Math.max(1, Number(currentPlayer?.bestLevel || 1));
             const bestByBoard = Math.max(1, Number(getPlayerBestLevel?.(currentPlayer?.id || currentPlayerId) || 1));
-            const best = Math.max(bestByPlayer, bestByBoard);
-            if (best >= 20) return 21;
-            if (best >= 10) return 11;
+            const best = Math.max(bestByPlayer, bestByBoard, Number(verified?.level || 1));
             return Math.max(1, Math.min(LEVELS.length, best));
         }
 
@@ -7850,12 +8031,15 @@ function showPasswordHint() {
             } else {
                 nickname = isGuestMode ? 'Guest 路人' : validateString(currentPlayer?.name || localStorage.getItem(STORAGE_KEY_NAME) || '玩家', '玩家');
                 grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-                const startLevel = isGuestMode ? 1 : hardComputeStartLevel();
+                const continuation = (!forceNew && !isGuestMode)
+                    ? getVerifiedPlayerPerformance(currentPlayer?.id || currentPlayerId)?.record
+                    : null;
+                const startLevel = continuation ? continuation.level : 1;
                 level = Math.max(1, Math.min(LEVELS.length, startLevel));
-                score = Math.max(0, Number(currentPlayer?.bestScore || 0));
-                lines = 0;
+                score = continuation ? continuation.score : 0;
+                lines = continuation ? continuation.lines : 0;
                 stageStartScore = score;
-                stageStartLines = 0;
+                stageStartLines = lines;
                 stageResults = [];
                 skillCharges = { row: level >= 1 ? 1 : 0, col: level >= 11 ? 1 : 0, cross: level >= 20 ? 1 : 0 };
                 activePiece = generatePiece();
@@ -8209,6 +8393,11 @@ function showPasswordHint() {
         
         // 【核心解法】電腦端鍵盤完美對應
         window.addEventListener('keydown', (e) => {
+            if (pendingGameActionConfirmation) {
+                if (e.key === 'Escape') closeGameActionConfirmation(false);
+                e.preventDefault();
+                return;
+            }
             if (levelStartGraceActive) {
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
                     e.preventDefault();
@@ -8232,7 +8421,7 @@ function showPasswordHint() {
                 case 'c': case 'C': hold(); break;                   // 對應 X鍵
                 case 'z': case 'Z': useBestSkill(); break;           // 技能
                 case 'p': case 'P': togglePause(); break;            // 暫停
-                case 'r': case 'R': initGame(); break;                 // 重新開始
+                case 'r': case 'R': void confirmRestartCurrentGameplay(); break; // 二次確認後重新開始
             }
         });
 
@@ -8309,7 +8498,7 @@ function showPasswordHint() {
             cancelLevelStartGrace();
             try { if (gravityTimer) clearInterval(gravityTimer); } catch(e) {}
             try { if (lockDelayTimeout) clearTimeout(lockDelayTimeout); } catch(e) {}
-            try { saveGameState?.(true); } catch(e) {}
+            if (!isGameOver && overlayMode === 'pause') { try { saveGameState?.(true); } catch(e) {} }
             showHomeOverlayClean();
             isGuestMode = false;
             const pauseBtn = document.getElementById('btn-pause');
@@ -8329,6 +8518,112 @@ function showPasswordHint() {
             showToast('已回到首頁，進度已嘗試保存。');
         }
 
+        async function confirmReturnHomeFromCurrentOverlay() {
+            const context = overlayMode;
+            const isPauseContext = context === 'pause';
+            const isLevelClearContext = context === 'levelClear';
+            const ok = await requestGameActionConfirmation({
+                title: '確定返回首頁嗎？',
+                summary: isPauseContext
+                    ? '系統會先保存目前棋盤、分數、關卡與累積消行，再停止本次即時遊玩並返回首頁。'
+                    : isLevelClearContext
+                        ? '系統會保留下一關起點暫存並返回首頁；稍後可由「繼續挑戰」接續。'
+                        : '本局已結算。返回首頁不會刪除已保存的最高紀錄。',
+                benefits: [
+                    isPauseContext ? '目前進度會先保存，可稍後接續。' : '已保存的最高分、龍虎榜與世界盃候選紀錄會保留。',
+                    isLevelClearContext ? '下一關起點與累積分數、消行數會保留。' : '可回首頁查看排行榜、世界盃與玩家資料。'
+                ],
+                losses: [
+                    '目前遊戲畫面會關閉並返回首頁。',
+                    isPauseContext ? '離開後不會繼續即時落下方塊。' : '若要繼續遊玩，需要再次按「繼續挑戰」。'
+                ],
+                confirmText: '確認返回首頁'
+            });
+            if (ok) showHomeFromPausedGame();
+        }
+
+        async function confirmStartNewRunFromGameOver() {
+            const ok = await requestGameActionConfirmation({
+                title: '確定開始全新挑戰嗎？',
+                summary: '全新挑戰會從 LEVEL 1、0 分、0 消行開始。歷史最高紀錄仍會保留。',
+                benefits: [
+                    '保留玩家帳號、歷史最高分、龍虎榜與世界盃榮譽紀錄。',
+                    '以乾淨棋盤重新挑戰完整關卡。'
+                ],
+                losses: [
+                    '本次的本關重挑暫存與最近關卡節點會清除。',
+                    '新局不會沿用目前累積分數、關卡、消行數或技能。'
+                ],
+                confirmText: '確認從 LEVEL 1 重來'
+            });
+            if (!ok) return;
+            void flushPendingSessionSummary('restart_after_game_over');
+            clearAllRetryCheckpoints();
+            clearSavedState();
+            document.getElementById('overlay')?.classList.remove('gameover-overlay');
+            initGame(true);
+        }
+
+        async function confirmRetryWithScorePenalty() {
+            const cp = getRetryBaseCheckpoint(level);
+            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
+            const adjustedScore = Math.max(0, Number(cp.score || 0) - 1000);
+            const floor = getEntryScoreFloor(cp.level);
+            const prevLevel = Math.max(1, Number(cp.level || level || 1) - 1);
+            const ok = await requestGameActionConfirmation({
+                title: '確定扣 1000 分重玩本關嗎？',
+                summary: adjustedScore >= floor
+                    ? `確認後會扣除 1000 分，回到 LEVEL ${cp.level} 的關卡起點。`
+                    : `扣分後不足以留在 LEVEL ${cp.level}；確認後會退回 LEVEL ${prevLevel} 重新累積。`,
+                benefits: ['保留玩家帳號與既有歷史最高紀錄。', '回到安全的關卡起點，不會回到死亡前最後一步。'],
+                losses: ['目前挑戰分數永久扣除 1000 分。', adjustedScore >= floor ? '本關死亡前的盤面進度不保留。' : `可能退回 LEVEL ${prevLevel}。`],
+                confirmText: '確認扣 1000 分重玩'
+            });
+            if (ok) retryCurrentLevelWithScorePenalty();
+        }
+
+        async function confirmRetryWithSkillPenalty() {
+            const cp = getRetryBaseCheckpoint(level);
+            const key = cp ? getBestAvailableSkill(cp.skillCharges || {}) : null;
+            if (!cp) { showToast('找不到本關起點暫存，請重新開始挑戰'); return; }
+            if (!key) { showToast('沒有可扣除的技能，請改用扣 1000 分或重新開始'); return; }
+            const ok = await requestGameActionConfirmation({
+                title: `確定扣除「${skillName(key)}」重玩嗎？`,
+                summary: `確認後會扣除 ${skillName(key)} ×1，並回到 LEVEL ${cp.level} 的關卡起點。`,
+                benefits: ['目前累積分數不扣除。', '保留玩家帳號與既有歷史最高紀錄。'],
+                losses: [`${skillName(key)} 技能永久扣除 1 次。`, '本關死亡前的盤面進度不保留。'],
+                confirmText: '確認扣技能重玩'
+            });
+            if (ok) retryCurrentLevelWithSkillPenalty();
+        }
+
+        async function confirmRestartCurrentGameplay() {
+            if (!gameStarted || isGameOver) return;
+            const wasPlaying = overlayMode === 'playing' && !isPaused;
+            if (wasPlaying) {
+                isPaused = true;
+                if (gravityTimer) { clearInterval(gravityTimer); gravityTimer = null; }
+                if (lockDelayTimeout) { clearTimeout(lockDelayTimeout); lockDelayTimeout = null; }
+                stopBgm();
+            }
+            const ok = await requestGameActionConfirmation({
+                title: '確定放棄目前這局並重新開始嗎？',
+                summary: '快捷鍵 R 不會再直接清除進度。確認後才會從 LEVEL 1 建立全新挑戰。',
+                benefits: ['保留玩家帳號與歷史最高紀錄。', '重新建立乾淨棋盤。'],
+                losses: ['目前尚未結算的分數、消行、關卡、技能與盤面會放棄。', '本關重挑節點會清除。'],
+                confirmText: '確認放棄本局並重來'
+            });
+            if (ok) {
+                void flushPendingSessionSummary('restart_keyboard');
+                clearAllRetryCheckpoints();
+                clearSavedState();
+                initGame(true);
+            } else if (wasPlaying) {
+                overlayMode = 'playing';
+                beginLevelStartGrace(LEVEL_START_GRACE_MS, 'pause_resume');
+            }
+        }
+
         function startGuestMode() {
             isGuestMode = true;
             currentPlayer = null; currentPlayerId = null; selectedPlayerId = null;
@@ -8343,9 +8638,8 @@ function showPasswordHint() {
             if (overlayMode === 'levelClear') return resumeNextLevel();
             if (overlayMode === 'pause') return togglePause();
             if (overlayMode === 'gameOver') {
-                void flushPendingSessionSummary('restart_after_game_over');
-                document.getElementById('overlay')?.classList.remove('gameover-overlay');
-                return initGame(true);
+                void confirmStartNewRunFromGameOver();
+                return;
             }
             const oldText = btn?.innerText || '繼續挑戰';
             btn?.classList.add('login-starting');
@@ -8356,7 +8650,7 @@ function showPasswordHint() {
             setTimeout(() => { if (btn) btn.classList.remove('login-starting'); if (!ok && btn) btn.innerText = oldText; }, 450);
         });
         document.getElementById('btn-new-game').addEventListener('click', () => {
-            if (overlayMode === 'pause' || overlayMode === 'levelClear' || overlayMode === 'gameOver') return showHomeFromPausedGame();
+            if (overlayMode === 'pause' || overlayMode === 'levelClear' || overlayMode === 'gameOver') { void confirmReturnHomeFromCurrentOverlay(); return; }
             // 首頁狀態下這顆按鈕理論上應該被隱藏；若因舊快取或 CSS 顯示出來，也絕對不能啟動遊戲。
             if (overlayMode === 'start') {
                 resetHomeActionButtons();
@@ -8370,16 +8664,20 @@ function showPasswordHint() {
             if (!btn) return;
             e.preventDefault();
             const action = btn.dataset.retryAction;
-            if (action === 'score') return retryCurrentLevelWithScorePenalty();
-            if (action === 'skill') return retryCurrentLevelWithSkillPenalty();
+            if (action === 'score') { void confirmRetryWithScorePenalty(); return; }
+            if (action === 'skill') { void confirmRetryWithSkillPenalty(); return; }
             if (action === 'new') {
-                void flushPendingSessionSummary('retry_new_game');
-                document.getElementById('overlay')?.classList.remove('gameover-overlay');
-                clearSavedState();
-                return initGame(true);
+                void confirmStartNewRunFromGameOver();
+                return;
             }
         });
         document.getElementById('btn-pause').addEventListener('click', togglePause);
+        document.getElementById('btn-confirm-game-action')?.addEventListener('click', () => closeGameActionConfirmation(true));
+        document.getElementById('btn-cancel-game-action-confirm')?.addEventListener('click', () => closeGameActionConfirmation(false));
+        document.getElementById('btn-close-game-action-confirm')?.addEventListener('click', () => closeGameActionConfirmation(false));
+        document.getElementById('game-action-confirm-modal')?.addEventListener('click', (event) => {
+            if (event.target?.id === 'game-action-confirm-modal') closeGameActionConfirmation(false);
+        });
         document.getElementById('btn-save').addEventListener('click', manualSaveGameState);
         document.getElementById('btn-player-settings').addEventListener('click', openPlayerSettings);
         document.getElementById('btn-close-profile')?.addEventListener('click', () => document.getElementById('player-profile-modal')?.classList.add('hidden'));
@@ -8478,7 +8776,7 @@ function showPasswordHint() {
                     <p><b class="text-yellow-300">首頁精簡：</b>V2.0.9 移除首頁內嵌的龍虎榜區塊，避免與下方「龍虎榜揭榜」功能重複，也避免排行榜佔用登入畫面。</p><p><b class="text-cyan-300">排行榜入口：</b>現在查看排行榜請使用首頁底部「龍虎榜揭榜」按鈕，會開啟完整獨立排行榜視窗。</p><p><b class="text-emerald-300">保留資料：</b>這次只移除首頁顯示區塊，不刪任何玩家帳號、挑戰密碼、最高紀錄或龍虎榜資料。</p>
                     <p><b class="text-blue-300">目標：</b>《極限操控方塊》共有 10 關。每一關都有「本關分數」目標，達成後即可過關並獲得技能。</p>
                     <p><b class="text-blue-300">手機操作：</b>左側方向鍵移動與快降，右側 A/Y 旋轉、B 硬降、X 暫存，技能鍵會自動使用目前最適合的已解鎖技能。</p>
-                    <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 重新開始。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
+                    <p><b class="text-blue-300">電腦操作：</b>← → 移動、↑/E 旋轉、↓ 快降、Space 硬降、C 暫存、Z 技能、P 暫停、R 開啟重新開始二次確認。畫面上的方向鍵、L/R、A/B/X/Y、技能鍵，以及右上角音樂、音效、儲存、玩家、暫停，都可直接用滑鼠點選。</p>
                     <p><b class="text-cyan-300">平板操作：</b>平板可直接使用畫面上的虛擬按鈕觸控遊玩；系統會依照直式、橫式與可視範圍動態調整棋盤與按鈕比例。</p>
                     <p><b class="text-yellow-300">技能：</b>過關後會得到清除一行、清除一列或十字爆破。技能採一鍵發動，不需要額外選格子，避免打斷操作節奏。</p><p><b class="text-cyan-300">下一關準備：</b>過關進入下一關時，系統先顯示真正要遊玩的棋盤，再於該盤面上倒數 2、1；倒數結束後方塊才開始落下，玩家可先看清楚盤面並思考下一步。</p><p><b class="text-cyan-300">解除暫停：</b>按下「繼續遊戲」後，也會先回到暫停前的真實棋盤並停住兩秒，倒數結束後才恢復重力與操作。</p>
                     <p><b class="text-emerald-300">本機儲存：</b>註冊挑戰者後，帳號、最高分、排行榜與各玩家進度會儲存在目前瀏覽器。同一台裝置可讓多人輪流登入自己的挑戰密碼繼續挑戰。</p>
@@ -8514,7 +8812,7 @@ function showPasswordHint() {
                 body.innerHTML = `
                     <div class="rounded-xl border border-yellow-400/70 bg-yellow-950/30 p-3 text-yellow-100"><p class="font-black text-yellow-200 mb-1">特別感謝</p><p>感謝 <b>尤崇驊</b> 提供遊戲體驗建議與遊戲創意點子，一起協作設計本遊戲。</p></div>
                     <p><b class="text-blue-300">遊戲名稱：</b>極限操控方塊</p>
-                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.4.4｜免責聲明・玩家命名規範版</span></p>
+                    <p><b class="text-blue-300">目前版本：</b><span class="text-cyan-200 font-bold">V2.4.5｜進度一致性・安全確認・結算黑屏修正版</span></p>
                     <p><b class="text-blue-300">監製：</b>阿布拉.凱 工作室</p>
                     <p><b class="text-slate-100">© 2026 阿布拉.凱 工作室。保留所有權利。</b></p>
                     <div class="rounded-xl border border-blue-700/50 bg-blue-950/20 p-3">
@@ -8557,6 +8855,7 @@ function showPasswordHint() {
                     <div class="rounded-xl border border-blue-500/40 bg-blue-950/20 p-3">
                         <p class="font-black text-blue-200 mb-2">最近更新</p>
                         <ul class="space-y-1 text-[12px] leading-relaxed text-slate-200 list-disc pl-5">
+                            <li><b>V2.4.5</b>：修正高等級玩家無存檔時被固定退回 LEVEL 21、累積消行歸零，以及排行榜／世界盃將不同來源的分數、關卡與消行拼接成同一筆紀錄；Game Over 先顯示可操作結算畫面，避免高等級結算黑屏；暫停、返回首頁、重新開始與本關重挑新增得失說明及二次確認；同步更新 LINE 分享 Meta 與全站版本。</li>
                             <li><b>V2.4.4</b>：修正註冊表單缺漏資料時沒有明確引導的問題：建立帳號前會檢查玩家帳號、挑戰密碼、再次輸入密碼、密碼提示與命名規範確認，缺漏時自動捲動到第一個問題欄位並顯示提示。同步修正免責聲明視窗版本文字與玩家命名規範連結呈現。</li>
                             <li><b>V2.4.3</b>：將消行與過關統計改為單局摘要批次同步：遊戲期間先在本機累積，於 Game Over、完成遊戲、回首頁、每 60 秒或下次開啟時集中送出。每次批次只寫入私人與公開摘要各一筆，大幅降低 Firebase 寫入、讀取與儲存消耗。</li>
                             <li><b>V2.4.2</b>：全球公開數據擴充為九宮格，新增「全球累積消除行數」與「全球累積過關次數」。數字由玩家與訪客實際消除行、成功過關的雲端事件累加，F5、重複登入及預設角色不會增加數值。</li>

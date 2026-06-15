@@ -1,11 +1,11 @@
 {
   "name": "abrakai-extreme-control-blocks-stats",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "private": true,
   "type": "module",
   "scripts": {
     "update-stats": "node scripts/update-public-stats.mjs",
-    "check": "node --check scripts/update-public-stats.mjs"
+    "check": "node tests/v245-static-check.mjs && node --check scripts/update-public-stats.mjs"
   },
   "dependencies": {
     "@google-analytics/data": "6.1.0",
